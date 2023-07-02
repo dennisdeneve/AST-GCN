@@ -1,14 +1,13 @@
 ## training ast-gcn
-import yaml
 import os
 import numpy as np
 import pandas as pd
 import tensorflow as tf
 from Model.tgcn import TGCN
-# from Data_PreProcess.data_preprocess import data_preprocess
 from Data_PreProcess import data_preprocess
+from Data_PreProcess.data_preprocess import processing_data
 from Evaluation.metrics import metrics, MaxMinNormalization
-from Model.acell import preprocess_data,load_assist_data
+from Model.acell import load_assist_data
 tf.compat.v1.disable_eager_execution()
 from Vis.visualization import plot_result,plot_error
 
@@ -27,10 +26,11 @@ def train(config):
     scheme =  config['scheme']['default']
     PG =  config['noise_param']['default']
 
+
+    print("Starting the data pre_processing with noise & normalization. :)")
     # Apply noise & normalization to dataset
-    # data = data_preprocess.data_preprocess(config)
     data = data_preprocess.data_preprocess(config)
-    
+   
     # After adding noise to the data, time_len and num_nodes are calculated based on the shape of the data. 
     # Finally, data1 is created as a NumPy matrix with dtype=np.float32.
     time_len = data.shape[0]
@@ -40,8 +40,9 @@ def train(config):
     #### normalization
     max_value = np.max(data1)
     data1  = data1/max_value
-
     data1.columns = data.columns
+    print("Finished the data pre_processing.")
+
 
     # Distinguishing the various model types
     if model_name == 'ast-gcn':
@@ -55,22 +56,21 @@ def train(config):
         name = 'tgcn'
 
 
-    print("Starting the data pre_process  :)")
+    print("Starting the data splitting & processing. :)")
     print('model:', model_name)
     print('scheme:', name)
     print('noise_name:', noise_name)
     print('noise_param:', PG)
 
-    trainX, trainY, testX, testY = preprocess_data(data1, time_len, train_rate, seq_len, pre_len, model_name, scheme)
-
+    trainX, trainY, testX, testY = processing_data(data1, time_len, train_rate, seq_len, pre_len, model_name, scheme)
     # print(trainX)
     # print(trainY)
     # print(testX)
     # print(testY)
-
     totalbatch = int(trainX.shape[0]/batch_size)
     print("The size of dataset is: ", str(batch_size))
     training_data_count = len(trainX)
+    print("Finished the data splitting & processing. :)")
 
 
     if model_name == 'ast-gcn':

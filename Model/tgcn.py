@@ -2,7 +2,8 @@
 import tensorflow as tf
 from tensorflow.compat.v1.nn.rnn_cell import RNNCell
 from Utils.utils import calculate_laplacian
-from Model.acell import preprocess_data,load_assist_data
+from Model.acell import load_assist_data
+# from Data_PreProcess import processing_data
 import numpy as np
 import pandas as pd
 import yaml
