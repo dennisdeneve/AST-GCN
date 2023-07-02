@@ -1,0 +1,2 @@
+model_checkpoint_path: "ASTGCN_pre_0-0"
+all_model_checkpoint_paths: "ASTGCN_pre_0-0"
