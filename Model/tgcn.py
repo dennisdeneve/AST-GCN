@@ -16,7 +16,6 @@ _weights and _biases are dictionaries that contain the weights and biases for th
 '''
 def TGCN(_X, _weights, _biases):
     
-    
     # Get the current directory
     current_dir = os.path.dirname(os.path.abspath(__file__))
     # Define the relative file path to the config file
@@ -29,13 +28,11 @@ def TGCN(_X, _weights, _biases):
     data_name = config['dataset']['default']
     pre_len =  config['pre_len']['default']
     
-    
     ########## load data #########
     if data_name == 'sz':
         data, adj = load_assist_data('sz')
     
     num_nodes = data.shape[1]
-    
     
     ### defines a TGCN cell using the tgcnCell class and creates a multi-layer RNN cell 
     cell_1 = tgcnCell(gru_units, adj, num_nodes=num_nodes)

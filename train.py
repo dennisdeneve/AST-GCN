@@ -1,1 +1,0 @@
-## training ast-gcn

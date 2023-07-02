@@ -9,7 +9,7 @@ learning_rate:
   
 training_epoch:
   type: int
-  default : 2 
+  default : 1
   help :  Number of epochs to train. 
   
 gru_units : 
