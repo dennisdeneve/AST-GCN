@@ -6,10 +6,10 @@ import tensorflow as tf
 from Model.tgcn import TGCN
 from Data_PreProcess import data_preprocess
 from Data_PreProcess.data_preprocess import processing_data
-from Evaluation.metrics import metrics, MaxMinNormalization
-from Model.acell import load_assist_data
+from Evaluation.metrics import metrics
+from Evaluation.evaluation import eval
+from Train import optimize
 tf.compat.v1.disable_eager_execution()
-from Vis.visualization import plot_result,plot_error
 
 def train(config):
     model_name = config['model_name']['default']
@@ -25,7 +25,6 @@ def train(config):
     dim =  config['dim']['default']
     scheme =  config['scheme']['default']
     PG =  config['noise_param']['default']
-
 
     print("Starting the data pre_processing with noise & normalization. :)")
     # Apply noise & normalization to dataset
@@ -43,7 +42,6 @@ def train(config):
     data1.columns = data.columns
     print("Finished the data pre_processing.")
 
-
     # Distinguishing the various model types
     if model_name == 'ast-gcn':
         if scheme == 1:
@@ -55,7 +53,6 @@ def train(config):
     else:
         name = 'tgcn'
 
-
     print("Starting the data splitting & processing. :)")
     print('model:', model_name)
     print('scheme:', name)
@@ -63,28 +60,31 @@ def train(config):
     print('noise_param:', PG)
 
     trainX, trainY, testX, testY = processing_data(data1, time_len, train_rate, seq_len, pre_len, model_name, scheme)
-    # print(trainX)
-    # print(trainY)
-    # print(testX)
-    # print(testY)
     totalbatch = int(trainX.shape[0]/batch_size)
     print("The size of dataset is: ", str(batch_size))
     training_data_count = len(trainX)
     print("Finished the data splitting & processing. :)")
 
-
+    # Define input tensors for the AST-GCN model based on model_name and scheme
     if model_name == 'ast-gcn':
+        # Check scheme for combining additional data with input data
         if scheme == 1:
+            # Input tensor shape: [seq_len+1, num_nodes]
             inputs = tf.keras.Input(shape=[seq_len+1, num_nodes], dtype=tf.float32)
         elif scheme == 2:
+            # Input tensor shape: [seq_len*2+pre_len, num_nodes]
             inputs = tf.keras.Input(shape=[seq_len*2+pre_len, num_nodes], dtype=tf.float32)
         else:
+            # Input tensor shape: [seq_len*2+pre_len+1, num_nodes]
             inputs = tf.keras.Input(shape=[seq_len*2+pre_len+1, num_nodes], dtype=tf.float32)
-
     else:
+        # Input tensor shape: [seq_len, num_nodes]
         inputs = tf.keras.Input(shape=[seq_len, num_nodes], dtype=tf.float32)
 
+    # Define input tensor for labels
     labels = tf.keras.Input(shape=[pre_len, num_nodes], dtype=tf.float32)
+    
+    
 
     ############ Graph weights defined ############
     # The weights are defined as a dictionary named 'weights', 
@@ -105,7 +105,6 @@ def train(config):
     pred,ttts,ttto = TGCN(inputs, weights, biases)
     y_pred = pred
         
-
     ########### optimizer used to train the model ############
     # lambda_loss is a hyperparameter that controls the strength of the L2 regularization applied to the trainable variables in the model.
     lambda_loss = 0.0015
@@ -124,7 +123,8 @@ def train(config):
     # The learning rate used by the optimizer is specified by the lr variable.
     optimizer = tf.compat.v1.train.AdamOptimizer(lr).minimize(loss)
 
-
+    # optimizer = optimize.optimize(labels,num_nodes,y_pred,lr)
+    
     ###### Initialize session ######
     ## initializes a TensorFlow session with GPU options set, and then initializes 
     # the global variables in the graph. It also creates a Saver object for saving and restoring the model variables.
@@ -143,19 +143,16 @@ def train(config):
     if not os.path.exists(path):
         os.makedirs(path)
         
-
     # Initialising all the variables
     x_axe,batch_loss,batch_rmse,batch_pred = [], [], [], []
     test_loss,test_rmse,test_mae,test_mape,test_smape,test_acc,test_r2,test_var,test_pred = [],[],[],[],[],[],[],[],[]    
     
-        
     ################### Training loop of the model. ####################
     # The loop iterates over the specified number of epochs and in each epoch, 
     # the training set is split into mini-batches and fed to the model for training.
     for epoch in range(training_epoch):
         # The optimizer is run on each mini-batch, and the loss and error metrics are calculated. 
         # The test set is evaluated completely at every epoch, and the loss and error metrics are calculated. 
-        
         for m in range(totalbatch):
             mini_batch = trainX[m * batch_size : (m+1) * batch_size]
             mini_label = trainY[m * batch_size : (m+1) * batch_size]
@@ -200,69 +197,17 @@ def train(config):
         # The model is also saved every 500 epochs - reduced to 10 for now
         if (epoch % 10 == 0):        
             saver.save(sess, path+'/model_100/ASTGCN_pre_%r'%epoch, global_step = epoch)
+    print("****************** Finished training loop over data :) ********************************")
             
-    ##############  Performing eval.###############
-    # First code computes the training and batch RMSE and loss values by averaging the RMSE and 
-    # loss for each batch in the training data. 
-    #x = [i for i in range(training_epoch)]
-    b = int(len(batch_rmse)/totalbatch)
-    batch_rmse1 = [i for i in batch_rmse]
-    train_rmse = [(sum(batch_rmse1[i*totalbatch:(i+1)*totalbatch])/totalbatch) for i in range(b)]
-    batch_loss1 = [i for i in batch_loss]
-    train_loss = [(sum(batch_loss1[i*totalbatch:(i+1)*totalbatch])/totalbatch) for i in range(b)]
-    #test_rmse = [float(i) for i in test_rmse]
-
-    #Then, it finds the index of the test RMSE value with the minimum value and saves the corresponding 
-    # predicted results to a CSV file.
-
-    index = test_rmse.index(np.min(test_rmse))
-
-    test_result = test_pred[index]
-    var = pd.DataFrame(test_result)
-    var.to_csv(path+'/test_result.csv',index = False,header = False)
-    
-    
-    ##############  visualizing the results of the evaluation of model .###############
-    # It then uses the plot_result and plot_error functions to plot the predicted and actual values, 
-    # as well as the training and test RMSE, loss, accuracy, MAE, and MAPE
-    plot_result(test_result,test_label1,path)
-    plot_error(train_rmse,train_loss,test_rmse,test_acc,test_mae,test_mape,test_smape,path)
-
-
-    evalution = []
-    evalution.append(np.min(test_rmse))
-    evalution.append(test_mae[index])
-    evalution.append(test_mape[index])
-
-    print("length of index ", index)
-
-    # This will append np.nan (a special value indicating "Not a Number") to the 
-    # evalution list if the index is out of range, instead of raising an IndexError.
-    if index < len(test_smape):
-        evalution.append(test_smape[index])
-    else:
-        evalution.append(np.nan)
-
-    #evalution.append(test_smape[index])
-
-    evalution.append(test_acc[index])
-    evalution.append(test_r2[index])
-    evalution.append(test_var[index])
-    evalution = pd.DataFrame(evalution)
-
-    # Saving the evaluation to a .csv file, and prints out all the details again
-    evalution.to_csv(path+'/evalution.csv',index=False,header=None)
-    print('successfully saved evaluation to csv file : ',path)
+            
+    print("****************** Starting evaluation :) ********************************")
+    eval(batch_rmse, totalbatch, batch_loss , test_rmse, test_pred, path, 
+        test_acc, test_mae, test_mape, test_smape,
+        test_r2, test_var, test_label1
+        )
     print('model_name:', model_name)
     print('scheme:', scheme)
     print('name:', name)
     print('noise_name:', noise_name)
     print('PG:', PG)
-    print('min_rmse:%r'%(np.min(test_rmse)),
-        'min_mae:%r'%(test_mae[index]),
-        #'min_smape:%r'%(test_smape[index]),
-        'max_acc:%r'%(test_acc[index]),
-        'r2:%r'%(test_r2[index]),
-        'var:%r'%test_var[index])
-                    
-                
+    print("****************** Finished evaluation :) ********************************")
