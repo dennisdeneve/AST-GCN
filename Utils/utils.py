@@ -5,7 +5,6 @@ import scipy.sparse as sp
 #from scipy.sparse import linalg
 import numpy as np
 
-
 def normalized_adj(adj):
     """
     Normalize the adjacency matrix.

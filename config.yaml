@@ -2,7 +2,6 @@
 
 ############################ General data configurations ############################
 
-
 learning_rate:  
   type: float
   default: 0.001

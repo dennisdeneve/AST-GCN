@@ -1,13 +1,72 @@
 # -*- coding: utf-8 -*-
 import tensorflow as tf
-#from tensorflow.contrib.rnn import RNNCell
 from tensorflow.compat.v1.nn.rnn_cell import RNNCell
-#from tensorflow.keras.layers import RNNCell
-from utils import calculate_laplacian
+from Utils.utils import calculate_laplacian
+from Model.acell import preprocess_data,load_assist_data
 import numpy as np
 import pandas as pd
+import yaml
+import os
 
-
+'''
+This method implements the TGCN model with tgcn.py 
+It takes in three arguments: _X, _weights, and _biases.
+_X is a placeholder for the input data, which is a tensor of shape (batch_size, time_steps, num_nodes, input_dim). 
+_weights and _biases are dictionaries that contain the weights and biases for the different layers of the T-GCN model.
+'''
+def TGCN(_X, _weights, _biases):
+    
+    
+    # Get the current directory
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    # Define the relative file path to the config file
+    config_file_path = os.path.join(current_dir, '..', 'config.yaml')
+    # Open the config file
+    with open(config_file_path, 'r') as file:
+        config = yaml.safe_load(file)
+    
+    gru_units =  config['gru_units']['default']
+    data_name = config['dataset']['default']
+    pre_len =  config['pre_len']['default']
+    
+    
+    ########## load data #########
+    if data_name == 'sz':
+        data, adj = load_assist_data('sz')
+    
+    num_nodes = data.shape[1]
+    
+    
+    ### defines a TGCN cell using the tgcnCell class and creates a multi-layer RNN cell 
+    cell_1 = tgcnCell(gru_units, adj, num_nodes=num_nodes)
+    cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell([cell_1], state_is_tuple=True)
+    
+    #It then unstacks the input tensor _X along the time_steps axis and feeds the resulting list
+    # of tensors into the RNN cell using the tf.compat.v1.nn.static_rnn method.
+    _X = tf.unstack(_X, axis=1)
+    outputs, states = tf.compat.v1.nn.static_rnn(cell, _X, dtype=tf.float32)
+    
+    # then the method reshapes each tensor in the output list and concatenates them along 
+    # the time_steps axis to obtain a tensor of shape (batch_sizetime_steps, num_nodesgru_units). 
+    # It then multiplies this tensor with the output weight matrix and adds the output bias vector to obtain the final output tensor.
+    m = []
+    for i in outputs:
+        o = tf.reshape(i,shape=[-1,num_nodes,gru_units])
+        o = tf.reshape(o,shape=[-1,gru_units])
+        m.append(o)
+        
+    #Finally the method reshapes the output tensor into the original shape (batch_size, num_nodes, pre_len) 
+    # and transposes the second and third dimensions to obtain the output tensor in the format (batch_size, pre_len, num_nodes). 
+    # It then reshapes the tensor to have shape (batch_size*pre_len, num_nodes) and returns the output tensor, 
+    # the intermediate output tensors m, and the final RNN states.
+    last_output = m[-1]
+    output = tf.matmul(last_output, _weights['out']) + _biases['out']
+    output = tf.reshape(output,shape=[-1,num_nodes,pre_len])
+    output = tf.transpose(output, perm=[0,2,1])
+    output = tf.reshape(output, shape=[-1,num_nodes])
+    return output, m, states
+    
+    
 class tgcnCell(RNNCell):
     """Temporal Graph Convolutional Network """
 

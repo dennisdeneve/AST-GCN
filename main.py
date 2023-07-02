@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import pickle as pkl
 import tensorflow as tf
 tf.compat.v1.disable_eager_execution()
 import argparse
@@ -8,12 +7,10 @@ import numpy as np
 import math
 import os
 import numpy.linalg as la
-from acell import preprocess_data,load_assist_data
-from tgcn import tgcnCell
-from visualization import plot_result,plot_error
+from Model.acell import preprocess_data,load_assist_data
+from Model.tgcn import TGCN
+from Vis.visualization import plot_result,plot_error
 from sklearn.metrics import mean_squared_error,mean_absolute_error
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import MinMaxScaler
 import time
 import yaml
 
@@ -33,7 +30,7 @@ noise_name = config['noise_name']['default']
 data_name = config['dataset']['default']
 train_rate = config['train_rate']['default']
 seq_len =  config['seq_len']['default']
-output_dim = pre_len =  config['pre_len']['default']
+pre_len =  config['pre_len']['default']
 batch_size =  config['batch_size']['default']
 lr =  config['learning_rate']['default']
 training_epoch =  config['training_epoch']['default']
@@ -102,19 +99,12 @@ print('scheme:', name)
 print('noise_name:', noise_name)
 print('noise_param:', PG)
 
-
-# print("data1 : ",data1)
-# print("time_len : ",time_len)
-# print("train_rate : ",train_rate)
-# print("seq : ",seq_len)
-# print("pre len : ",pre_len)
-# print("scheme : ",scheme)
 trainX, trainY, testX, testY = preprocess_data(data1, time_len, train_rate, seq_len, pre_len, model_name, scheme)
 
-print(trainX)
-print(trainY)
-print(testX)
-print(testY)
+# print(trainX)
+# print(trainY)
+# print(testX)
+# print(testY)
 
 totalbatch = int(trainX.shape[0]/batch_size)
 print("The size of dataset is: ", str(batch_size))
@@ -122,58 +112,10 @@ training_data_count = len(trainX)
 
 
 
-'''
-This method implements the TGCN model with tgcn.py 
-It takes in three arguments: _X, _weights, and _biases.
-_X is a placeholder for the input data, which is a tensor of shape (batch_size, time_steps, num_nodes, input_dim). 
-_weights and _biases are dictionaries that contain the weights and biases for the different layers of the T-GCN model.
-'''
-def TGCN(_X, _weights, _biases):
-    ### defines a TGCN cell using the tgcnCell class and creates a multi-layer RNN cell 
-    cell_1 = tgcnCell(gru_units, adj, num_nodes=num_nodes)
-    cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell([cell_1], state_is_tuple=True)
-    
-    #It then unstacks the input tensor _X along the time_steps axis and feeds the resulting list
-    # of tensors into the RNN cell using the tf.compat.v1.nn.static_rnn method.
-    _X = tf.unstack(_X, axis=1)
-    outputs, states = tf.compat.v1.nn.static_rnn(cell, _X, dtype=tf.float32)
-    
-    # then the method reshapes each tensor in the output list and concatenates them along 
-    # the time_steps axis to obtain a tensor of shape (batch_sizetime_steps, num_nodesgru_units). 
-    # It then multiplies this tensor with the output weight matrix and adds the output bias vector to obtain the final output tensor.
-    m = []
-    for i in outputs:
-        o = tf.reshape(i,shape=[-1,num_nodes,gru_units])
-        o = tf.reshape(o,shape=[-1,gru_units])
-        m.append(o)
-        
-    #Finally the method reshapes the output tensor into the original shape (batch_size, num_nodes, pre_len) 
-    # and transposes the second and third dimensions to obtain the output tensor in the format (batch_size, pre_len, num_nodes). 
-    # It then reshapes the tensor to have shape (batch_size*pre_len, num_nodes) and returns the output tensor, 
-    # the intermediate output tensors m, and the final RNN states.
-    last_output = m[-1]
-    output = tf.matmul(last_output, _weights['out']) + _biases['out']
-    output = tf.reshape(output,shape=[-1,num_nodes,pre_len])
-    output = tf.transpose(output, perm=[0,2,1])
-    output = tf.reshape(output, shape=[-1,num_nodes])
-    return output, m, states
+
     
     
-###### placeholders ######
-# if model_name == 'ast-gcn':
-#     if scheme == 1:
-#         inputs = tf.placeholder(tf.float32, shape=[None, seq_len+1, num_nodes])
-#     elif scheme == 2:
-#         inputs = tf.placeholder(tf.float32, shape=[None, seq_len*2+pre_len, num_nodes])
-#     else:
-#         inputs = tf.placeholder(tf.float32, shape=[None, seq_len*2+pre_len+1, num_nodes])
-
-# else:
-#     inputs = tf.placeholder(tf.float32, shape=[None, seq_len, num_nodes])
-
-# labels = tf.placeholder(tf.float32, shape=[None, pre_len, num_nodes])
-
-
+    
 if model_name == 'ast-gcn':
     if scheme == 1:
         inputs = tf.keras.Input(shape=[seq_len+1, num_nodes], dtype=tf.float32)
@@ -243,16 +185,7 @@ path = os.path.join(out,path1)
 if not os.path.exists(path):
     os.makedirs(path)
     
-###### evaluation ######
-# def evaluation(a,b):
-#     rmse = math.sqrt(mean_squared_error(a,b))
-#     mae = mean_absolute_error(a, b)
-#     mape =
-#     F_norm = la.norm(a-b,'fro')/la.norm(a,'fro')
-#     r2 = 1-((a-b)**2).sum()/((a-a.mean())**2).sum()
-#     var = 1-(np.var(a-b))/np.var(a)
-#     return rmse, mae, 1-F_norm, r2, var
- 
+###### evaluation ###### 
 def evaluation(a, b):
     """
     Calculate evaluation metrics for comparing actual values 'a' and predicted values 'b'.
@@ -278,7 +211,6 @@ def evaluation(a, b):
     var = 1 - (np.var(a - b)) / np.var(a)
     
     return rmse, mae, np.mean(mape), np.mean(smape), 1 - F_norm, r2, var
-
 
 
 # Initialising all the variables
@@ -344,8 +276,8 @@ for epoch in range(training_epoch):
 time_end = time.time()
 print("Timer ended : " ,time_end-time_start,'s')
 
-##############  visualizing the results of the model after training.###############
 
+##############  visualizing the results of the model after training.###############
 # First code computes the training and batch RMSE and loss values by averaging the RMSE and 
 # loss for each batch in the training data. 
 #x = [i for i in range(training_epoch)]
@@ -405,6 +337,3 @@ print('min_rmse:%r'%(np.min(test_rmse)),
       'max_acc:%r'%(test_acc[index]),
       'r2:%r'%(test_r2[index]),
       'var:%r'%test_var[index])
-
-
-
