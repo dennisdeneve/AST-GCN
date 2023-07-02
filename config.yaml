@@ -2,6 +2,11 @@
 
 ############################ General data configurations ############################
 
+train_ast_gcn:
+  type: bool
+  default: true
+  help: whether to train final TCN models
+
 learning_rate:  
   type: float
   default: 0.001

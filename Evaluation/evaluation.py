@@ -14,9 +14,7 @@ def eval(batch_rmse, totalbatch, batch_loss , test_rmse, test_pred, path,
     train_loss = [(sum(batch_loss1[i*totalbatch:(i+1)*totalbatch])/totalbatch) for i in range(b)]
     #test_rmse = [float(i) for i in test_rmse]
 
-    #Then, it finds the index of the test RMSE value with the minimum value and saves the corresponding 
-    # predicted results to a CSV file.
-
+    #Then, it finds the index of the test RMSE value with the minimum value and saves the corresponding  predicted results to a CSV file.
     index = test_rmse.index(np.min(test_rmse))
 
     test_result = test_pred[index]

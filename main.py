@@ -15,16 +15,14 @@ def main():
     parser.add_argument('--config', type=str, help='path to YAML config file')
     args = parser.parse_args()
 
-    print("---- Loading the config.yaml file ----")
     # Load the YAML config file which contains all the required settings for platform
     with open('config.yaml', 'r') as file:
         config = yaml.safe_load(file)
-    print("---- Finished loading the config.yaml file ----")
 
-
-    print("************* Starting training the AST-GCN Model ************* ")
-    train.train(config)
-    print("*************  Finished training the AST-GCN Model ************* ")
+    if config['train_ast_gcn']['default']:
+        print("************* Starting training the AST-GCN Model ************* ")
+        train.train(config)
+        print("*************  Finished training the AST-GCN Model ************* ")
 
     time_end = time.time()
     print("Timer ended : " ,time_end-time_start,'s')

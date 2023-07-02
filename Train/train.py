@@ -185,9 +185,7 @@ def train(config):
         # The training and testing progress is printed after every epoch. 
         print('Iter:{}'.format(epoch),
             'train_rmse:{:.4}'.format(batch_rmse[-1]),
-            
             'test_loss:{:.4}'.format(loss2),
-            
             'test_rmse:{:.4}'.format(rmse),
             'test_mae:{:.4}'.format(mae),
             'test_mape:{:.4}'.format(mape),
@@ -198,7 +196,6 @@ def train(config):
         if (epoch % 10 == 0):        
             saver.save(sess, path+'/model_100/ASTGCN_pre_%r'%epoch, global_step = epoch)
     print("****************** Finished training loop over data :) ********************************")
-            
             
     print("****************** Starting evaluation :) ********************************")
     eval(batch_rmse, totalbatch, batch_loss , test_rmse, test_pred, path, 
