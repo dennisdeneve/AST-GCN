@@ -1,6 +1,10 @@
 # Configuration pyyaml file with configuration settings required (as args) for main.py
 
 ############################ General data configurations ############################
+model_name :
+  type :  str  
+  default :  tgcn  
+  help :  ast-gcn 
 
 train_ast_gcn:
   type: bool
@@ -58,11 +62,7 @@ dataset :
   default :  sz  
   help :  dataset 
       
-model_name :
-  type :  str  
-  default :  tgcn  
-  help :  ast-gcn 
-      
+
 scheme :
   type :  str  
   default :  1  
