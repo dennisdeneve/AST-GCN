@@ -1,7 +1,5 @@
-## training ast-gcn
 import os
 import numpy as np
-import pandas as pd
 import tensorflow as tf
 from Model.tgcn import TGCN
 from Data_PreProcess import data_preprocess

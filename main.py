@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import tensorflow as tf
-#tf.compat.v1.disable_eager_execution()
 import argparse
 import Train.train as train
 import time
