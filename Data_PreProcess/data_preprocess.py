@@ -1,8 +1,24 @@
 # data pre-process
 from Evaluation.metrics import metrics, MaxMinNormalization
-from Model.acell import load_assist_data
+# from Model.acell import load_assist_data
 import numpy as np
 import pandas as pd
+import os
+
+
+
+def load_assist_data(dataset):
+    # Get the current working directory and create the data directory path
+    data_dir = os.path.join(os.getcwd(), 'data')
+    # Read the adjacency CSV file into a Pandas DataFrame
+    sz_adj = pd.read_csv(os.path.join(data_dir, f'{dataset}_adj.csv'), header=None)
+    # Convert the DataFrame to a NumPy matrix
+    adj = np.mat(sz_adj)
+     # Read the speed CSV file into another Pandas DataFrame
+    data = pd.read_csv(os.path.join(data_dir, f'{dataset}_speed.csv'))
+     # Return the data DataFrame and adj matrix
+    return data, adj
+
 
 def data_preprocess(config):    
     noise_name = config['noise_name']['default']

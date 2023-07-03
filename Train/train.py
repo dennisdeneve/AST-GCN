@@ -60,8 +60,9 @@ def train(config):
     trainX, trainY, testX, testY = processing_data(data1, time_len, train_rate, seq_len, pre_len, model_name, scheme)
     totalbatch = int(trainX.shape[0]/batch_size)
     print("The size of dataset is: ", str(batch_size))
-    training_data_count = len(trainX)
+    # training_data_count = len(trainX)
     print("Finished the data splitting & processing. :)")
+
 
     # Define input tensors for the AST-GCN model based on model_name and scheme
     if model_name == 'ast-gcn':
