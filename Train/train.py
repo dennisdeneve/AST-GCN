@@ -23,6 +23,7 @@ def train(config):
     dim =  config['dim']['default']
     scheme =  config['scheme']['default']
     PG =  config['noise_param']['default']
+    lambda_loss = config['lambda_loss']['default']
 
     print("Starting the data pre_processing with noise & normalization. :)")
     # Apply noise & normalization to dataset
@@ -104,8 +105,7 @@ def train(config):
     y_pred = pred
         
     ########### optimizer used to train the model ############
-    # lambda_loss is a hyperparameter that controls the strength of the L2 regularization applied to the trainable variables in the model.
-    lambda_loss = 0.0015
+    
     #Lreg is the L2 regularization term, which is computed as the sum of the L2 norms of all the trainable variables 
     #in the model multiplied by the lambda_loss hyperparameter.
     Lreg = lambda_loss * sum(tf.compat.v1.nn.l2_loss(tf_var) for tf_var in tf.compat.v1.trainable_variables())
@@ -147,7 +147,8 @@ def train(config):
     ################### Training loop of the model. ####################
     # The loop iterates over the specified number of epochs and in each epoch, 
     # the training set is split into mini-batches and fed to the model for training.
-    for epoch in range(training_epoch):
+    
+    for epoch in range(training_epoch): #initially 2
         # The optimizer is run on each mini-batch, and the loss and error metrics are calculated. 
         # The test set is evaluated completely at every epoch, and the loss and error metrics are calculated. 
         for m in range(totalbatch):
@@ -174,7 +175,6 @@ def train(config):
         test_mape.append(mape * max_value)
         test_mape.append(smape * max_value)
         test_acc.append(acc)
-        
         test_r2.append(r2_score)
         test_var.append(var_score)
         test_pred.append(test_output1)

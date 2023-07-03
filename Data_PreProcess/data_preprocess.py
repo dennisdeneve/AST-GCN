@@ -20,6 +20,7 @@ def load_assist_data(dataset):
     return data, adj
 
 
+
 def data_preprocess(config):    
     noise_name = config['noise_name']['default']
     data_name = config['dataset']['default']

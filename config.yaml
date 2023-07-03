@@ -5,13 +5,24 @@
 train_ast_gcn:
   type: bool
   default: true
-  help: whether to train final TCN models
+  help: whether to train final TCN model
+
+adjdata:
+  type: str
+  default: 'data/Graph Neural Network Data/Adjacency Matrix/adj_mx.pkl'  #DataNew
+  help: adj data path
+
+
+lambda_loss:
+  type: float
+  default: 0.0015
+  help: Hyperparameter that controls the strength of the L2 regularization applied to the trainable variables in the model.
 
 learning_rate:  
   type: float
   default: 0.001
   help: Initial learning rate.
-  
+
 training_epoch:
   type: int
   default : 2
