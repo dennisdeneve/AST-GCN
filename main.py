@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-import argparse
-import Train.train as train
 import time
 import yaml
+import argparse
+import Train.train as train
 
 def main():
     time_start = time.time()
@@ -23,7 +23,7 @@ def main():
         print("*************  Finished training the AST-GCN Model ************* ")
 
     time_end = time.time()
-    print("Timer ended : " ,time_end-time_start,'s')
+    print("Time taken for the experimental pipeline : " ,time_end-time_start,'s')
 
 if __name__ == '__main__':
     main()

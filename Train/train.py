@@ -86,9 +86,8 @@ def train(config):
     
 
     ############ Graph weights defined ############
-    # The weights are defined as a dictionary named 'weights', 
-    # where the key 'out' maps to a TensorFlow Variable representing the weight matrix 
-    # that will be applied to the output of the TGCN model. 
+    # The weights are defined as a dictionary named 'weights',  where the key 'out' maps to a TensorFlow Variable representing the 
+    # weight matrix that will be applied to the output of the TGCN model. 
     # The weight matrix has a shape of [gru_units, pre_len], where 'gru_units' is the number of GRU units in the TGCN cell 
     # and 'pre_len' is the number of time steps to predict into the future. 
     # The values in the weight matrix are randomly initialized from a normal distribution with mean=1.0.
@@ -135,7 +134,6 @@ def train(config):
     sess.run(tf.compat.v1.global_variables_initializer())
 
     # It then creates a path to save the model using various parameters and creates the directory if it doesn't exist.
-    #out = 'out/%s'%(model_name)
     out = 'out/%s_%s'%(model_name,noise_name)
     path1 = '%s_%s_%s_lr%r_batch%r_unit%r_seq%r_pre%r_epoch%r_scheme%r_PG%r'%(model_name,name,data_name,lr,batch_size,gru_units,seq_len,pre_len,training_epoch,scheme,PG)
     path = os.path.join(out,path1)

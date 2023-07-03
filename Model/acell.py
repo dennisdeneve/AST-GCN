@@ -9,7 +9,6 @@ import numpy as np
 import tensorflow as tf
 from Data_PreProcess.data_preprocess import load_assist_data
 
-
 # Load the 'sz' dataset using the load_assist_data function
 data, adj = load_assist_data('sz')
 # Extract the number of rows (time_len) and columns (num_nodes) from the data DataFrame
