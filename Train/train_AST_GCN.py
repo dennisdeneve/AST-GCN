@@ -1,5 +1,3 @@
-# Train AST_GCN
-import os
 import numpy as np
 import tensorflow as tf
 from Model.tgcn import TGCN
@@ -7,7 +5,6 @@ from Data_PreProcess import data_preprocess
 from Data_PreProcess.data_preprocess import processing_data
 from Evaluation.metrics import metrics
 from Evaluation.evaluation import eval
-from Train import optimize
 tf.compat.v1.disable_eager_execution()
 
 def train(config):
@@ -35,7 +32,6 @@ def train(config):
     print("Starting the data pre_processing with noise & normalization on AST-GCN Model. :)")
     # Apply noise & normalization to dataset
     data = data_preprocess.data_preprocess(config)
-   
     # After adding noise to the data, time_len and num_nodes are calculated based on the shape of the data. 
     # Finally, data1 is created as a NumPy matrix with dtype=np.float32.
     time_len = data.shape[0]
@@ -60,9 +56,7 @@ def train(config):
     # training_data_count = len(trainX)
     print("Finished the data splitting & processing for AST-GCN model. :)")
 
-
     print("****************** Initializing model and starting training loop over data for AST-GCN model:) ********************************")
-    
     # Define input tensors for the AST-GCN model based on model_name and scheme
     # Check scheme for combining additional data with input data
     if scheme == 1:
@@ -75,12 +69,10 @@ def train(config):
         # Input tensor shape: [seq_len*2+pre_len+1, num_nodes]
         inputs = tf.keras.Input(shape=[seq_len*2+pre_len+1, num_nodes], dtype=tf.float32)
     
-
     # Define input tensor for labels
     labels = tf.keras.Input(shape=[pre_len, num_nodes], dtype=tf.float32)
     
     
-
     ############ Graph weights defined ############
     # The weights are defined as a dictionary named 'weights',  where the key 'out' maps to a TensorFlow Variable representing the 
     # weight matrix that will be applied to the output of the TGCN model. 
@@ -92,15 +84,13 @@ def train(config):
     biases = {
         'out': tf.Variable(tf.random.normal([pre_len]),name='bias_o')}
 
-
     #The TGCN model is then called with the inputs, weights, and biases as arguments, 
     # and the output of the model is stored in the variable 'pred'. 
     # Finally, the predicted values are stored in 'y_pred', which will be used for training and evaluation of the model.
-    pred,ttts,ttto = TGCN(inputs, weights, biases)
+    pred,ttts,ttto = TGCN(inputs, weights, biases, config)
     y_pred = pred
         
     ########### optimizer used to train the model ############
-    
     #Lreg is the L2 regularization term, which is computed as the sum of the L2 norms of all the trainable variables 
     #in the model multiplied by the lambda_loss hyperparameter.
     Lreg = lambda_loss * sum(tf.compat.v1.nn.l2_loss(tf_var) for tf_var in tf.compat.v1.trainable_variables())
@@ -115,8 +105,6 @@ def train(config):
     # optimizer is the Adam optimizer, which is used to minimize the loss function during training. 
     # The learning rate used by the optimizer is specified by the lr variable.
     optimizer = tf.compat.v1.train.AdamOptimizer(lr).minimize(loss)
-
-    # optimizer = optimize.optimize(labels,num_nodes,y_pred,lr)
     
     ###### Initialize session ######
     ## initializes a TensorFlow session with GPU options set, and then initializes 
@@ -127,8 +115,7 @@ def train(config):
     gpu_options = tf.compat.v1.GPUOptions(per_process_gpu_memory_fraction=0.333)
     sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options))
     sess.run(tf.compat.v1.global_variables_initializer())
-
-
+    
     # # It then creates a path to save the model using various parameters and creates the directory if it doesn't exist.
     # out = 'out/%s_%s'%(model_name,noise_name)
     # path1 = '%s_%s_%s_lr%r_batch%r_unit%r_seq%r_pre%r_epoch%r_scheme%r_PG%r'%(model_name,name,data_name,lr,batch_size,gru_units,seq_len,pre_len,training_epoch,scheme,PG)
@@ -136,7 +123,6 @@ def train(config):
     # if not os.path.exists(path):
     #     os.makedirs(path)
        
-        
     # Initialising all the variables
     x_axe,batch_loss,batch_rmse,batch_pred = [], [], [], []
     test_loss,test_rmse,test_mae,test_mape,test_smape,test_acc,test_r2,test_var,test_pred = [],[],[],[],[],[],[],[],[]    
@@ -185,11 +171,9 @@ def train(config):
             'test_mape:{:.4}'.format(mape),
             'test_smape:{:.4}'.format(smape),
             'test_acc:{:.4}'.format(acc))
-        
         # # The model is also saved every 500 epochs - reduced to 10 for now
         # if (epoch % 10 == 0):        
         #     saver.save(sess, path+'/model_100/ASTGCN_pre_%r'%epoch, global_step = epoch)
-        
     print("****************** Finished training loop over data for AST-GCN model:) ********************************")
             
     print("****************** Starting evaluation for AST-GCN model:) ********************************")
@@ -197,9 +181,4 @@ def train(config):
     #     test_acc, test_mae, test_mape, test_smape,
     #     test_r2, test_var, test_label1
     #     )
-    print('model_name:', model_name)
-    print('scheme:', scheme)
-    print('name:', name)
-    print('noise_name:', noise_name)
-    print('PG:', PG)
     print("****************** Finished evaluation for AST-GCN model :) ********************************")

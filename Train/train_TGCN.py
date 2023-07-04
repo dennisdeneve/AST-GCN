@@ -1,5 +1,3 @@
-# TGCN Train
-import os
 import numpy as np
 import tensorflow as tf
 from Model.tgcn import TGCN
@@ -7,7 +5,6 @@ from Data_PreProcess import data_preprocess
 from Data_PreProcess.data_preprocess import processing_data
 from Evaluation.metrics import metrics
 from Evaluation.evaluation import eval
-from Train import optimize
 tf.compat.v1.disable_eager_execution()
 
 def train(config):
@@ -29,14 +26,13 @@ def train(config):
     print("Starting the data pre_processing with noise & normalization for T-GCN model. :)")
     # Apply noise & normalization to dataset
     data = data_preprocess.data_preprocess(config)
-   
     # After adding noise to the data, time_len and num_nodes are calculated based on the shape of the data. 
     # Finally, data1 is created as a NumPy matrix with dtype=np.float32.
     time_len = data.shape[0]
     num_nodes = data.shape[1]
     data1 =np.mat(data,dtype=np.float32)
 
-    #### normalization
+    #### normalization on data1
     max_value = np.max(data1)
     data1  = data1/max_value
     data1.columns = data.columns
@@ -55,15 +51,12 @@ def train(config):
     # training_data_count = len(trainX)
     print("Finished the data splitting & processing for T-GCN model. :)")
 
-
     print("****************** Initializing model and starting training loop over data for T-GCN model :) ********************************")
     # Define input tensors for the T-GCN model based on model_name and scheme
     # Input tensor shape: [seq_len, num_nodes]
     inputs = tf.keras.Input(shape=[seq_len, num_nodes], dtype=tf.float32)
-
-    # Define input tensor for labels
+    # Define input tensor for labels: [pre_len, num_nodes]
     labels = tf.keras.Input(shape=[pre_len, num_nodes], dtype=tf.float32)
-    
     
     ############ Graph weights defined ############
     # The weights are defined as a dictionary named 'weights',  where the key 'out' maps to a TensorFlow Variable representing the 
@@ -83,8 +76,8 @@ def train(config):
     pred,ttts,ttto = TGCN(inputs, weights, biases, config)
     y_pred = pred
         
+        
     ########### optimizer used to train the model ############
-    
     #Lreg is the L2 regularization term, which is computed as the sum of the L2 norms of all the trainable variables 
     #in the model multiplied by the lambda_loss hyperparameter.
     Lreg = lambda_loss * sum(tf.compat.v1.nn.l2_loss(tf_var) for tf_var in tf.compat.v1.trainable_variables())
@@ -181,9 +174,4 @@ def train(config):
     #     test_acc, test_mae, test_mape, test_smape,
     #     test_r2, test_var, test_label1
     #     )
-    print('model_name:', model_name)
-    print('scheme:', scheme)
-    print('name:', name)
-    print('noise_name:', noise_name)
-    print('PG:', PG)
     print("****************** Finished evaluation for T-GCN model :) ********************************")

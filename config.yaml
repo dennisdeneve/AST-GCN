@@ -4,12 +4,12 @@
 train_t_gcn:
   type: bool
   default: true
-  help: whether to train T-GCN model
+  help: whether to train T-GCN model (Temporal Graph Convolutional Network)
   
 train_ast_gcn:
   type: bool
   default: false
-  help: whether to train AST-GCN model
+  help: whether to train AST-GCN model (Attribute-Augmented Spatiotemporal Graph Convolutional Network)
 
 adjdata:
   type: str
@@ -44,7 +44,7 @@ seq_len :
 pre_len :
   type :  int  
   default : 3 
-  help :  time length of prediction. 
+  help :  the number of time steps to predict into the future (time length of prediction).  
       
 train_rate :
   type :  float  
@@ -61,7 +61,6 @@ dataset :
   default :  sz  
   help :  dataset 
       
-
 scheme :
   type :  str  
   default :  1  
