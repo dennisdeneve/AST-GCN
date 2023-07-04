@@ -21,6 +21,7 @@ def eval(batch_rmse, totalbatch, batch_loss , test_rmse, test_pred, path,
     var = pd.DataFrame(test_result)
     var.to_csv(path+'/test_result.csv',index = False,header = False)
     
+    
 
      ##############  visualizing the results of the evaluation of model .###############
     # It then uses the plot_result and plot_error functions to plot the predicted and actual values, 
@@ -51,6 +52,9 @@ def eval(batch_rmse, totalbatch, batch_loss , test_rmse, test_pred, path,
 
     # Saving the evaluation to a .csv file, and prints out all the details again
     evalution.to_csv(path+'/evalution.csv',index=False,header=None)
+    
+    
+    
     print('successfully saved evaluation to csv file : ',path)
     
     print('min_rmse:%r'%(np.min(test_rmse)),

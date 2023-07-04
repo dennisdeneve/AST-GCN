@@ -195,10 +195,10 @@ def train(config):
     print("****************** Finished training loop over data :) ********************************")
             
     print("****************** Starting evaluation :) ********************************")
-    eval(batch_rmse, totalbatch, batch_loss , test_rmse, test_pred, path, 
-        test_acc, test_mae, test_mape, test_smape,
-        test_r2, test_var, test_label1
-        )
+    # eval(batch_rmse, totalbatch, batch_loss , test_rmse, test_pred, path, 
+    #     test_acc, test_mae, test_mape, test_smape,
+    #     test_r2, test_var, test_label1
+    #     )
     print('model_name:', model_name)
     print('scheme:', scheme)
     print('name:', name)

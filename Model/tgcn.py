@@ -8,6 +8,7 @@ import numpy as np
 import pandas as pd
 import yaml
 import os
+import argparse
 
 '''
 This method implements the TGCN model with tgcn.py 
