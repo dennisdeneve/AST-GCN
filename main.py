@@ -1,11 +1,8 @@
-# -*- coding: utf-8 -*-
 import time
 import yaml
 import argparse
 import Train.train_AST_GCN as train_ast_gcn
 import Train.train_TGCN as train_tgcn
-
-
 
 def main():
     time_start = time.time()
@@ -30,7 +27,6 @@ def main():
         train_tgcn.train(config)
         print("*************  Finished training process for the T-GCN Model ************* ")
         
-
     time_end = time.time()
     print("Time taken for the experimental pipeline : " ,time_end-time_start,'s')
 

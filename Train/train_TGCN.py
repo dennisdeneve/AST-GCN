@@ -22,7 +22,6 @@ def train(config):
     lr =  config['learning_rate']['default']
     training_epoch =  config['training_epoch']['default']
     gru_units =  config['gru_units']['default']
-    dim =  config['dim']['default']
     scheme =  config['scheme']['default']
     PG =  config['noise_param']['default']
     lambda_loss = config['lambda_loss']['default']
@@ -58,7 +57,6 @@ def train(config):
 
 
     print("****************** Initializing model and starting training loop over data for T-GCN model :) ********************************")
-    
     # Define input tensors for the T-GCN model based on model_name and scheme
     # Input tensor shape: [seq_len, num_nodes]
     inputs = tf.keras.Input(shape=[seq_len, num_nodes], dtype=tf.float32)
@@ -67,7 +65,6 @@ def train(config):
     labels = tf.keras.Input(shape=[pre_len, num_nodes], dtype=tf.float32)
     
     
-
     ############ Graph weights defined ############
     # The weights are defined as a dictionary named 'weights',  where the key 'out' maps to a TensorFlow Variable representing the 
     # weight matrix that will be applied to the output of the TGCN model. 
@@ -83,7 +80,7 @@ def train(config):
     #The TGCN model is then called with the inputs, weights, and biases as arguments, 
     # and the output of the model is stored in the variable 'pred'. 
     # Finally, the predicted values are stored in 'y_pred', which will be used for training and evaluation of the model.
-    pred,ttts,ttto = TGCN(inputs, weights, biases)
+    pred,ttts,ttto = TGCN(inputs, weights, biases, config)
     y_pred = pred
         
     ########### optimizer used to train the model ############

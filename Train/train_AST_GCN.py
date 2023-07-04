@@ -12,7 +12,7 @@ tf.compat.v1.disable_eager_execution()
 
 def train(config):
     model_name = "ast-gcn"
-    
+     
     noise_name = config['noise_name']['default']
     data_name = config['dataset']['default']
     train_rate = config['train_rate']['default']
@@ -22,10 +22,15 @@ def train(config):
     lr =  config['learning_rate']['default']
     training_epoch =  config['training_epoch']['default']
     gru_units =  config['gru_units']['default']
-    dim =  config['dim']['default']
     scheme =  config['scheme']['default']
     PG =  config['noise_param']['default']
     lambda_loss = config['lambda_loss']['default']
+    if scheme == 1:
+        name = 'add poi dim'
+    elif scheme == 2:
+        name = 'add weather dim'
+    else:
+        name = 'add poi + weather dim'
 
     print("Starting the data pre_processing with noise & normalization on AST-GCN Model. :)")
     # Apply noise & normalization to dataset
@@ -42,16 +47,6 @@ def train(config):
     data1  = data1/max_value
     data1.columns = data.columns
     print("Finished the data pre_processing for AST-GCN model.")
-
-    # Distinguishing the various model types
-    
-    if scheme == 1:
-        name = 'add poi dim'
-    elif scheme == 2:
-        name = 'add weather dim'
-    else:
-        name = 'add poi + weather dim'
-    
 
     print("Starting the data splitting & processing for AST-GCN model. :)")
     print('model:', model_name)

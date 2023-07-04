@@ -1,11 +1,8 @@
 # data pre-process
 from Evaluation.metrics import metrics, MaxMinNormalization
-# from Model.acell import load_assist_data
 import numpy as np
 import pandas as pd
 import os
-
-
 
 def load_assist_data(dataset):
     # Get the current working directory and create the data directory path
@@ -19,8 +16,6 @@ def load_assist_data(dataset):
      # Return the data DataFrame and adj matrix
     return data, adj
 
-
-
 def data_preprocess(config):    
     noise_name = config['noise_name']['default']
     data_name = config['dataset']['default']
@@ -29,20 +24,16 @@ def data_preprocess(config):
     ########## load data #########
     if data_name == 'sz':
         data, adj = load_assist_data('sz')
-    #if data_name == 'sh':
-    #    data, adj = load_sh_data('sh')
-
+    
     ## Applying different types of noise filter to data
     if noise_name == 'Gauss':
-        #If noise_name is 'Gauss', 
-        # it generates Gaussian noise using the np.random.normal() function with mean 0 and standard deviation PG. 
+        #it generates Gaussian noise using the np.random.normal() function with mean 0 and standard deviation PG. 
         # The generated noise is normalized using MaxMinNormalization() and added to the input data.
         Gauss = np.random.normal(0,PG,size=data.shape)
         noise_Gauss = MaxMinNormalization(Gauss,np.max(Gauss),np.min(Gauss))
         data = data + noise_Gauss
         return data 
     elif noise_name == 'Possion':
-        #If noise_name is 'Possion',
         # it generates Poisson noise using the np.random.poisson() function with mean PG. 
         # The generated noise is also normalized and added to the input data.
         Possion = np.random.poisson(PG,size=data.shape)
@@ -50,11 +41,9 @@ def data_preprocess(config):
         data = data + noise_Possion
         return data 
     else:
-        # Else data is unchanged
+        # else data is unchanged
         return data 
      
-
-# def preprocess_data(data1,  time_len, train_rate, seq_len, pre_len, model_name,scheme):
 def processing_data(data1,  time_len, train_rate, seq_len, pre_len, model_name,scheme):
     train_size = int(time_len * train_rate)
     train_data = data1[0:train_size]
@@ -124,15 +113,13 @@ def processing_data(data1,  time_len, train_rate, seq_len, pre_len, model_name,s
                 testX.append(b)
                 testY.append(b1[seq_len : seq_len + pre_len])
 
-
     trainX1 = np.array(trainX)
     trainY1 = np.array(trainY)
     testX1 = np.array(testX)
-
     testY1 = np.array(testY)
-    print(trainX1.shape)
-    print(trainY1.shape)
-    print(testX1.shape)
-    print(testY1.shape)
+    # print(trainX1.shape)
+    # print(trainY1.shape)
+    # print(testX1.shape)
+    # print(testY1.shape)
     
     return trainX1, trainY1, testX1, testY1

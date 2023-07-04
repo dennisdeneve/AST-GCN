@@ -3,12 +3,6 @@ import tensorflow as tf
 from tensorflow.compat.v1.nn.rnn_cell import RNNCell
 from Utils.utils import calculate_laplacian
 from Model.acell import load_assist_data
-# from Data_PreProcess import processing_data
-import numpy as np
-import pandas as pd
-import yaml
-import os
-import argparse
 
 '''
 This method implements the TGCN model with tgcn.py 
@@ -16,16 +10,7 @@ It takes in three arguments: _X, _weights, and _biases.
 _X is a placeholder for the input data, which is a tensor of shape (batch_size, time_steps, num_nodes, input_dim). 
 _weights and _biases are dictionaries that contain the weights and biases for the different layers of the T-GCN model.
 '''
-def TGCN(_X, _weights, _biases):
-    
-    # Get the current directory
-    current_dir = os.path.dirname(os.path.abspath(__file__))
-    # Define the relative file path to the config file
-    config_file_path = os.path.join(current_dir, '..', 'config.yaml')
-    # Open the config file
-    with open(config_file_path, 'r') as file:
-        config = yaml.safe_load(file)
-    
+def TGCN(_X, _weights, _biases, config):
     gru_units =  config['gru_units']['default']
     data_name = config['dataset']['default']
     pre_len =  config['pre_len']['default']
