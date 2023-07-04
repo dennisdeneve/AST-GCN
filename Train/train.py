@@ -133,12 +133,14 @@ def train(config):
     sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options))
     sess.run(tf.compat.v1.global_variables_initializer())
 
-    # It then creates a path to save the model using various parameters and creates the directory if it doesn't exist.
-    out = 'out/%s_%s'%(model_name,noise_name)
-    path1 = '%s_%s_%s_lr%r_batch%r_unit%r_seq%r_pre%r_epoch%r_scheme%r_PG%r'%(model_name,name,data_name,lr,batch_size,gru_units,seq_len,pre_len,training_epoch,scheme,PG)
-    path = os.path.join(out,path1)
-    if not os.path.exists(path):
-        os.makedirs(path)
+
+    # # It then creates a path to save the model using various parameters and creates the directory if it doesn't exist.
+    # out = 'out/%s_%s'%(model_name,noise_name)
+    # path1 = '%s_%s_%s_lr%r_batch%r_unit%r_seq%r_pre%r_epoch%r_scheme%r_PG%r'%(model_name,name,data_name,lr,batch_size,gru_units,seq_len,pre_len,training_epoch,scheme,PG)
+    # path = os.path.join(out,path1)
+    # if not os.path.exists(path):
+    #     os.makedirs(path)
+       
         
     # Initialising all the variables
     x_axe,batch_loss,batch_rmse,batch_pred = [], [], [], []
