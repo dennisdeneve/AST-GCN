@@ -2,7 +2,10 @@
 import time
 import yaml
 import argparse
-import Train.train as train
+import Train.train_AST_GCN as train_ast_gcn
+import Train.train_TGCN as train_tgcn
+
+
 
 def main():
     time_start = time.time()
@@ -18,9 +21,15 @@ def main():
         config = yaml.safe_load(file)
 
     if config['train_ast_gcn']['default']:
-        print("************* Starting training the AST-GCN Model ************* ")
-        train.train(config)
-        print("*************  Finished training the AST-GCN Model ************* ")
+        print("************* Starting training process for the AST-GCN Model ************* ")
+        train_ast_gcn.train(config)
+        print("*************  Finished training process for the AST-GCN Model ************* ")
+    
+    if config['train_t_gcn']['default']:
+        print("************* Starting training process for the T-GCN Model ************* ")
+        train_tgcn.train(config)
+        print("*************  Finished training process for the T-GCN Model ************* ")
+        
 
     time_end = time.time()
     print("Time taken for the experimental pipeline : " ,time_end-time_start,'s')

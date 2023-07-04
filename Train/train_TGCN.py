@@ -1,3 +1,4 @@
+# TGCN Train
 import os
 import numpy as np
 import tensorflow as tf
@@ -10,7 +11,8 @@ from Train import optimize
 tf.compat.v1.disable_eager_execution()
 
 def train(config):
-    model_name = config['model_name']['default']
+    model_name = 'tgcn'
+    name = 'tgcn'
     noise_name = config['noise_name']['default']
     data_name = config['dataset']['default']
     train_rate = config['train_rate']['default']
@@ -25,7 +27,7 @@ def train(config):
     PG =  config['noise_param']['default']
     lambda_loss = config['lambda_loss']['default']
 
-    print("Starting the data pre_processing with noise & normalization. :)")
+    print("Starting the data pre_processing with noise & normalization for T-GCN model. :)")
     # Apply noise & normalization to dataset
     data = data_preprocess.data_preprocess(config)
    
@@ -39,20 +41,10 @@ def train(config):
     max_value = np.max(data1)
     data1  = data1/max_value
     data1.columns = data.columns
-    print("Finished the data pre_processing.")
+    print("Finished the data pre_processing for T-GCN model.")
 
-    # Distinguishing the various model types
-    if model_name == 'ast-gcn':
-        if scheme == 1:
-            name = 'add poi dim'
-        elif scheme == 2:
-            name = 'add weather dim'
-        else:
-            name = 'add poi + weather dim'
-    else:
-        name = 'tgcn'
-
-    print("Starting the data splitting & processing. :)")
+    
+    print("Starting the data splitting & processing for T-GCN model. :)")
     print('model:', model_name)
     print('scheme:', name)
     print('noise_name:', noise_name)
@@ -62,26 +54,14 @@ def train(config):
     totalbatch = int(trainX.shape[0]/batch_size)
     print("The size of dataset is: ", str(batch_size))
     # training_data_count = len(trainX)
-    print("Finished the data splitting & processing. :)")
+    print("Finished the data splitting & processing for T-GCN model. :)")
 
 
-    # Define input tensors for the AST-GCN model based on model_name and scheme
-    if model_name == 'ast-gcn':
-        # Check scheme for combining additional data with input data
-        if scheme == 1:
-            # Input tensor shape: [seq_len+1, num_nodes]
-            inputs = tf.keras.Input(shape=[seq_len+1, num_nodes], dtype=tf.float32)
-        elif scheme == 2:
-            # Input tensor shape: [seq_len*2+pre_len, num_nodes]
-            inputs = tf.keras.Input(shape=[seq_len*2+pre_len, num_nodes], dtype=tf.float32)
-        else:
-            # Input tensor shape: [seq_len*2+pre_len+1, num_nodes]
-            inputs = tf.keras.Input(shape=[seq_len*2+pre_len+1, num_nodes], dtype=tf.float32)
+    print("****************** Initializing model and starting training loop over data for T-GCN model :) ********************************")
     
-    # Else model is TGCN
-    else:
-        # Input tensor shape: [seq_len, num_nodes]
-        inputs = tf.keras.Input(shape=[seq_len, num_nodes], dtype=tf.float32)
+    # Define input tensors for the T-GCN model based on model_name and scheme
+    # Input tensor shape: [seq_len, num_nodes]
+    inputs = tf.keras.Input(shape=[seq_len, num_nodes], dtype=tf.float32)
 
     # Define input tensor for labels
     labels = tf.keras.Input(shape=[pre_len, num_nodes], dtype=tf.float32)
@@ -197,9 +177,9 @@ def train(config):
         # if (epoch % 10 == 0):        
         #     saver.save(sess, path+'/model_100/ASTGCN_pre_%r'%epoch, global_step = epoch)
         
-    print("****************** Finished training loop over data :) ********************************")
+    print("****************** Finished training loop over data for T-GCN model :) ********************************")
             
-    print("****************** Starting evaluation :) ********************************")
+    print("****************** Starting evaluation for T-GCN model :) ********************************")
     # eval(batch_rmse, totalbatch, batch_loss , test_rmse, test_pred, path, 
     #     test_acc, test_mae, test_mape, test_smape,
     #     test_r2, test_var, test_label1
@@ -209,4 +189,4 @@ def train(config):
     print('name:', name)
     print('noise_name:', noise_name)
     print('PG:', PG)
-    print("****************** Finished evaluation :) ********************************")
+    print("****************** Finished evaluation for T-GCN model :) ********************************")

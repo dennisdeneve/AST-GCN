@@ -1,21 +1,20 @@
 # Configuration pyyaml file with configuration settings required (as args) for main.py
 
 ############################ General data configurations ############################
-model_name :
-  type :  str  
-  default :  tgcn  
-  help :  ast-gcn 
-
-train_ast_gcn:
+train_t_gcn:
   type: bool
   default: true
-  help: whether to train final TCN model
+  help: whether to train T-GCN model
+  
+train_ast_gcn:
+  type: bool
+  default: false
+  help: whether to train AST-GCN model
 
 adjdata:
   type: str
   default: 'data/Graph Neural Network Data/Adjacency Matrix/adj_mx.pkl'  #DataNew
   help: adj data path
-
 
 lambda_loss:
   type: float
