@@ -50,7 +50,28 @@ def sparse_to_tuple(mx):
     # Reorder the SparseTensor for better performance
     return tf.sparse.reorder(L) 
     
-def calculate_laplacian(adj, lambda_max=1):  
+# def calculate_laplacian(adj, lambda_max=1):  
+#     """
+#     Calculate the normalized Laplacian matrix.
+
+#     Args:
+#         adj (np.ndarray or sp.spmatrix): Input adjacency matrix.
+#         lambda_max (float): Maximum eigenvalue for normalization.
+
+#     Returns:
+#         tf.SparseTensor: Normalized Laplacian matrix.
+#     """
+#      #Add an identity matrix and normalize the adjacency matrix
+#     adj = normalized_adj(adj + sp.eye(adj.shape[0]))
+#     # Convert the adjacency matrix to CSR format
+#     adj = sp.csr_matrix(adj)
+#     # Convert the adjacency matrix to float32
+#     adj = adj.astype(np.float32)
+#     # Convert the adjacency matrix to SparseTensor format
+#     return sparse_to_tuple(adj)
+
+
+def calculate_laplacian(adj, lambda_max=1):
     """
     Calculate the normalized Laplacian matrix.
 
@@ -61,14 +82,33 @@ def calculate_laplacian(adj, lambda_max=1):
     Returns:
         tf.SparseTensor: Normalized Laplacian matrix.
     """
-     #Add an identity matrix and normalize the adjacency matrix
-    adj = normalized_adj(adj + sp.eye(adj.shape[0]))
-    # Convert the adjacency matrix to CSR format
+    # Convert adj to csr_matrix
     adj = sp.csr_matrix(adj)
+
+    # Add an identity matrix and normalize the adjacency matrix
+    adj = normalized_adj(adj + sp.eye(adj.shape[0]))
+
     # Convert the adjacency matrix to float32
     adj = adj.astype(np.float32)
+
     # Convert the adjacency matrix to SparseTensor format
     return sparse_to_tuple(adj)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     
 def weight_variable_glorot(input_dim, output_dim, name=""):
     """

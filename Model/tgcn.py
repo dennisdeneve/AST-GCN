@@ -17,8 +17,8 @@ def TGCN(_X, _weights, _biases, config):
     pre_len =  config['pre_len']['default']
     
     ########## load data #########
-    if data_name == 'sz':
-        data, adj = load_assist_data('sz')
+    #if data_name == 'sz':
+    data, adj = load_assist_data('data/ADDO ELEPHANT PARK.csv','data/adj_mx.csv')
     
     num_nodes = data.shape[1]
     
@@ -73,6 +73,7 @@ class tgcnCell(RNNCell):
         self._units = num_units
         self._adj = []
         self._adj.append(calculate_laplacian(adj))
+        
 
     '''
     Accessor method that returns the state size (nodes * units)
