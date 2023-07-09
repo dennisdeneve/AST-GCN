@@ -6,9 +6,10 @@ from Model.acell import load_assist_data
 
 '''
 This method implements the TGCN model with tgcn.py 
-It takes in three arguments: _X, _weights, and _biases.
+It takes in three arguments: _X, _weights, _biases and config.
 _X is a placeholder for the input data, which is a tensor of shape (batch_size, time_steps, num_nodes, input_dim). 
 _weights and _biases are dictionaries that contain the weights and biases for the different layers of the T-GCN model.
+config is the yaml configuration file used for settings.
 '''
 def TGCN(_X, _weights, _biases, config):
     gru_units =  config['gru_units']['default']

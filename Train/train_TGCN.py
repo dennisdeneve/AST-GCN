@@ -10,7 +10,7 @@ tf.compat.v1.disable_eager_execution()
 def train(config):
     model_name = 'tgcn'
     name = 'tgcn'
-    noise_name = config['noise_name']['default']
+    # noise_name = config['noise_name']['default']
     data_name = config['dataset']['default']
     train_rate = config['train_rate']['default']
     seq_len =  config['seq_len']['default']
@@ -38,11 +38,9 @@ def train(config):
     data1.columns = data.columns
     print("Finished the data pre_processing for T-GCN model.")
 
-    
     print("Starting the data splitting & processing for T-GCN model. :)")
     print('model:', model_name)
     print('scheme:', name)
-    print('noise_name:', noise_name)
     print('noise_param:', PG)
 
     trainX, trainY, testX, testY = processing_data(data1, time_len, train_rate, seq_len, pre_len, model_name, scheme)
@@ -69,13 +67,11 @@ def train(config):
     biases = {
         'out': tf.Variable(tf.random.normal([pre_len]),name='bias_o')}
 
-
     #The TGCN model is then called with the inputs, weights, and biases as arguments, 
     # and the output of the model is stored in the variable 'pred'. 
     # Finally, the predicted values are stored in 'y_pred', which will be used for training and evaluation of the model.
     pred,ttts,ttto = TGCN(inputs, weights, biases, config)
     y_pred = pred
-        
         
     ########### optimizer used to train the model ############
     #Lreg is the L2 regularization term, which is computed as the sum of the L2 norms of all the trainable variables 
@@ -105,7 +101,6 @@ def train(config):
     sess = tf.compat.v1.Session(config=tf.compat.v1.ConfigProto(gpu_options=gpu_options))
     sess.run(tf.compat.v1.global_variables_initializer())
 
-
     # # It then creates a path to save the model using various parameters and creates the directory if it doesn't exist.
     # out = 'out/%s_%s'%(model_name,noise_name)
     # path1 = '%s_%s_%s_lr%r_batch%r_unit%r_seq%r_pre%r_epoch%r_scheme%r_PG%r'%(model_name,name,data_name,lr,batch_size,gru_units,seq_len,pre_len,training_epoch,scheme,PG)
@@ -113,7 +108,6 @@ def train(config):
     # if not os.path.exists(path):
     #     os.makedirs(path)
        
-        
     # Initialising all the variables
     x_axe,batch_loss,batch_rmse,batch_pred = [], [], [], []
     test_loss,test_rmse,test_mae,test_mape,test_smape,test_acc,test_r2,test_var,test_pred = [],[],[],[],[],[],[],[],[]    
@@ -132,11 +126,9 @@ def train(config):
                                                     feed_dict = {inputs:mini_batch, labels:mini_label})
             batch_loss.append(loss1)
             batch_rmse.append(rmse1 * max_value)
-
         # Test completely at every epoch
         loss2, rmse2, test_output = sess.run([loss, error, y_pred],
                                             feed_dict = {inputs:testX, labels:testY})
-
         # The evaluation metrics such as RMSE, MAE, MAPE, and SMAPE are calculated on the test set, and the results are stored. 
         testoutput = np.abs(test_output)
         test_label = np.reshape(testY,[-1,num_nodes])
@@ -162,11 +154,9 @@ def train(config):
             'test_mape:{:.4}'.format(mape),
             'test_smape:{:.4}'.format(smape),
             'test_acc:{:.4}'.format(acc))
-        
         # # The model is also saved every 500 epochs - reduced to 10 for now
         # if (epoch % 10 == 0):        
         #     saver.save(sess, path+'/model_100/ASTGCN_pre_%r'%epoch, global_step = epoch)
-        
     print("****************** Finished training loop over data for T-GCN model :) ********************************")
             
     print("****************** Starting evaluation for T-GCN model :) ********************************")
