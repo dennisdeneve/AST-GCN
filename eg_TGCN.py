@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import os
 import tensorflow as tf
 from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.layers import Input, Dense, LSTM, Reshape
@@ -118,13 +119,14 @@ increment =[100,200,300,8760, 10920, 13106, 15312, 17520, 19704, 21888, 24096, 2
                 87648, 89832, 92016, 94224, 96432, 98592, 100776, 102984, 105192,
                 107352, 109536, 111744, 113929]
 forecasting_horizons = [3, 6, 9, 12, 24]
-n_split =47
+num_splits =1
 for forecast_len in forecasting_horizons:
      # Step 1: Load and preprocess the data
-    station = 'ADDO ELEPHANT PARK.csv'  # Replace with your actual data path
+    station = 'ADDO ELEPHANT PARK'  # Replace with your actual data path
     # Load the weather station data using create_dataset method
     #weather_data = create_dataset(station)
-    weather_data = pd.read_csv(station)
+    station_name = station + '.csv'
+    weather_data = pd.read_csv(station_name)
     # Preprocess the weather station data
     processed_data = weather_data[['Pressure', 'WindDir', 'WindSpeed', 'Humidity', 'Rain', 'Temperature']]
     processed_data = processed_data.astype(float)
@@ -133,6 +135,7 @@ for forecast_len in forecasting_horizons:
     weather_stations = weather_data['StasName'].unique()
     num_nodes = len(weather_stations)
     print("Num_nodes (len Weather stations) : ", num_nodes)
+    
     adjacency_matrix = pd.read_csv('adj_mx.csv', index_col=0)
     adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
     # This setting changes for each of the forecast_len in the above list for the horizon, thus not in config file
@@ -144,10 +147,19 @@ for forecast_len in forecasting_horizons:
 
     targetFile = 'Results/TGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Targets/' + \
                             'target.csv'
+    # ## If directory not present, make it
+    # if not os.path.exists(targetFile):
+    #     os.makedirs(targetFile)
     resultsFile = 'Results/TGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
                             'result.csv'
+    # ## If directory not present, make it
+    # if not os.path.exists(resultsFile):
+    #     os.makedirs(resultsFile)
     lossFile = 'Results/TGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
                         'loss.csv'
+    # ## If directory not present, make it
+    # if not os.path.exists(lossFile):
+    #     os.makedirs(lossFile)
 
     # Step 3: Reshape and preprocess the input data
     time_steps = 10  # Number of time steps to consider
@@ -172,8 +184,6 @@ for forecast_len in forecasting_horizons:
     input_data = scaler.fit_transform(input_data)
     input_data = input_data.reshape(-1, time_steps, num_nodes, 6)
     target_data = scaler.transform(target_data)
-
-    num_splits = n_split
 
     for k in range(num_splits):
         print('TCN training started on split {0}/47 at {1} station forecasting {2} hours ahead.'.format(k+1, station,
@@ -241,6 +251,13 @@ for forecast_len in forecasting_horizons:
         print(f'Predicted temperature at {station}: {temperature_prediction}')
         
     print('tgcnTrain : TGCN training finished at ', station)     
+    # # If directory not present, make it
+    # directory = os.path.dirname(resultsFile)
+    # if not os.path.exists(directory):
+    #     os.makedirs(directory)
+
+    # Save the results to the file
+    resultsDF.to_csv(resultsFile)
     resultsDF.to_csv(resultsFile)
     lossDF.to_csv(lossFile)
     targetDF.to_csv(targetFile)
