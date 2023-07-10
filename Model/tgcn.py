@@ -1,9 +1,7 @@
-# -*- coding: utf-8 -*-
 import tensorflow as tf
 from tensorflow.compat.v1.nn.rnn_cell import RNNCell
 from Utils.utils import calculate_laplacian
 from Model.acell import load_assist_data
-
 '''
 This method implements the TGCN model with tgcn.py 
 It takes in three arguments: _X, _weights, _biases and config.
@@ -15,11 +13,7 @@ def TGCN(_X, _weights, _biases, config):
     gru_units =  config['gru_units']['default']
     data_name = config['dataset']['default']
     pre_len =  config['pre_len']['default']
-    
-    ########## load data #########
-    #if data_name == 'sz':
     data, adj = load_assist_data('data/ADDO ELEPHANT PARK.csv','data/adj_mx.csv')
-    
     num_nodes = data.shape[1]
     
     ### defines a TGCN cell using the tgcnCell class and creates a multi-layer RNN cell 
@@ -51,7 +45,6 @@ def TGCN(_X, _weights, _biases, config):
     output = tf.reshape(output, shape=[-1,num_nodes])
     return output, m, states
     
-    
 class tgcnCell(RNNCell):
     """Temporal Graph Convolutional Network """
 
@@ -74,21 +67,18 @@ class tgcnCell(RNNCell):
         self._adj = []
         self._adj.append(calculate_laplacian(adj))
         
-
     '''
     Accessor method that returns the state size (nodes * units)
     '''
     @property
     def state_size(self):
         return self._nodes * self._units
-
     '''
     Accessor method that returns the output size (Units)
     '''
     @property
     def output_size(self):
         return self._units
-
     '''
     This method implements a variant of the Temporal Graph Convolutional Network (TGCN) cell in TensorFlow.
     The function takes three arguments:
@@ -114,8 +104,7 @@ class tgcnCell(RNNCell):
                 # into two tensors r and u, each of size self._units. r represents the reset gate,
                 # while u represents the update gate.
                 r, u = tf.compat.v1.split(value=value, num_or_size_splits=2, axis=1)
-                
-                
+                   
             with tf.compat.v1.variable_scope("candidate"):
                 #Within the "candidate" sub-scope, the function computes a candidate activation value c
                 # using a nonlinear activation function (self._act) applied to another linear transformation 
@@ -144,37 +133,16 @@ class tgcnCell(RNNCell):
 #        print('state_shape:',state.shape)
         ## concat
         x_s = tf.concat([inputs, state], axis=2)
-#        print('x_s_shape:',x_s.shape)
+#       print('x_s_shape:',x_s.shape)
         
-         #####  commented out code in the function which appears to be an attempt to include additional knowledge graphs in -
-         
-#        kgembedding = np.array(pd.read_csv(r'/DHH/sz_gcn/sz_data/sz_poi_transR_embedding20.csv',header=None))
-#        kgeMatrix = np.repeat(kgembedding[np.newaxis, :, :], self._units, axis=0)
-#        kgeMatrix = tf.reshape(tf.constant(kgeMatrix, dtype=tf.float32), (self._units, -1))
-#        kgMatrix = tf.reshape(kgeMatrix,(-1,self._nodes, 20))
-#        ## inputs:(-1,num_nodes)
-#        inputs = tf.expand_dims(inputs, 2)
-#        ## state:(batch,num_node,gru_units)
-#        state = tf.reshape(state, (-1, self._nodes, self._units))
-#        ## concat
-#        print('kgMatrix_shape:',kgMatrix.shape)
-#        print('inputs_shape:',inputs.shape)
-#        print('state_shape:',state.shape)
-#        kg_x = tf.concat([inputs, kgMatrix],axis = 2)
-#        print('kg_x_shape:',kg_x.shape)
-#        x_s = tf.concat([kg_x, state], axis=2)
-        # input_size = x_s.get_shape()[2].value
         input_size = x_s.get_shape()[2]
 
-        
         ####It then applies a series of matrix multiplications to compute the output of the GCN.
-        ## (num_node,input_size,-1)
         x0 = tf.transpose(x_s, perm=[1, 2, 0])  
         x0 = tf.reshape(x0, shape=[self._nodes, -1])
         
         ## The tf.compat.v1.sparse_tensor_dense_matmul function is used to perform a sparse matrix multiplication 
         # between each adjacency matrix m in self._adj and the input tensor x0. 
-
         scope = tf.compat.v1.get_variable_scope()
         with tf.compat.v1.variable_scope(scope):
             for m in self._adj:
@@ -189,7 +157,6 @@ class tgcnCell(RNNCell):
                 # 'weights', [input_size, output_size], initializer=tf.compat.v1.contrib.layers.xavier_initializer())
                 'weights', [input_size, output_size], initializer=tf.initializers.glorot_uniform())
 
-            
             x = tf.compat.v1.matmul(x, weights)  # (batch_size * self._nodes, output_size)
             biases = tf.compat.v1.get_variable(
                 "biases", [output_size], initializer=tf.compat.v1.constant_initializer(bias, dtype=tf.compat.v1.float32))
