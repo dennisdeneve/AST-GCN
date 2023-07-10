@@ -208,14 +208,28 @@ def trainTGCN():
 
             # Step 5: Compile and train the T-GCN model
             model.compile(optimizer='adam', loss='mse')
-            history = model.fit(input_data, 
-                                target_data, 
-                                epochs=1, 
-                                batch_size=196)
+            # history = model.fit(input_data, 
+            #                     target_data, 
+            #                     epochs=1, 
+            #                     batch_size=196)
+            
+            # Define callbacks for early stopping and model checkpointing
+            early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=self.patience)
+            checkpoint = ModelCheckpoint(self.save, save_weights_only=False, monitor='val_loss', verbose=1,
+                                        save_best_only=True,
+                                        mode='min', save_freq='epoch')
+            callback = [early_stop, checkpoint]
+            history = model.fit(X_train, Y_train,
+                            validation_data=(X_val, Y_val),
+                            batch_size=196,
+                            epochs=1,
+                            verbose=1,
+                            callbacks=callback)
             
             # validation and train loss to dataframe
             lossDF = lossDF.append([[history.history['loss']]])
-
+            
+            
             # Step 6: Use the trained model for predictions
             # Assuming you have new data for prediction stored in `new_data`
             new_data = pd.DataFrame({
@@ -233,14 +247,39 @@ def trainTGCN():
             new_data = new_data.reshape(-1, time_steps, 1, 6)
             predictions = model.predict(new_data)
             predictions = scaler.inverse_transform(predictions.reshape(-1, num_nodes * 6))
-
+            
+            # appending results and target to relative dataframes 
+            #resultsDF = resultsDF.append(pd.DataFrame(predictions))
+            #targetDF = targetDF.append(pd.DataFrame(target_data))
+            # Test the model and write to file
+            
+            # X_test = np.expand_dims(X_test, axis=2)  # Add the missing dimension
+            yhat = model.predict(X_test)
+            # predictions to dataframe
+            resultsDF = pd.concat([resultsDF, pd.Series(yhat.reshape(-1, ))])
+            
+            Y_test = np.expand_dims(Y_test, axis=2)  # Add the missing dimension
+            targetDF = pd.concat([targetDF, pd.Series(Y_test.reshape(-1, ))])
+            
+            # Test the model and write to file
+            # yhat = model.predict(X_test)
+            # predictions to dataframe
+            #resultsDF = pd.concat([resultsDF, pd.Series(predictions.reshape(-1, ))])
+        
             # Print the predicted temperature for a specific weather station
             station_index = 0  # Replace with the index of the desired weather station
             station = weather_stations[station_index]
             temperature_prediction = predictions[0][station_index * 6 + 5]  
             print(f'Predicted temperature at {station}: {temperature_prediction}')
+            #good to add - from gwn train
+            # print(
+            # 'Epoch {:2d} | Train Time: {:4.2f}s | Train Loss: {:5.4f} | Validation Time: {:5.4f} | Validation Loss: '
+            # '{:5.4f} '.format(
+            #     epoch + 1, trainTime, train_loss, validationTime, validation_loss))
             
-        print('tgcnTrain : TGCN training finished at ', station)     
+        #print('tgcnTrain : TGCN training finished at ', station)  
+        print('TCN training finished on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,
+                                                                                                        forecast_len, num_splits))   
         # Save the results to the file
         resultsDF.to_csv(resultsFile)
         resultsDF.to_csv(resultsFile)
@@ -248,11 +287,3 @@ def trainTGCN():
         targetDF.to_csv(targetFile)
         
     print("TGCN training finished for all stations at all splits ! :)")
-    
-def main():
-    
-    print("Started : ")
-    trainTGCN()
-
-if __name__ == '__main__':
-    main()

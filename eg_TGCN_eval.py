@@ -87,10 +87,6 @@ def evalTGCN(model):
                 targets = pd.read_csv(target_path).drop(['Unnamed: 0'], axis=1)
 
                 # Calculate the metrics
-                # mse=0
-                # rmse=0
-                # mae=0
-                # smape=0
                 mse = MSE(targets.values, preds.values)
                 rmse = RMSE(targets.values, preds.values)
                 mae = MAE(targets.values, preds.values)

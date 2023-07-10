@@ -1,12 +1,12 @@
 ############################ General data configurations ############################
 train_t_gcn:
   type: bool
-  default: false
+  default: true
   help: whether to train T-GCN model (Temporal Graph Convolutional Network)
 
 eval_t_gcn:
   type: bool
-  default: true
+  default: false
   help: whether to evaluate T-GCN model (Temporal Graph Convolutional Network)
   
 train_ast_gcn:
