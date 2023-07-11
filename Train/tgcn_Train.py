@@ -5,45 +5,8 @@ from sklearn.preprocessing import StandardScaler
 from tensorflow.keras.layers import Input, Dense, LSTM, Reshape
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
-from Utils.utils import calculate_laplacian, create_X_Y, min_max, dataSplit
-
-#################### Method from model, tgcn ####################
-def tgcnCell(units, adj, num_nodes):
-    class GcnCell(tf.keras.layers.Layer):
-        def __init__(self, units, adj):
-            super(GcnCell, self).__init__()
-            self.units = units
-            self.adj = adj
-
-        def build(self, input_shape):
-            self.layer = tf.keras.layers.GRU(self.units, return_sequences=True)
-            self.layer.build(input_shape)
-
-        def call(self, inputs):
-            adj_normalized_tiled = tf.expand_dims(self.adj, axis=0)
-            adj_normalized_tiled = tf.tile(adj_normalized_tiled, [tf.shape(inputs)[0], 1, 1])
-            return self.layer(inputs)
-
-        def compute_output_shape(self, input_shape):
-            return input_shape[:-1] + (self.units,)
-
-        def get_config(self):
-            config = super().get_config().copy()
-            config.update({
-                'units': self.units,
-                'adj': self.adj.numpy().tolist(),  # convert tensor to list for saving
-            })
-            return config
-
-    adj_normalized = calculate_laplacian(adj)
-    adj_normalized = tf.convert_to_tensor(adj_normalized, dtype=tf.float32)
-
-    adj_normalized = tf.sparse.reorder(tf.sparse.SparseTensor(indices=tf.where(adj_normalized != 0),
-                                                              values=tf.gather_nd(adj_normalized, tf.where(adj_normalized != 0)),
-                                                              dense_shape=adj_normalized.shape))
-    adj_normalized = tf.sparse.to_dense(adj_normalized)
-    adj_normalized = tf.reshape(adj_normalized, [num_nodes, num_nodes])
-    return GcnCell(units, adj_normalized)
+from Utils.utils import create_X_Y, min_max, dataSplit
+from Model.tgcn import tgcnCell
 
 def trainTGCN(config):
     increment = config['increment']['default']
@@ -52,19 +15,17 @@ def trainTGCN(config):
     num_splits =config['num_splits']['default']
     
     for forecast_len in forecasting_horizons:
-        # Step 1: Load and preprocess the data
-        # station = 'ADDO ELEPHANT PARK'  
         for station in stations:
             print('********** TGCN model training started at ' + station)
-            # pulling in weather station data & preprocessing the weather station data
+            # Step 1: Load and preprocess the data the weather station data
             station_name = 'data/Weather Station Data/' + station + '.csv'
             weather_data = pd.read_csv(station_name)
             processed_data = weather_data[['Pressure', 'WindDir', 'WindSpeed', 'Humidity', 'Rain', 'Temperature']]
             processed_data = processed_data.astype(float)
+            
             # Step 2: Adjust weather station nodes and adjacency matrix
             weather_stations = weather_data['StasName'].unique()
             num_nodes = len(weather_stations)
-            
             adjacency_matrix = pd.read_csv('adj_mx.csv', index_col=0)
             adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
             n_ahead_length = forecast_len
@@ -117,12 +78,11 @@ def trainTGCN(config):
                 # Scaling the data
                 train, validation, test = min_max(pre_standardize_train,
                                                         pre_standardize_validation,
-                                                        pre_standardize_test)     
-                # Creating the X and Y for forecasting
+                                                        pre_standardize_test) 
+                    
+                # Creating the X and Y for forecasting (training), validation & testing
                 X_train, Y_train = create_X_Y(train, time_steps, num_nodes, n_ahead_length)
-                # Creating the X and Y for validation set
                 X_val, Y_val = create_X_Y(validation, time_steps, num_nodes, n_ahead_length)
-                # Get the X feature set for testing
                 X_test, Y_test = create_X_Y(test, time_steps, num_nodes, n_ahead_length)
                 
                 # Step 4: Define the T-GCN model architecture

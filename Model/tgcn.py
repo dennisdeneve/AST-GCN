@@ -2,6 +2,47 @@ import tensorflow as tf
 from tensorflow.compat.v1.nn.rnn_cell import RNNCell
 from Utils.utils import calculate_laplacian
 from Model.acell import load_assist_data
+
+#################### Method from model, tgcn ####################
+def tgcnCell(units, adj, num_nodes):
+    class GcnCell(tf.keras.layers.Layer):
+        def __init__(self, units, adj):
+            super(GcnCell, self).__init__()
+            self.units = units
+            self.adj = adj
+
+        def build(self, input_shape):
+            self.layer = tf.keras.layers.GRU(self.units, return_sequences=True)
+            self.layer.build(input_shape)
+
+        def call(self, inputs):
+            adj_normalized_tiled = tf.expand_dims(self.adj, axis=0)
+            adj_normalized_tiled = tf.tile(adj_normalized_tiled, [tf.shape(inputs)[0], 1, 1])
+            return self.layer(inputs)
+
+        def compute_output_shape(self, input_shape):
+            return input_shape[:-1] + (self.units,)
+
+        def get_config(self):
+            config = super().get_config().copy()
+            config.update({
+                'units': self.units,
+                'adj': self.adj.numpy().tolist(),  # convert tensor to list for saving
+            })
+            return config
+
+    adj_normalized = calculate_laplacian(adj)
+    adj_normalized = tf.convert_to_tensor(adj_normalized, dtype=tf.float32)
+
+    adj_normalized = tf.sparse.reorder(tf.sparse.SparseTensor(indices=tf.where(adj_normalized != 0),
+                                                              values=tf.gather_nd(adj_normalized, tf.where(adj_normalized != 0)),
+                                                              dense_shape=adj_normalized.shape))
+    adj_normalized = tf.sparse.to_dense(adj_normalized)
+    adj_normalized = tf.reshape(adj_normalized, [num_nodes, num_nodes])
+    return GcnCell(units, adj_normalized)
+
+############################## OLD MODEL IMPLEMENTATIONS OF TGCN ##############################################
+
 '''
 This method implements the TGCN model with tgcn.py 
 It takes in three arguments: _X, _weights, _biases and config.
@@ -17,7 +58,7 @@ def TGCN(_X, _weights, _biases, config):
     num_nodes = data.shape[1]
     
     ### defines a TGCN cell using the tgcnCell class and creates a multi-layer RNN cell 
-    cell_1 = tgcnCell(gru_units, adj, num_nodes=num_nodes)
+    cell_1 = tgcnCellOld(gru_units, adj, num_nodes=num_nodes)
     cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell([cell_1], state_is_tuple=True)
     
     #It then unstacks the input tensor _X along the time_steps axis and feeds the resulting list
@@ -45,7 +86,7 @@ def TGCN(_X, _weights, _biases, config):
     output = tf.reshape(output, shape=[-1,num_nodes])
     return output, m, states
     
-class tgcnCell(RNNCell):
+class tgcnCellOld(RNNCell):
     """Temporal Graph Convolutional Network """
 
     def call(self, inputs, **kwargs):
@@ -60,7 +101,7 @@ class tgcnCell(RNNCell):
     def __init__(self, num_units, adj, num_nodes, input_size=None,
                  act=tf.nn.tanh, reuse=None):
 
-        super(tgcnCell, self).__init__(_reuse=reuse)
+        super(tgcnCellOld, self).__init__(_reuse=reuse)
         self._act = act
         self._nodes = num_nodes
         self._units = num_units

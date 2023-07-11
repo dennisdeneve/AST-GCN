@@ -1,7 +1,7 @@
 import time
 import yaml
 import argparse
-from eg_TGCN import trainTGCN as train
+from Train.tgcn_Train import trainTGCN as train
 from eg_TGCN_eval import evalTGCN as eval
 
 def main():
@@ -20,7 +20,6 @@ def main():
         # train_ast_gcn.train(config)
         print("*************  Finished training process for the AST-GCN Model ************* ")
     
-    
     if config['train_t_gcn']['default']:
         print("************* Starting training process for the T-GCN Model ************* ")
         train(config)
@@ -33,6 +32,5 @@ def main():
         
     time_end = time.time()
     print("Time taken for the experimental pipeline :@ " ,time_end-time_start,'s')
-
 if __name__ == '__main__':
     main()
