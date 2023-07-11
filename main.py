@@ -9,8 +9,8 @@ from eg_TGCN import trainTGCN as train
 from eg_TGCN_eval import evalTGCN as eval
 
 def main():
-    time_start = time.time()
-    print("Timer started : ")
+    # time_start = time.time()
+    # print("Timer started : ")
 
     # Parse the command-line arguments
     parser = argparse.ArgumentParser()
@@ -36,8 +36,8 @@ def main():
         eval('TGCN')
         print("*************  Finished eval process for the T-GCN Model ************* ")
         
-    time_end = time.time()
-    print("Time taken for the experimental pipeline : " ,time_end-time_start,'s')
+    # time_end = time.time()
+    # print("Time taken for the experimental pipeline : " ,time_end-time_start,'s')
 
 if __name__ == '__main__':
     main()
