@@ -6,9 +6,9 @@ from tensorflow.keras.layers import Input, Dense, LSTM, Reshape
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from Utils.utils import create_X_Y, min_max, dataSplit
-from Model.tgcn import tgcnCell
+from Model.stgcn import stgcnCell
 
-def trainTGCN(config):
+def trainSTGCN(config):
     increment = config['increment']['default']
     stations = config['stations']['default']
     forecasting_horizons = config['forecasting_horizons']['default']
@@ -16,7 +16,7 @@ def trainTGCN(config):
     
     for forecast_len in forecasting_horizons:
         for station in stations:
-            print('********** TGCN model training started at ' + station)
+            print('********** ST-GCN model training started at ' + station)
             # Step 1: Load and preprocess the data the weather station data
             station_name = 'data/Weather Station Data/' + station + '.csv'
             weather_data = pd.read_csv(station_name)
@@ -26,7 +26,7 @@ def trainTGCN(config):
             # Step 2: Adjust weather station nodes and adjacency matrix
             weather_stations = weather_data['StasName'].unique()
             num_nodes = len(weather_stations)
-            adjacency_matrix = pd.read_csv('adj_mx.csv', index_col=0)
+            adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Adjacency Matrix/adj_mx.csv', index_col=0)
             adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
             n_ahead_length = forecast_len
                         
@@ -66,10 +66,10 @@ def trainTGCN(config):
             target_data = np.reshape(target_data, (target_data.shape[0], -1))
 
             for k in range(num_splits):
-                print('TCN training started on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,
+                print('STGCN training started on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,
                                                                                                             forecast_len, num_splits))
                 
-                save_File = 'Garage/Final Models/TCN/' + station + '/' + str(forecast_len) + ' Hour Models/Best_Model_' \
+                save_File = 'Garage/Final Models/STGCN/' + station + '/' + str(forecast_len) + ' Hour Models/Best_Model_' \
                             + str(n_ahead_length) + '_walk_' + str(k) + '.h5'
                             
                 # splitting the processed time series data
@@ -87,7 +87,7 @@ def trainTGCN(config):
                 
                 # Step 4: Define the T-GCN model architecture
                 inputs = Input(shape=(time_steps, 1, num_nodes * 60))  # Update the input shape
-                x = tf.keras.layers.TimeDistributed(tgcnCell(64, adjacency_matrix, num_nodes))(inputs)
+                x = tf.keras.layers.TimeDistributed(stgcnCell(64, adjacency_matrix, num_nodes))(inputs)
                 x = Reshape((-1, 10 * 64))(x)  # Reshape into 3D tensor
                 x = LSTM(64, activation='relu', return_sequences=True)(x)
                 outputs = Dense(60, activation='linear')(x)
@@ -154,10 +154,10 @@ def trainTGCN(config):
                 temperature_prediction = predictions[0][station_index * 6 + 5]  
                 print(f'Predicted temperature at {station}: {temperature_prediction}')
                 
-            print('TCN training finished on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,
+            print('ST-GCN training finished on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,
                                                                                                             forecast_len, num_splits))   
             # Save the results to the file
             resultsDF.to_csv(resultsFile)
             lossDF.to_csv(lossFile)
             targetDF.to_csv(targetFile)
-    print("TGCN training finished for all stations at all splits ! :)")
+    print("ST-GCN training finished for all stations at all splits ! :)")

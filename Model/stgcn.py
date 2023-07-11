@@ -4,7 +4,7 @@ from Utils.utils import calculate_laplacian
 from Model.acell import load_assist_data
 
 #################### Method from model, tgcn ####################
-def tgcnCell(units, adj, num_nodes):
+def stgcnCell(units, adj, num_nodes):
     class GcnCell(tf.keras.layers.Layer):
         def __init__(self, units, adj):
             super(GcnCell, self).__init__()
