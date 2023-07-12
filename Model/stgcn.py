@@ -2,8 +2,118 @@ import tensorflow as tf
 from tensorflow.compat.v1.nn.rnn_cell import RNNCell
 from Utils.utils import calculate_laplacian
 from Model.acell import load_assist_data
+from tensorflow.keras.layers import Input, Dense, LSTM, Reshape
+from tensorflow.keras.models import Model
+from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
+from Utils.utils import create_X_Y, min_max, dataSplit
 
-#################### Method from model, tgcn ####################
+
+def stgcnModel(time_steps, num_nodes, adjacency_matrix, save_File,
+               X_train, Y_train, X_val, Y_val
+               ):
+    """
+    Build and train the temperature model.
+    Returns:
+    model (Sequential): The trained temperature model.
+    history (History): The training history.
+    """
+        
+     # Step 4: Define the ST-GCN model architecture
+    inputs = Input(shape=(time_steps, 1, num_nodes * 60))  # Update the input shape
+    x = tf.keras.layers.TimeDistributed(stgcnCell(64, adjacency_matrix, num_nodes))(inputs)
+    x = Reshape((-1, 10 * 64))(x)  # Reshape into 3D tensor
+    x = LSTM(64, activation='relu', return_sequences=True)(x)
+    outputs = Dense(60, activation='linear')(x)
+    model = Model(inputs=inputs, outputs=outputs)
+                
+    # Step 5: Compile and train the T-GCN model
+    model.compile(optimizer='adam', loss='mean_squared_error')
+                
+    # Define callbacks for early stopping and model checkpointing
+    early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=5)
+    checkpoint = ModelCheckpoint(filepath=save_File, save_weights_only=False, monitor='val_loss', verbose=1,
+                                            save_best_only=True,
+                                            mode='min', save_freq='epoch')
+    callback = [early_stop, checkpoint]            
+
+                # print("Final X Train shape ",X_train.shape)
+                # print("Final Y Train shape ",Y_train.shape)
+                # print("Final X Val shape ",X_val.shape)
+                # print("Final Y Val shape ",Y_val.shape)
+                
+    ########## Training the model
+    history = model.fit(X_train, Y_train,
+                    validation_data=(X_val, Y_val),
+                    batch_size=196,
+                    epochs=1,
+                    verbose=1,
+                    callbacks=callback)
+    
+    return model, history
+                
+                
+        # # Build the model architecture
+        # model = Sequential()
+        # model.add(TCN(
+        #     input_shape=(self.n_lag, self.n_features),
+        #     activation=self.act_func,
+        #     nb_filters=self.filters,
+        #     kernel_size=self.kernel,
+        #     dilations=self.dilations,
+        #     dropout_rate=self.dropout,
+        #     use_batch_norm=self.batch_norm,
+        #     use_weight_norm=self.weight_norm,
+        #     use_layer_norm=self.layer_norm,
+        #     return_sequences=False,
+        #     padding=self.padding
+        # ))
+        # model.add(Dense(self.n_ahead, activation="linear"))
+
+        # # Configure optimizer and compile the model
+        # if (self.optimizer == 'SGD'):
+        #     opt = keras.optimizers.SGD(learning_rate=self.learning_rate, decay=1e-2 / self.epochs)
+        # elif (self.optimizer == 'RMSprop'):
+        #     opt = keras.optimizers.RMSprop(learning_rate=self.learning_rate, decay=1e-2 / self.epochs)
+        # else: opt = keras.optimizers.Adam(learning_rate=self.learning_rate, decay=1e-2 / self.epochs)
+        # model.compile(loss=self.loss,
+        #               optimizer=opt,
+        #               metrics=[self.loss, 'mape'])
+
+        # # Define callbacks for early stopping and model checkpointing
+        # early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=self.patience)
+        # checkpoint = ModelCheckpoint(self.save, save_weights_only=False, monitor='val_loss', verbose=1,
+        #                              save_best_only=True,
+        #                              mode='min', save_freq='epoch')
+        # callback = [early_stop, checkpoint]
+
+        # # Train the model
+        # history = model.fit(self.x_train, self.y_train,
+        #                     validation_data=(self.x_val, self.y_val),
+        #                     batch_size=self.batch_size,
+        #                     epochs=self.epochs,
+        #                     verbose=1,
+        #                     callbacks=callback)
+
+    
+
+# Sptial dynamics considered
+# In the ST-GCN model, each graph convolutional cell (GcnCell) represents a single time step. 
+# The GcnCell layer applies graph convolution operation to capture spatial dependencies among 
+# nodes in the graph. This operation takes into account the adjacency matrix (adj) to propagate 
+# information between neighboring nodes.
+
+# Temporal dynamics considered
+# # By using a recurrent neural network (RNN) layer (GRU) within the GcnCell, the model captures 
+# the temporal dynamics of the data. The GRU layer receives the output of the graph convolutional
+# operation from the previous time step as input and processes it along with the current input 
+# to generate the output sequence.
+
+# Therefore, the ST-GCN model combines both spatial and temporal information,
+# allowing it to learn and model the dynamics of the graph-structured data over time. 
+# The ST-GCN model combines both spatial and temporal information by integrating 
+# graph convolutional networks and recurrent neural networks (GRU   ). 
+
+#################### Method from model, stgcn ####################
 def stgcnCell(units, adj, num_nodes):
     class GcnCell(tf.keras.layers.Layer):
         def __init__(self, units, adj):
@@ -40,6 +150,27 @@ def stgcnCell(units, adj, num_nodes):
     adj_normalized = tf.sparse.to_dense(adj_normalized)
     adj_normalized = tf.reshape(adj_normalized, [num_nodes, num_nodes])
     return GcnCell(units, adj_normalized)
+
+
+################### RNNs -> GRU ####################
+# Yes, a GRU (Gated Recurrent Unit) is a type of recurrent neural network (RNN). 
+# GRU is a variant of the traditional RNN architecture that addresses some of 
+# the limitations of standard RNNs, such as the vanishing gradient problem and 
+# difficulty in capturing long-term dependencies.
+
+# Similar to RNNs, GRUs are designed to process sequential data, where the current 
+# output depends on both the current input and the previous hidden state. 
+# They are recurrent in nature because they have a hidden state that is updated at 
+# each time step and used as input for the next time step.
+
+# However, GRUs differ from traditional RNNs in their internal structure. GRUs introduce 
+# the concept of "gates" that control the flow of information through the network. These gates, 
+# namely the update gate and reset gate, determine how much of the previous hidden state to 
+# incorporate and how much of the new input to remember.
+# By using these gates, GRUs can selectively update and remember relevant information over 
+# long sequences, making them better suited for capturing long-term dependencies. They have been shown
+# to be effective in various tasks involving sequential dat and time series analysis.
+
 
 ############################## OLD MODEL IMPLEMENTATIONS OF TGCN ##############################################
 

@@ -6,7 +6,8 @@ from tensorflow.keras.layers import Input, Dense, LSTM, Reshape
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from Utils.utils import create_X_Y, min_max, dataSplit
-from Model.stgcn import stgcnCell
+# from Model.stgcn import stgcnCell
+from Model.stgcn import stgcnModel
 
 def trainSTGCN(config):
     increment = config['increment']['default']
@@ -85,37 +86,9 @@ def trainSTGCN(config):
                 X_val, Y_val = create_X_Y(validation, time_steps, num_nodes, n_ahead_length)
                 X_test, Y_test = create_X_Y(test, time_steps, num_nodes, n_ahead_length)
                 
-                # Step 4: Define the T-GCN model architecture
-                inputs = Input(shape=(time_steps, 1, num_nodes * 60))  # Update the input shape
-                x = tf.keras.layers.TimeDistributed(stgcnCell(64, adjacency_matrix, num_nodes))(inputs)
-                x = Reshape((-1, 10 * 64))(x)  # Reshape into 3D tensor
-                x = LSTM(64, activation='relu', return_sequences=True)(x)
-                outputs = Dense(60, activation='linear')(x)
-                model = Model(inputs=inputs, outputs=outputs)
-                
-                # Step 5: Compile and train the T-GCN model
-                model.compile(optimizer='adam', loss='mean_squared_error')
-                
-                # Define callbacks for early stopping and model checkpointing
-                early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=5)
-                checkpoint = ModelCheckpoint(filepath=save_File, save_weights_only=False, monitor='val_loss', verbose=1,
-                                            save_best_only=True,
-                                            mode='min', save_freq='epoch')
-                callback = [early_stop, checkpoint]            
-
-                # print("Final X Train shape ",X_train.shape)
-                # print("Final Y Train shape ",Y_train.shape)
-                # print("Final X Val shape ",X_val.shape)
-                # print("Final Y Val shape ",Y_val.shape)
-                
-                ########## Training the model
-                history = model.fit(X_train, Y_train,
-                        validation_data=(X_val, Y_val),
-                        batch_size=196,
-                        epochs=1,
-                        verbose=1,
-                        callbacks=callback)
-                
+                #### Get model from methods in stgcn.py in Model/
+                model, history = stgcnModel(time_steps, num_nodes, adjacency_matrix,save_File, X_train, Y_train, X_val, Y_val)
+               
                 # validation and train loss to dataframe
                 lossDF = lossDF.append([[history.history['loss']]])
                 
