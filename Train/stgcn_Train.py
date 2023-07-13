@@ -1,36 +1,25 @@
 import numpy as np
 import pandas as pd
-import tensorflow as tf
 from sklearn.preprocessing import StandardScaler
-from tensorflow.keras.layers import Input, Dense, LSTM, Reshape
-from tensorflow.keras.models import Model
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from Utils.utils import create_X_Y, min_max, dataSplit
-# from Model.stgcn import stgcnCell
 from Model.stgcn import stgcnModel
+from Data_PreProcess.data_preprocess import data_preprocess_ST_GCN
 
 def trainSTGCN(config):
     increment = config['increment']['default']
     stations = config['stations']['default']
     forecasting_horizons = config['forecasting_horizons']['default']
     num_splits =config['num_splits']['default']
+    time_steps =config['time_steps']['default']
     
     for forecast_len in forecasting_horizons:
         for station in stations:
             print('********** ST-GCN model training started at ' + station)
-            # Step 1: Load and preprocess the data the weather station data
-            station_name = 'data/Weather Station Data/' + station + '.csv'
-            weather_data = pd.read_csv(station_name)
-            processed_data = weather_data[['Pressure', 'WindDir', 'WindSpeed', 'Humidity', 'Rain', 'Temperature']]
-            processed_data = processed_data.astype(float)
             
-            # Step 2: Adjust weather station nodes and adjacency matrix
-            weather_stations = weather_data['StasName'].unique()
-            num_nodes = len(weather_stations)
-            adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Adjacency Matrix/adj_mx.csv', index_col=0)
-            adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
             n_ahead_length = forecast_len
-                        
+             
+            processed_data, adjacency_matrix, num_nodes = data_preprocess_ST_GCN(station)
+            
             lossDF = pd.DataFrame()
             resultsDF = pd.DataFrame()
             targetDF = pd.DataFrame()
@@ -40,7 +29,7 @@ def trainSTGCN(config):
                                     'result.csv'
             lossFile = 'Results/TGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
                                 'loss.csv'
-            time_steps = 10  # Number of time steps to consider
+            
             input_data = []
             target_data = []
 
@@ -123,8 +112,9 @@ def trainSTGCN(config):
             
                 # Print the predicted temperature for a specific weather station
                 station_index = 0  # Replace with the index of the desired weather station
-                station = weather_stations[station_index]
-                temperature_prediction = predictions[0][station_index * 6 + 5]  
+                # station = weather_stations[station_index]
+                # temperature_prediction = predictions[0][station_index * 6 + 5]  
+                temperature_prediction = predictions[0][station_index * 6 + 5]
                 print(f'Predicted temperature at {station}: {temperature_prediction}')
                 
             print('ST-GCN training finished on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,

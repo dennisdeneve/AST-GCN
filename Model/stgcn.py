@@ -5,7 +5,6 @@ from Model.acell import load_assist_data
 from tensorflow.keras.layers import Input, Dense, LSTM, Reshape
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
-from Utils.utils import create_X_Y, min_max, dataSplit
 
 
 def stgcnModel(time_steps, num_nodes, adjacency_matrix, save_File,
@@ -27,19 +26,26 @@ def stgcnModel(time_steps, num_nodes, adjacency_matrix, save_File,
     model = Model(inputs=inputs, outputs=outputs)
                 
     # Step 5: Compile and train the T-GCN model
-    model.compile(optimizer='adam', loss='mean_squared_error')
+    model.compile(optimizer='adam', 
+                  loss='mean_squared_error')
                 
     # Define callbacks for early stopping and model checkpointing
-    early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=5)
-    checkpoint = ModelCheckpoint(filepath=save_File, save_weights_only=False, monitor='val_loss', verbose=1,
-                                            save_best_only=True,
-                                            mode='min', save_freq='epoch')
+    early_stop = EarlyStopping(monitor='val_loss', 
+                               mode='min', 
+                               patience=5)
+    checkpoint = ModelCheckpoint(filepath=save_File, 
+                                save_weights_only=False, 
+                                monitor='val_loss', 
+                                verbose=1,
+                                save_best_only=True,
+                                mode='min', 
+                                save_freq='epoch')
     callback = [early_stop, checkpoint]            
 
-                # print("Final X Train shape ",X_train.shape)
-                # print("Final Y Train shape ",Y_train.shape)
-                # print("Final X Val shape ",X_val.shape)
-                # print("Final Y Val shape ",Y_val.shape)
+    # print("Final X Train shape ",X_train.shape)
+    # print("Final Y Train shape ",Y_train.shape)
+    # print("Final X Val shape ",X_val.shape)
+    # print("Final Y Val shape ",Y_val.shape)
                 
     ########## Training the model
     history = model.fit(X_train, Y_train,
@@ -52,50 +58,6 @@ def stgcnModel(time_steps, num_nodes, adjacency_matrix, save_File,
     return model, history
                 
                 
-        # # Build the model architecture
-        # model = Sequential()
-        # model.add(TCN(
-        #     input_shape=(self.n_lag, self.n_features),
-        #     activation=self.act_func,
-        #     nb_filters=self.filters,
-        #     kernel_size=self.kernel,
-        #     dilations=self.dilations,
-        #     dropout_rate=self.dropout,
-        #     use_batch_norm=self.batch_norm,
-        #     use_weight_norm=self.weight_norm,
-        #     use_layer_norm=self.layer_norm,
-        #     return_sequences=False,
-        #     padding=self.padding
-        # ))
-        # model.add(Dense(self.n_ahead, activation="linear"))
-
-        # # Configure optimizer and compile the model
-        # if (self.optimizer == 'SGD'):
-        #     opt = keras.optimizers.SGD(learning_rate=self.learning_rate, decay=1e-2 / self.epochs)
-        # elif (self.optimizer == 'RMSprop'):
-        #     opt = keras.optimizers.RMSprop(learning_rate=self.learning_rate, decay=1e-2 / self.epochs)
-        # else: opt = keras.optimizers.Adam(learning_rate=self.learning_rate, decay=1e-2 / self.epochs)
-        # model.compile(loss=self.loss,
-        #               optimizer=opt,
-        #               metrics=[self.loss, 'mape'])
-
-        # # Define callbacks for early stopping and model checkpointing
-        # early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=self.patience)
-        # checkpoint = ModelCheckpoint(self.save, save_weights_only=False, monitor='val_loss', verbose=1,
-        #                              save_best_only=True,
-        #                              mode='min', save_freq='epoch')
-        # callback = [early_stop, checkpoint]
-
-        # # Train the model
-        # history = model.fit(self.x_train, self.y_train,
-        #                     validation_data=(self.x_val, self.y_val),
-        #                     batch_size=self.batch_size,
-        #                     epochs=self.epochs,
-        #                     verbose=1,
-        #                     callbacks=callback)
-
-    
-
 # Sptial dynamics considered
 # In the ST-GCN model, each graph convolutional cell (GcnCell) represents a single time step. 
 # The GcnCell layer applies graph convolution operation to capture spatial dependencies among 

@@ -4,12 +4,23 @@ import numpy as np
 import pandas as pd
 import os
 
-
-from Evaluation.metrics import metrics, MaxMinNormalization
-import numpy as np
-import pandas as pd
-import os
-
+###############################  NEW DATA PRE-PROCESS METHOD THAT WWORKS  ###############################
+def data_preprocess_ST_GCN(station,):
+    # Step 1: Load and preprocess the data the weather station data
+    station_name = 'data/Weather Station Data/' + station + '.csv'
+    weather_data = pd.read_csv(station_name)
+    processed_data = weather_data[['Pressure', 'WindDir', 'WindSpeed', 'Humidity', 'Rain', 'Temperature']]
+    processed_data = processed_data.astype(float)
+            
+    # Step 2: Adjust weather station nodes and adjacency matrix
+    weather_stations = weather_data['StasName'].unique()
+    adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Adjacency Matrix/adj_mx.csv', index_col=0)
+    num_nodes = len(weather_stations)
+    adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
+    
+    return processed_data, adjacency_matrix, num_nodes
+    
+#################  Old methods to pr-process data #################
 def load_assist_data(station_file, adjacency_file):
     # Read the weather station CSV file into a Pandas DataFrame
     weather_data = pd.read_csv(station_file)

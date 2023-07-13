@@ -49,6 +49,10 @@ num_splits:
   default: 1
   help: number of splits in walk-forward validation
 
+time_steps:
+  type: int
+  default: 10
+  help: number of time steps to consider 
 
 train_ast_gcn:
   type: bool
