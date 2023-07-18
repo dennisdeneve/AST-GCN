@@ -1,7 +1,9 @@
 import time
 import yaml
 import argparse
-from Train.stgcn_Train import trainSTGCN as train
+from Train.stgcn_Train import trainSTGCN as trainSTGCN
+from Train.astgcn_Train import trainASTGCN as trainASTGCN
+
 from eg_TGCN_eval import evalTGCN as eval
 
 def main():
@@ -17,12 +19,12 @@ def main():
 
     if config['train_ast_gcn']['default']:
         print("************* Starting training process for the AST-GCN Model ************* ")
-        # train_ast_gcn.train(config)
+        trainASTGCN(config)
         print("*************  Finished training process for the AST-GCN Model ************* ")
     
     if config['train_st_gcn']['default']:
         print("************* Starting training process for the ST-GCN Model ************* ")
-        train(config)
+        trainSTGCN(config)
         print("*************  Finished training process for the ST-GCN Model ************* ")
         
     if config['eval_st_gcn']['default']:

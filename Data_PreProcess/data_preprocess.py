@@ -1,17 +1,15 @@
-# data pre-process
-from Evaluation.metrics import metrics, MaxMinNormalization
+from Evaluation.metrics import MaxMinNormalization
 import numpy as np
 import pandas as pd
-import os
+from sklearn.preprocessing import StandardScaler
 
-###############################  NEW DATA PRE-PROCESS METHOD THAT WWORKS  ###############################
-def data_preprocess_ST_GCN(station,):
+###############################  NEW DATA PRE-PROCESS METHODs THAT WWORK  ###############################
+def data_preprocess_ST_GCN(station):
     # Step 1: Load and preprocess the data the weather station data
     station_name = 'data/Weather Station Data/' + station + '.csv'
     weather_data = pd.read_csv(station_name)
     processed_data = weather_data[['Pressure', 'WindDir', 'WindSpeed', 'Humidity', 'Rain', 'Temperature']]
     processed_data = processed_data.astype(float)
-            
     # Step 2: Adjust weather station nodes and adjacency matrix
     weather_stations = weather_data['StasName'].unique()
     adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Adjacency Matrix/adj_mx.csv', index_col=0)
@@ -19,6 +17,97 @@ def data_preprocess_ST_GCN(station,):
     adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
     
     return processed_data, adjacency_matrix, num_nodes
+
+
+def data_preprocess_AST_GCN(station):
+    # Step 1: Load and preprocess the data the weather station data
+    station_name = 'data/Weather Station Data/' + station + '.csv'
+    weather_data = pd.read_csv(station_name)
+    processed_data = weather_data[['Pressure', 'Humidity', 'Rain', 'Temperature']]
+    attribute_data = weather_data[['WindDir', 'WindSpeed']]  # Extract attribute data
+    processed_data = processed_data.astype(float)
+    # Step 2: Adjust weather station nodes and adjacency matrix
+    weather_stations = weather_data['StasName'].unique()
+    adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Adjacency Matrix/adj_mx.csv', index_col=0)
+    num_nodes = len(weather_stations)
+    adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
+    
+    print("Processed data:", processed_data)
+    print("Attribute data:", attribute_data)
+    
+# old preprocess that only as coords as attribute data
+# def data_preprocess_AST_GCN(station):
+#     # Step 1: Load and preprocess the data the weather station data
+#     station_name = 'data/Weather Station Data/' + station + '.csv'
+#     weather_data = pd.read_csv(station_name)
+#     processed_data = weather_data[['Pressure', 'WindDir', 'WindSpeed', 'Humidity', 'Rain', 'Temperature']]
+#     attribute_data = weather_data[['Latitude', 'Longitude']]  # Extract attribute data
+#     processed_data = processed_data.astype(float)
+#     # Step 2: Adjust weather station nodes and adjacency matrix
+#     weather_stations = weather_data['StasName'].unique()
+#     adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Adjacency Matrix/adj_mx.csv', index_col=0)
+#     num_nodes = len(weather_stations)
+#     adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
+    
+#     print("Processed data:", processed_data)
+#     print("Attribute data:", attribute_data)
+    
+    return processed_data, attribute_data, adjacency_matrix, num_nodes
+
+def sliding_window_ST_GCN(processed_data, time_steps, num_nodes):
+    input_data = []
+    target_data = []
+    # Iterate over the processed data to create input-target pairs
+    # It iterates over the processed data and creates a sliding window of length time_steps over the data.
+    # For each window, it creates an input sequence (input_data) and the corresponding target value (target_data).
+    for i in range(len(processed_data) - time_steps):
+        input_data.append(processed_data.iloc[i:i+time_steps].values)
+        target_data.append(processed_data.iloc[i+time_steps].values)
+    # Convert the input and target data to NumPy arrays
+    input_data = np.array(input_data)
+    target_data = np.array(target_data)
+    ## Reshape the input data to match the desired shape of the model
+    input_data = input_data.transpose((0, 2, 1))  # Swap the time_steps and num_nodes dimensions
+    input_data = input_data.reshape(-1, num_nodes, time_steps * 6)  
+    # Normalize the input and target data if necessary, also reshape 
+    scaler = StandardScaler()
+    input_data = input_data.reshape(-1, num_nodes * 6)
+    input_data = scaler.fit_transform(input_data)
+    input_data = input_data.reshape(-1, time_steps, num_nodes, 6)
+    target_data = scaler.transform(target_data)
+    # Adjust the shape of the input and target data
+    input_data = np.transpose(input_data, (0, 2, 1, 3))  # Swap the time_steps and num_nodes dimensions
+    target_data = np.reshape(target_data, (target_data.shape[0], -1))
+    
+    return input_data, target_data, scaler
+
+
+def sliding_window_AST_GCN(processed_data, time_steps, num_nodes):
+    input_data = []
+    target_data = []
+    # Iterate over the processed data to create input-target pairs
+    # It iterates over the processed data and creates a sliding window of length time_steps over the data.
+    # For each window, it creates an input sequence (input_data) and the corresponding target value (target_data).
+    for i in range(len(processed_data) - time_steps):
+        input_data.append(processed_data.iloc[i:i+time_steps].values)
+        target_data.append(processed_data.iloc[i+time_steps].values)
+    # Convert the input and target data to NumPy arrays
+    input_data = np.array(input_data)
+    target_data = np.array(target_data)
+    ## Reshape the input data to match the desired shape of the model
+    input_data = input_data.transpose((0, 2, 1))  # Swap the time_steps and num_nodes dimensions
+    input_data = input_data.reshape(-1, num_nodes, time_steps * 4)  
+    # Normalize the input and target data if necessary, also reshape 
+    scaler = StandardScaler()
+    input_data = input_data.reshape(-1, num_nodes * 4)
+    input_data = scaler.fit_transform(input_data)
+    input_data = input_data.reshape(-1, time_steps, num_nodes, 4)
+    target_data = scaler.transform(target_data)
+    # Adjust the shape of the input and target data
+    input_data = np.transpose(input_data, (0, 2, 1, 3))  # Swap the time_steps and num_nodes dimensions
+    target_data = np.reshape(target_data, (target_data.shape[0], -1))
+    
+    return input_data, target_data, scaler
     
 #################  Old methods to pr-process data #################
 def load_assist_data(station_file, adjacency_file):

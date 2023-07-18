@@ -32,7 +32,7 @@ def create_X_Y(ts: np.array, lag=1, num_nodes=1, n_ahead=1, target_index=0):
     num_samples -= num_samples % time_steps
     X = X[:num_samples]
     Y = Y[:num_samples]
-    ### Reshaping to match the TGCN model output architecture
+    ### Reshaping to match the ASTGCN model output architecture
     X = np.expand_dims(X, axis=2)
     Y = np.reshape(Y, (Y.shape[0], -1))  # Reshape Y to match the shape of y_pred
     return X, Y
@@ -41,6 +41,27 @@ def create_X_Y(ts: np.array, lag=1, num_nodes=1, n_ahead=1, target_index=0):
 def calculate_laplacian(adj):
     adj_normalized = normalize_adj(adj + np.eye(adj.shape[0]))
     return adj_normalized
+
+def calculate_laplacian_astgcn(adj):
+    # Calculate the normalized Laplacian matrix
+    adj = tf.convert_to_tensor(adj, dtype=tf.float32)
+    adj = tf.sparse.reorder(tf.sparse.SparseTensor(indices=tf.where(adj != 0),
+                                                   values=tf.gather_nd(adj, tf.where(adj != 0)),
+                                                   dense_shape=adj.shape))
+    adj = tf.sparse.to_dense(adj)
+    adj = tf.reshape(adj, [adj.shape[0], adj.shape[0]])
+    
+    # Calculate row sums
+    rowsum = tf.reduce_sum(adj, axis=1)
+    rowsum = tf.maximum(rowsum, 1e-12)  # Add small epsilon to avoid division by zero
+    
+    # Calculate the degree matrix
+    degree = tf.linalg.diag(1.0 / tf.sqrt(rowsum))
+    
+    # Calculate the normalized Laplacian matrix
+    laplacian = tf.eye(adj.shape[0]) - tf.matmul(tf.matmul(degree, adj), degree)
+    
+    return laplacian
 
 
 def normalize_adj(adj):

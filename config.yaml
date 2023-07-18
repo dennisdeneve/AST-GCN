@@ -4,10 +4,16 @@ train_st_gcn:
   default: true
   help: whether to train ST-GCN model (Spatial-Temporal Graph Convolutional Network)
 
+train_ast_gcn:
+  type: bool
+  default: false
+  help: whether to train AST-GCN model (Attribute-Augmented Spatiotemporal Graph Convolutional Network)
+
 eval_st_gcn:
   type: bool
   default: false
   help: whether to evaluate ST-GCN model (Spatial-Temporal Graph Convolutional Network)
+
   
 stations:
   type: str[]
@@ -53,11 +59,6 @@ time_steps:
   type: int
   default: 10
   help: number of time steps to consider 
-
-train_ast_gcn:
-  type: bool
-  default: false
-  help: whether to train AST-GCN model (Attribute-Augmented Spatiotemporal Graph Convolutional Network)
 
 adjdata:
   type: str

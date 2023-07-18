@@ -76,6 +76,7 @@ def stgcnModel(time_steps, num_nodes, adjacency_matrix, save_File,
 # graph convolutional networks and recurrent neural networks (GRU   ). 
 
 #################### Method from model, stgcn ####################
+# working for ST-GCN model
 def stgcnCell(units, adj, num_nodes):
     class GcnCell(tf.keras.layers.Layer):
         def __init__(self, units, adj):

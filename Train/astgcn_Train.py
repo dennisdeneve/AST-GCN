@@ -1,10 +1,10 @@
 import numpy as np
 import pandas as pd
 from Utils.utils import create_X_Y, min_max, dataSplit
-from Model.stgcn import stgcnModel
-from Data_PreProcess.data_preprocess import data_preprocess_ST_GCN, sliding_window_ST_GCN
+from Model.astgcn import astgcnModel
+from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, sliding_window_AST_GCN
 
-def trainSTGCN(config):
+def trainASTGCN(config):
     increment = config['increment']['default']
     stations = config['stations']['default']
     forecasting_horizons = config['forecasting_horizons']['default']
@@ -13,27 +13,28 @@ def trainSTGCN(config):
     
     for forecast_len in forecasting_horizons:
         for station in stations:
-            print('********** ST-GCN model training started at ' + station) 
+            print('********** AST-GCN model training started at ' + station) 
+            print('------------------  Attributed-Augemented logic included ---------------------')
             
-            processed_data, adjacency_matrix, num_nodes = data_preprocess_ST_GCN(station)
+            processed_data, attribute_data, adjacency_matrix, num_nodes = data_preprocess_AST_GCN(station)
             
             lossDF = pd.DataFrame()
             resultsDF = pd.DataFrame()
             targetDF = pd.DataFrame()
-            targetFile = 'Results/TGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Targets/' + \
+            targetFile = 'Results/ASTGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Targets/' + \
                                     'target.csv'
-            resultsFile = 'Results/TGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
+            resultsFile = 'Results/ASTGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
                                     'result.csv'
-            lossFile = 'Results/TGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
+            lossFile = 'Results/ASTGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
                                 'loss.csv'
             
-            input_data, target_data, scaler = sliding_window_ST_GCN(processed_data, time_steps, num_nodes)
+            input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, time_steps, num_nodes)
 
             for k in range(num_splits):
-                print('STGCN training started on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,
+                print('ASTGCN training started on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,
                                                                                                             forecast_len, num_splits))
                 
-                save_File = 'Garage/Final Models/STGCN/' + station + '/' + str(forecast_len) + ' Hour Models/Best_Model_' \
+                save_File = 'Garage/Final Models/ASTGCN/' + station + '/' + str(forecast_len) + ' Hour Models/Best_Model_' \
                             + str(forecast_len) + '_walk_' + str(k) + '.h5'
                             
                 # splitting the processed time series data
@@ -49,8 +50,13 @@ def trainSTGCN(config):
                 X_val, Y_val = create_X_Y(validation, time_steps, num_nodes, forecast_len)
                 X_test, Y_test = create_X_Y(test, time_steps, num_nodes, forecast_len)
                 
+                print("X Train shape ",X_train.shape)
+                print("Y Train shape ",Y_train.shape)
+                
                 #### Get model from methods in stgcn.py in Model/
-                model, history = stgcnModel(time_steps, num_nodes, adjacency_matrix,save_File, X_train, Y_train, X_val, Y_val)
+                model, history = astgcnModel(time_steps, num_nodes, adjacency_matrix, 
+                                            attribute_data, save_File,forecast_len,increment, 
+                                            X_train, Y_train, X_val, Y_val)
                
                 # validation and train loss to dataframe
                 lossDF = lossDF.append([[history.history['loss']]])
@@ -88,10 +94,10 @@ def trainSTGCN(config):
                 temperature_prediction = predictions[0][station_index * 6 + 5]
                 print(f'Predicted temperature at {station}: {temperature_prediction}')
                 
-            print('ST-GCN training finished on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,
+            print('AST-GCN training finished on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,
                                                                                                             forecast_len, num_splits))   
             # Save the results to the file
             resultsDF.to_csv(resultsFile)
             lossDF.to_csv(lossFile)
             targetDF.to_csv(targetFile)
-    print("ST-GCN training finished for all stations at all splits ! :)")
+    print("AST-GCN training finished for all stations at all splits ! :)")
