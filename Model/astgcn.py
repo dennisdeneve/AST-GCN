@@ -35,12 +35,10 @@ def astgcnModel(time_steps, num_nodes, adjacency_matrix,
     X_val, Y_val = create_X_Y(val_Attribute, time_steps, num_nodes, forecast_len)
     X_test, Y_test = create_X_Y(test_Attribute, time_steps, num_nodes, forecast_len)
     
-    
-    print("Final X Train shape ",X_train.shape)
-    print("Final Y Train shape ",Y_train.shape)
-    
-    print("Attribute  X Train shape ",X_attribute_train.shape)
-    print("Attribute Y Train shape ",Y_attribute_train.shape)
+    # print("Final X Train shape ",X_train.shape)
+    # print("Final Y Train shape ",Y_train.shape)
+    # print("Attribute  X Train shape ",X_attribute_train.shape)
+    # print("Attribute Y Train shape ",Y_attribute_train.shape)
     
     adj_normalized = calculate_laplacian_astgcn(adjacency_matrix)
     adj_normalized = tf.convert_to_tensor(adj_normalized, dtype=tf.float32)
@@ -49,18 +47,10 @@ def astgcnModel(time_steps, num_nodes, adjacency_matrix,
     # Step 4: Define the AST-GCN model architecture
     # inputs = Input(shape=(time_steps, 1, num_nodes * 2)) 
     inputs = Input(shape=(time_steps, 1, X_train.shape[-1]))
-
-    print("inputs shape initially ******** ",inputs.shape)
     x = astgcnCell(63, adj_normalized, X_attribute_train, Y_attribute_train, num_nodes)(inputs)
-    # x = tf.keras.layers.TimeDistributed(astgcnCell(64, adjacency_matrix, attribute_data, num_nodes))(inputs)
-    # print("Shape of X = :" ,x.shape)
-    # print("Shape of X_attribute  = :" ,X_attribute_train.shape)
-    # print("Shape of Y_attribute = :" ,Y_attribute_train.shape)
-    # print("Shape of X_attribute.shape[-1] = :" ,X_attribute_train.shape[-1])
-    # print("Shape of Y_attribute.shape[-1] = :" ,Y_attribute_train.shape[-1])
     x = Reshape((-1, time_steps * num_nodes ))(x)
     x = LSTM(64, activation='relu', return_sequences=False)(x)
-    outputs = Dense(2, activation='linear')(x)
+    outputs = Dense(40, activation='linear')(x)
     model = Model(inputs=inputs, outputs=outputs)
                 
     # Step 5: Compile and train the T-GCN model
@@ -82,26 +72,17 @@ def astgcnModel(time_steps, num_nodes, adjacency_matrix,
     tf.config.run_functions_eagerly(True)
     model.summary()
     
-    print("X_train shape : ", X_train.shape)
-    print("Y_train shape: ", X_train.shape)
-    print("X_val shape: ", X_val.shape)
-    print("Y_val shape: ", Y_val.shape)
-    
     last_column_X = X_val[:, :, :, -1]  # Extract the last column
     X_val = np.repeat(np.expand_dims(last_column_X, axis=-1), 40, axis=-1)  # Repeat the last column to match (10, 1, 40)
     last_column_Y = Y_val[:, -1]  # Extract the last column
     Y_val = np.repeat(np.expand_dims(last_column_Y, axis=-1), 40, axis=-1)
-
-
-
-    # Verify the updated shapes
-    print("Aligned Shapes:")
-    print("X_train shape:", X_train.shape)
-    print("Y_train shape:", Y_train.shape)
-    print("X_val shape:", X_val.shape)
-    print("Y_val shape:", Y_val.shape)
-    
-    ########## Training the model
+    # print("Aligned Shapes:")
+    # print("X_train shape:", X_train.shape)
+    # print("Y_train shape:", Y_train.shape)
+    # print("X_val shape:", X_val.shape)
+    # print("Y_val shape:", Y_val.shape)
+       
+    # ########## Training the model
     history = model.fit(X_train, Y_train,
                     validation_data=(X_val, Y_val),
                     batch_size=196,
@@ -111,8 +92,7 @@ def astgcnModel(time_steps, num_nodes, adjacency_matrix,
     
     # Obtain predicted output
     y_pred = model.predict(X_val)
-    print("Y_pred predicted output shape:", y_pred.shape)
-
+    # print("Y_pred predicted output shape:", y_pred.shape)
     return model, history
        
 # This function creates the custom ASTGCN cell. 
@@ -153,8 +133,8 @@ def astgcnCell(units, adj, X_attribute, Y_attribute, num_nodes):
             config.update({
                 'units': self.units,
                 'adj': self.adj.numpy().tolist(),
-                'X_attribute': self.X_attribute.numpy().tolist(),
-                'Y_attribute': self.Y_attribute.numpy().tolist()
+                'X_attribute': self.X_attribute,
+                'Y_attribute': self.Y_attribute
             })
             return config
 

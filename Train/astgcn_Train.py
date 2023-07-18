@@ -79,9 +79,9 @@ def trainASTGCN(config):
                 new_data = new_data.astype(float)
                 new_data = np.expand_dims(new_data, axis=0)  # Add batch dimension
                 new_data = np.expand_dims(new_data, axis=2)  # Add node dimension
-                new_data = new_data.reshape(-1, time_steps, 1, 60)
+                new_data = new_data.reshape(-1, time_steps, 1, 40)
                 predictions = model.predict(new_data)
-                predictions = scaler.inverse_transform(predictions.reshape(-1, num_nodes * 6))
+                predictions = scaler.inverse_transform(predictions.reshape(-1, num_nodes * 4))
                 yhat = model.predict(X_test)
                 # predictions to dataframe
                 resultsDF = pd.concat([resultsDF, pd.Series(yhat.reshape(-1, ))])
@@ -89,11 +89,6 @@ def trainASTGCN(config):
                 Y_test = np.expand_dims(Y_test, axis=2)  # Add the missing dimension
                 targetDF = pd.concat([targetDF, pd.Series(Y_test.reshape(-1, ))])
             
-                # Print the predicted temperature for a specific weather station
-                station_index = 0  # Replace with the index of the desired weather station
-                temperature_prediction = predictions[0][station_index * 6 + 5]
-                print(f'Predicted temperature at {station}: {temperature_prediction}')
-                
             print('AST-GCN training finished on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,
                                                                                                             forecast_len, num_splits))   
             # Save the results to the file
