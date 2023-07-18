@@ -31,9 +31,8 @@ def data_preprocess_AST_GCN(station):
     adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Adjacency Matrix/adj_mx.csv', index_col=0)
     num_nodes = len(weather_stations)
     adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
-    
-    print("Processed data:", processed_data)
-    print("Attribute data:", attribute_data)
+    # print("Processed data:", processed_data)
+    # print("Attribute data:", attribute_data)
     
 # old preprocess that only as coords as attribute data
 # def data_preprocess_AST_GCN(station):

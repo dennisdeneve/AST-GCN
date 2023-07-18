@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from Utils.utils import create_X_Y, min_max, dataSplit
+from Utils.utils import create_X_Y, min_max, dataSplit, create_file_if_not_exists
 from Model.stgcn import stgcnModel
 from Data_PreProcess.data_preprocess import data_preprocess_ST_GCN, sliding_window_ST_GCN
 
@@ -20,13 +20,16 @@ def trainSTGCN(config):
             lossDF = pd.DataFrame()
             resultsDF = pd.DataFrame()
             targetDF = pd.DataFrame()
-            targetFile = 'Results/TGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Targets/' + \
+            targetFile = 'Results/STGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Targets/' + \
                                     'target.csv'
-            resultsFile = 'Results/TGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
+            resultsFile = 'Results/STGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
                                     'result.csv'
-            lossFile = 'Results/TGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
+            lossFile = 'Results/STGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
                                 'loss.csv'
-            
+            create_file_if_not_exists(targetFile)
+            create_file_if_not_exists(resultsFile)
+            create_file_if_not_exists(lossFile)
+
             input_data, target_data, scaler = sliding_window_ST_GCN(processed_data, time_steps, num_nodes)
 
             for k in range(num_splits):
@@ -35,7 +38,7 @@ def trainSTGCN(config):
                 
                 save_File = 'Garage/Final Models/STGCN/' + station + '/' + str(forecast_len) + ' Hour Models/Best_Model_' \
                             + str(forecast_len) + '_walk_' + str(k) + '.h5'
-                            
+                create_file_if_not_exists(save_File)
                 # splitting the processed time series data
                 split = [increment[k], increment[k + 1], increment[k + 2]]
                 pre_standardize_train, pre_standardize_validation, pre_standardize_test = dataSplit(split, input_data)
@@ -55,8 +58,7 @@ def trainSTGCN(config):
                 # validation and train loss to dataframe
                 lossDF = lossDF.append([[history.history['loss']]])
                 
-                # Step 6: Use the trained model for predictions
-                # Assuming you have new data for prediction stored in `new_data`
+                # Use the trained model for predictions
                 new_data = pd.DataFrame({
                     'Pressure': [997.5] * time_steps,
                     'WindDir': [100.0] * time_steps,
@@ -65,9 +67,8 @@ def trainSTGCN(config):
                     'Rain': [0.0] * time_steps,
                     'Temperature': [25.5] * time_steps
                 })
-                # Replicate the columns 10 times
+
                 new_data = pd.concat([new_data]*10, axis=1)
-                # Ensure columns are in correct order
                 new_data = new_data[sorted(new_data.columns)]
                 
                 new_data = new_data.astype(float)

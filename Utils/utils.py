@@ -1,7 +1,20 @@
 import tensorflow as tf
 import scipy.sparse as sp
 import numpy as np
+import os
 from sklearn.preprocessing import MinMaxScaler
+
+def create_file_if_not_exists(file_path):
+    # Get the directory from the file path
+    directory = os.path.dirname(file_path)
+    
+    # If the directory does not exist, create it
+    if not os.path.exists(directory):
+        os.makedirs(directory)
+    
+    # If the file does not exist, create it
+    if not os.path.isfile(file_path):
+        open(file_path, 'w').close()
 
 def dataSplit(split, series):
     train = series[0:split[0]]

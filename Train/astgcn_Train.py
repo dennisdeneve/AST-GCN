@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from Utils.utils import create_X_Y, min_max, dataSplit
+from Utils.utils import create_X_Y, min_max, dataSplit, create_file_if_not_exists
 from Model.astgcn import astgcnModel
 from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, sliding_window_AST_GCN
 
@@ -27,6 +27,9 @@ def trainASTGCN(config):
                                     'result.csv'
             lossFile = 'Results/ASTGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
                                 'loss.csv'
+            create_file_if_not_exists(targetFile)
+            create_file_if_not_exists(resultsFile)
+            create_file_if_not_exists(lossFile)
             
             input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, time_steps, num_nodes)
 
@@ -36,7 +39,7 @@ def trainASTGCN(config):
                 
                 save_File = 'Garage/Final Models/ASTGCN/' + station + '/' + str(forecast_len) + ' Hour Models/Best_Model_' \
                             + str(forecast_len) + '_walk_' + str(k) + '.h5'
-                            
+                create_file_if_not_exists(save_File)          
                 # splitting the processed time series data
                 split = [increment[k], increment[k + 1], increment[k + 2]]
                 pre_standardize_train, pre_standardize_validation, pre_standardize_test = dataSplit(split, input_data)
@@ -49,9 +52,6 @@ def trainASTGCN(config):
                 X_train, Y_train = create_X_Y(train, time_steps, num_nodes, forecast_len)
                 X_val, Y_val = create_X_Y(validation, time_steps, num_nodes, forecast_len)
                 X_test, Y_test = create_X_Y(test, time_steps, num_nodes, forecast_len)
-                
-                print("X Train shape ",X_train.shape)
-                print("Y Train shape ",Y_train.shape)
                 
                 #### Get model from methods in stgcn.py in Model/
                 model, history = astgcnModel(time_steps, num_nodes, adjacency_matrix, 
