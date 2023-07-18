@@ -16,16 +16,13 @@ def trainSTGCN(config):
             print('********** ST-GCN model training started at ' + station) 
             
             processed_data, adjacency_matrix, num_nodes = data_preprocess_ST_GCN(station)
-            
             lossDF = pd.DataFrame()
             resultsDF = pd.DataFrame()
             targetDF = pd.DataFrame()
-            targetFile = 'Results/STGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Targets/' + \
-                                    'target.csv'
-            resultsFile = 'Results/STGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
-                                    'result.csv'
-            lossFile = 'Results/STGCN/' + str(forecast_len) + ' Hour Forecast/' + station + '/Predictions/' + \
-                                'loss.csv'
+            folder_path = f'Results/STGCN/{forecast_len} Hour Forecast/{station}'
+            targetFile = f'{folder_path}/Targets/target.csv'
+            resultsFile = f'{folder_path}/Predictions/result.csv'
+            lossFile = f'{folder_path}/Predictions/loss.csv'
             create_file_if_not_exists(targetFile)
             create_file_if_not_exists(resultsFile)
             create_file_if_not_exists(lossFile)

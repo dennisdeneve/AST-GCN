@@ -33,24 +33,6 @@ def data_preprocess_AST_GCN(station):
     adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
     # print("Processed data:", processed_data)
     # print("Attribute data:", attribute_data)
-    
-# old preprocess that only as coords as attribute data
-# def data_preprocess_AST_GCN(station):
-#     # Step 1: Load and preprocess the data the weather station data
-#     station_name = 'data/Weather Station Data/' + station + '.csv'
-#     weather_data = pd.read_csv(station_name)
-#     processed_data = weather_data[['Pressure', 'WindDir', 'WindSpeed', 'Humidity', 'Rain', 'Temperature']]
-#     attribute_data = weather_data[['Latitude', 'Longitude']]  # Extract attribute data
-#     processed_data = processed_data.astype(float)
-#     # Step 2: Adjust weather station nodes and adjacency matrix
-#     weather_stations = weather_data['StasName'].unique()
-#     adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Adjacency Matrix/adj_mx.csv', index_col=0)
-#     num_nodes = len(weather_stations)
-#     adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
-    
-#     print("Processed data:", processed_data)
-#     print("Attribute data:", attribute_data)
-    
     return processed_data, attribute_data, adjacency_matrix, num_nodes
 
 def sliding_window_ST_GCN(processed_data, time_steps, num_nodes):
@@ -79,7 +61,6 @@ def sliding_window_ST_GCN(processed_data, time_steps, num_nodes):
     target_data = np.reshape(target_data, (target_data.shape[0], -1))
     
     return input_data, target_data, scaler
-
 
 def sliding_window_AST_GCN(processed_data, time_steps, num_nodes):
     input_data = []

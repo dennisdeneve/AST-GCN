@@ -1,10 +1,11 @@
-import tensorflow as tf
 import numpy as np
+import tensorflow as tf
 from Utils.utils import calculate_laplacian_astgcn
 from tensorflow.keras.layers import Input, Dense, LSTM, Reshape
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from Utils.utils import create_X_Y, min_max, dataSplit
+tf.config.experimental_run_functions_eagerly(False)
 
 # This function creates, compiles, and trains a st-gnn model for temperature forecasting.
 # It first prepares the data by splitting, normalizing, and reshaping it as necessary. 
@@ -39,7 +40,6 @@ def astgcnModel(time_steps, num_nodes, adjacency_matrix,
     val_split = train_split + int(num_samples * 0.15)  # 15% of the data for validation
     train_attribute, val_attribute, test_attribute = dataSplit([train_split, val_split, num_samples], attribute_data)
     train_Attribute, val_Attribute, test_Attribute = min_max(train_attribute.values, val_attribute.values, test_attribute.values) 
-    
     # Creating the X and Y for forecasting (training), validation & testing
     X_attribute_train, Y_attribute_train = create_X_Y(train_Attribute, time_steps, num_nodes, forecast_len)
     X_val, Y_val = create_X_Y(val_Attribute, time_steps, num_nodes, forecast_len)
@@ -57,11 +57,9 @@ def astgcnModel(time_steps, num_nodes, adjacency_matrix,
     x = LSTM(64, activation='relu', return_sequences=False)(x)
     outputs = Dense(40, activation='linear')(x)
     model = Model(inputs=inputs, outputs=outputs)
-                
     # Compile and train the T-GCN model
     model.compile(optimizer='adam', 
                   loss='mean_squared_error')
-                
     # Define callbacks for early stopping and model checkpointing
     early_stop = EarlyStopping(monitor='val_loss', 
                                mode='min', 
@@ -76,13 +74,11 @@ def astgcnModel(time_steps, num_nodes, adjacency_matrix,
     callback = [early_stop, checkpoint]            
     tf.config.run_functions_eagerly(True)
     model.summary()
-    
     # Reshape validation data
     last_column_X = X_val[:, :, :, -1]  # Extract the last column
     X_val = np.repeat(np.expand_dims(last_column_X, axis=-1), 40, axis=-1)  # Repeat the last column to match (10, 1, 40)
     last_column_Y = Y_val[:, -1]  # Extract the last column
     Y_val = np.repeat(np.expand_dims(last_column_Y, axis=-1), 40, axis=-1)
-   
     # ########## Training the model
     history = model.fit(X_train, Y_train,
                     validation_data=(X_val, Y_val),
@@ -160,7 +156,7 @@ def astgcnCell(units, adj, X_attribute, Y_attribute, num_nodes):
                 'Y_attribute': self.Y_attribute
             })
             return config
-
+        
     adj_normalized = calculate_laplacian_astgcn(adj)
     adj_normalized = tf.convert_to_tensor(adj_normalized, dtype=tf.float32)
     adj_normalized = tf.sparse.reorder(tf.sparse.SparseTensor(indices=tf.where(adj_normalized != 0),
