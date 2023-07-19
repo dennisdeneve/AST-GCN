@@ -1,57 +1,6 @@
 import pandas as pd
-import numpy as np
-from sklearn.metrics import mean_squared_error as mse
-from sklearn.metrics import mean_absolute_error
 from Utils.utils import create_file_if_not_exists
-import math
-
-def SMAPE(actual, predicted):
-    """
-    Calculates the SMAPE metric
-    Parameters:
-        actual - target values
-        predicted - output values predicted by model
-    Returns:
-        smape - returns smape metric
-    """
-
-    return np.mean(abs(predicted - actual) / ((abs(predicted) + abs(actual)) / 2)) * 100
-
-def MSE(target, pred):
-    """
-    Calculates the MSE metric
-    Parameters:
-        actual - target values
-        predicted - output values predicted by model
-    Returns:
-        mse - returns MSE metric
-    """
-
-    return mse(target, pred, squared=True)
-
-def RMSE(target, pred):
-    """
-    Calculates the RMSE metric
-    Parameters:
-        actual - target values
-        predicted - output values predicted by model
-    Returns:
-        root - returns RMSE metric
-    """
-
-    root = math.sqrt(mse(target, pred))
-    return root
-
-def MAE(target, pred):
-    """
-    Calculates the MAE metric
-    Parameters:
-        actual - target values
-        predicted - output values predicted by model
-    Returns:
-        mae - returns MAE metric
-    """
-    return mean_absolute_error(target, pred)
+from Evaluation.metrics import SMAPE, MSE, RMSE, MAE
 
 def evalSTGCN(config):
     """
@@ -66,8 +15,10 @@ def evalSTGCN(config):
         model - Whether these metrics are being calculated for the LSTM or TCN model
     """
     model = 'STGCN'
-    stations = ['ADDO ELEPHANT PARK']
-    horizons =  [3, 6, 9, 12, 24]
+    # stations = ['ADDO ELEPHANT PARK']
+    # horizons =  [3, 6, 9, 12, 24]
+    stations = config['stations']['default']
+    horizons = config['forecasting_horizons']['default']
     
     for station in stations:
         for horizon in horizons:

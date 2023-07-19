@@ -5,28 +5,26 @@ from sklearn.preprocessing import StandardScaler
 
 ###############################  NEW DATA PRE-PROCESS METHODs THAT WWORK  ###############################
 def data_preprocess_ST_GCN(station):
-    # Step 1: Load and preprocess the data the weather station data
+    # Load and preprocess the weather station data
     station_name = 'data/Weather Station Data/' + station + '.csv'
     weather_data = pd.read_csv(station_name)
     processed_data = weather_data[['Pressure', 'WindDir', 'WindSpeed', 'Humidity', 'Rain', 'Temperature']]
     processed_data = processed_data.astype(float)
-    # Step 2: Adjust weather station nodes and adjacency matrix
+    #Adjust weather station nodes and adjacency matrix
     weather_stations = weather_data['StasName'].unique()
     adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Adjacency Matrix/adj_mx.csv', index_col=0)
     num_nodes = len(weather_stations)
     adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
-    
     return processed_data, adjacency_matrix, num_nodes
 
-
 def data_preprocess_AST_GCN(station):
-    # Step 1: Load and preprocess the data the weather station data
+    # Load and preprocess the weather station data & attribute data 
     station_name = 'data/Weather Station Data/' + station + '.csv'
     weather_data = pd.read_csv(station_name)
     processed_data = weather_data[['Pressure', 'Humidity', 'Rain', 'Temperature']]
     attribute_data = weather_data[['WindDir', 'WindSpeed']]  # Extract attribute data
     processed_data = processed_data.astype(float)
-    # Step 2: Adjust weather station nodes and adjacency matrix
+    # Adjust weather station nodes and adjacency matrix
     weather_stations = weather_data['StasName'].unique()
     adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Adjacency Matrix/adj_mx.csv', index_col=0)
     num_nodes = len(weather_stations)

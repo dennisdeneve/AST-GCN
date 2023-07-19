@@ -4,7 +4,6 @@ from Utils.utils import create_X_Y, min_max, dataSplit, create_file_if_not_exist
 from Model.astgcn import astgcnModel
 from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, sliding_window_AST_GCN
 
-
 def trainASTGCN(config):
     increment = config['increment']['default']
     stations = config['stations']['default']
@@ -27,6 +26,9 @@ def trainASTGCN(config):
             targetFile = f'{folder_path}/Targets/target.csv'
             resultsFile = f'{folder_path}/Predictions/result.csv'
             lossFile = f'{folder_path}/Predictions/loss.csv'
+            actual_vs_predicted_file = f'{folder_path}/Predictions/actual_vs_predicted.csv'
+            # Define the file for the actual vs predicted data
+            create_file_if_not_exists(actual_vs_predicted_file)
             create_file_if_not_exists(targetFile)
             create_file_if_not_exists(resultsFile)
             create_file_if_not_exists(lossFile)
@@ -81,11 +83,20 @@ def trainASTGCN(config):
                 # Making prediction and inverse transforming the predictions.
                 predictions = model.predict(new_data)
                 predictions = scaler.inverse_transform(predictions.reshape(-1, num_nodes * 4))
+                
                 yhat = model.predict(X_test)
                 Y_test = np.expand_dims(Y_test, axis=2)  
                 # Append results and target data 
                 resultsData.append(yhat.reshape(-1,))
                 targetData.append(Y_test.reshape(-1,))
+                
+                # After getting the predictions and actual values
+                actual_vs_predicted_data = pd.DataFrame({
+                    'Actual': Y_test.flatten(),
+                    'Predicted': yhat.flatten()
+                })
+                # Write to the file
+                actual_vs_predicted_data.to_csv(actual_vs_predicted_file, index=False)
             print('AST-GCN training finished on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,
                                                                                                             forecast_len, num_splits)) 
             # Create DataFrames from the lists and save the relevant results to the,
