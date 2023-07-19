@@ -6,12 +6,12 @@ train_st_gcn:
 
 train_ast_gcn:
   type: bool
-  default: true
+  default: false
   help: whether to train AST-GCN model (Attribute-Augmented Spatiotemporal Graph Convolutional Network)
 
 eval_st_gcn:
   type: bool
-  default: false
+  default: true
   help: whether to evaluate ST-GCN model (Spatial-Temporal Graph Convolutional Network)
 
 stations:

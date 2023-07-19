@@ -3,7 +3,7 @@ import yaml
 import argparse
 from Train.stgcn_Train import trainSTGCN as trainSTGCN
 from Train.astgcn_Train import trainASTGCN as trainASTGCN
-from eg_TGCN_eval import evalTGCN as eval
+from eg_STGCN_eval import evalSTGCN as evalSTGCN
 
 def main():
     time_start = time.time()
@@ -28,7 +28,7 @@ def main():
         
     if config['eval_st_gcn']['default']:
         print("************* Starting eval process for the ST-GCN Model ************* ")
-        eval('TGCN')
+        evalSTGCN(config)
         print("*************  Finished eval process for the ST-GCN Model ************* ")
         
     time_end = time.time()
