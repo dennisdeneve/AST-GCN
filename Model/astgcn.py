@@ -5,7 +5,7 @@ from tensorflow.keras.layers import Input, Dense, LSTM, Reshape
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 from Utils.utils import create_X_Y, min_max, dataSplit
-tf.config.experimental_run_functions_eagerly(False)
+tf.config.run_functions_eagerly(False)
 
 # This function creates, compiles, and trains a st-gnn model for temperature forecasting.
 # It first prepares the data by splitting, normalizing, and reshaping it as necessary. 
@@ -13,8 +13,8 @@ tf.config.experimental_run_functions_eagerly(False)
 # The model uses the Adam optimizer and mean squared error as the loss function, and 
 # implements early stopping and model checkpointing during training.
 def astgcnModel(time_steps, num_nodes, adjacency_matrix, 
-                attribute_data, save_File, forecast_len,increment,
-                X_train, Y_train, X_val, Y_val
+                attribute_data, save_File, forecast_len,
+                X_train, Y_train, X_val, Y_val, split
                ):    
     """
     Build and train the ASTGCN model.
@@ -34,13 +34,10 @@ def astgcnModel(time_steps, num_nodes, adjacency_matrix,
     - model: The trained model
     - history: Training history
     """
-   # splitting the processed time series data
-    num_samples = len(attribute_data)
-    train_split = int(num_samples * 0.7)  # 70% of the data for training
-    val_split = train_split + int(num_samples * 0.15)  # 15% of the data for validation
-    train_attribute, val_attribute, test_attribute = dataSplit([train_split, val_split, num_samples], attribute_data)
+    ######### splitting the Attribute data
+    train_attribute, val_attribute, test_attribute = dataSplit(split, attribute_data)
     train_Attribute, val_Attribute, test_Attribute = min_max(train_attribute.values, val_attribute.values, test_attribute.values) 
-    # Creating the X and Y for forecasting (training), validation & testing
+    # Creating the X and Y for attribute forecasting (training), validation & testing
     X_attribute_train, Y_attribute_train = create_X_Y(train_Attribute, time_steps, num_nodes, forecast_len)
     X_val, Y_val = create_X_Y(val_Attribute, time_steps, num_nodes, forecast_len)
     X_test, Y_test = create_X_Y(test_Attribute, time_steps, num_nodes, forecast_len)
@@ -72,12 +69,12 @@ def astgcnModel(time_steps, num_nodes, adjacency_matrix,
                                 mode='min', 
                                 save_freq='epoch')
     callback = [early_stop, checkpoint]            
-    tf.config.run_functions_eagerly(True)
+    ##### Print out sunmary of the model
     model.summary()
-    # Reshape validation data
-    last_column_X = X_val[:, :, :, -1]  # Extract the last column
-    X_val = np.repeat(np.expand_dims(last_column_X, axis=-1), 40, axis=-1)  # Repeat the last column to match (10, 1, 40)
-    last_column_Y = Y_val[:, -1]  # Extract the last column
+    # Reshape X & Y validation data
+    last_column_X = X_val[:, :, :, -1] 
+    X_val = np.repeat(np.expand_dims(last_column_X, axis=-1), 40, axis=-1) 
+    last_column_Y = Y_val[:, -1] 
     Y_val = np.repeat(np.expand_dims(last_column_Y, axis=-1), 40, axis=-1)
     # ########## Training the model
     history = model.fit(X_train, Y_train,

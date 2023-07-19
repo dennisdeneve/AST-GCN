@@ -58,8 +58,8 @@ def trainASTGCN(config):
                 
                 # Getting the model from astgcnModel method and training it.
                 model, history = astgcnModel(time_steps, num_nodes, adjacency_matrix, 
-                                            attribute_data, save_File,forecast_len,increment, 
-                                            X_train, Y_train, X_val, Y_val)
+                                            attribute_data, save_File,forecast_len, 
+                                            X_train, Y_train, X_val, Y_val, split)
                
                 # validation and train loss to dataframe
                 lossData.append([history.history['loss']])

@@ -1,13 +1,9 @@
-#!/usr/bin/env python2
-# -*- coding: utf-8 -*-
+import matplotlib.pyplot as plt
 """
 Created on Fri Apr 27 09:39:22 2018
 
 @author: lhfcitylab
 """
-
-import matplotlib.pyplot as plt
-
 '''
 This method is used to plot the test results and the true labels for all the test data as well as for a single day. 
 '''
@@ -43,7 +39,6 @@ def plot_result(test_result,test_label1,path):
     # Saves the figure as a .jpg file in the path specified.
     plt.savefig(path+'/test_oneday.jpg')
     #    plt.show()
-    
     
 #def plot_error(train_rmse,train_loss,test_rmse,test_acc,test_mae,path):
 def plot_error(train_rmse,train_loss,test_rmse,test_acc,test_mae,test_mape,test_smape,path):
@@ -143,4 +138,3 @@ def plot_error(train_rmse,train_loss,test_rmse,test_acc,test_mae,test_mape,test_
     plt.legend(loc='best',fontsize=10)
     plt.savefig(path+'/test_smape[150:].jpg')
 #    plt.show()
-
