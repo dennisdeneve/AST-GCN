@@ -16,7 +16,7 @@ eval_st_gcn:
 
 eval_ast_gcn:
   type: bool
-  default: true
+  default: false
   help: whether to evaluate AST-GCN model (Spatial-Temporal Graph Convolutional Network)
 
 stations:
