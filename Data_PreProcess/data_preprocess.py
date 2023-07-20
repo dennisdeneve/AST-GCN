@@ -98,31 +98,31 @@ def load_assist_data(station_file, adjacency_file):
     # Return the weather station data and adjacency matrix
     return weather_data, adjacency_matrix
 
-def data_preprocess(config):    
-    noise_name = config['noise_name']['default']
-    data_name = config['dataset']['default']
-    PG =  config['noise_param']['default']
+# def data_preprocess(config):    
+#     noise_name = config['noise_name']['default']
+#     data_name = config['dataset']['default']
+#     PG =  config['noise_param']['default']
     
-    ########## load data #########
-    # if data_name == 'sz':
-    data, adj = load_assist_data('ADDO ELEPHANT PARK.csv', 'adj_mx.csv')
+#     ########## load data #########
+#     # if data_name == 'sz':
+#     data, adj = load_assist_data('ADDO ELEPHANT PARK.csv', 'adj_mx.csv')
     
-    ## Applying different types of noise filter to data
-    if noise_name == 'Gauss':
-        # Generate Gaussian noise using the np.random.normal() function with mean 0 and standard deviation PG
-        Gauss = np.random.normal(0, PG, size=data.shape)
-        noise_Gauss = MaxMinNormalization(Gauss, np.max(Gauss), np.min(Gauss))
-        data = data + noise_Gauss
-        return data 
-    elif noise_name == 'Possion':
-        # Generate Poisson noise using the np.random.poisson() function with mean PG
-        Possion = np.random.poisson(PG, size=data.shape)
-        noise_Possion = MaxMinNormalization(Possion, np.max(Possion), np.min(Possion))
-        data = data + noise_Possion
-        return data 
-    else:
-        # Return the unchanged data
-        return data 
+#     ## Applying different types of noise filter to data
+#     if noise_name == 'Gauss':
+#         # Generate Gaussian noise using the np.random.normal() function with mean 0 and standard deviation PG
+#         Gauss = np.random.normal(0, PG, size=data.shape)
+#         noise_Gauss = MaxMinNormalization(Gauss, np.max(Gauss), np.min(Gauss))
+#         data = data + noise_Gauss
+#         return data 
+#     elif noise_name == 'Possion':
+#         # Generate Poisson noise using the np.random.poisson() function with mean PG
+#         Possion = np.random.poisson(PG, size=data.shape)
+#         noise_Possion = MaxMinNormalization(Possion, np.max(Possion), np.min(Possion))
+#         data = data + noise_Possion
+#         return data 
+#     else:
+#         # Return the unchanged data
+#         return data 
      
 def processing_data(weather_data, adjacency_matrix, time_len, train_rate, seq_len, pre_len, model_name, scheme):
     train_size = int(time_len * train_rate)
@@ -199,12 +199,6 @@ def processing_data(weather_data, adjacency_matrix, time_len, train_rate, seq_le
     testY1 = np.array(testY)
     
     return trainX1, trainY1, testX1, testY1
-
-
-
-
-
-
 
 
 
