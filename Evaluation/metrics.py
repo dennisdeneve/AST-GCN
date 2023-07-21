@@ -2,11 +2,6 @@ import math
 import numpy as np
 import numpy.linalg as la
 from sklearn.metrics import mean_squared_error,mean_absolute_error
-import pandas as pd
-import numpy as np
-from sklearn.metrics import mean_squared_error as mse
-from sklearn.metrics import mean_absolute_error
-from Utils.utils import create_file_if_not_exists
 import math
 
 def SMAPE(actual, predicted):
@@ -31,7 +26,7 @@ def MSE(target, pred):
         mse - returns MSE metric
     """
 
-    return mse(target, pred, squared=True)
+    return mean_squared_error(target, pred, squared=True)
 
 def RMSE(target, pred):
     """
@@ -43,7 +38,7 @@ def RMSE(target, pred):
         root - returns RMSE metric
     """
 
-    root = math.sqrt(mse(target, pred))
+    root = math.sqrt(mean_squared_error(target, pred))
     return root
 
 def MAE(target, pred):

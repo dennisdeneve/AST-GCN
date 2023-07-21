@@ -1,14 +1,6 @@
 import pandas as pd
-from Utils.utils import create_file_if_not_exists
+from Utils.utils import create_file_if_not_exists, get_file_paths
 from Evaluation.metrics import SMAPE, MSE, RMSE, MAE
-
-def get_file_paths(station, horizon, model='ASTGCN'):
-    return {
-        "yhat": f'Results/{model}/{horizon} Hour Forecast/{station}/Predictions/result.csv',
-        "target": f'Results/{model}/{horizon} Hour Forecast/{station}/Targets/target.csv',
-        "metrics": f'Results/{model}/{horizon} Hour Forecast/{station}/Metrics/metrics.txt',
-        "actual_vs_predicted": f'Results/{model}/{horizon} Hour Forecast/{station}/Metrics/actual_vs_predicted.txt'
-    }
 
 def evalASTGCN(config):
     stations = config['stations']['default']

@@ -4,6 +4,14 @@ import numpy as np
 import os
 from sklearn.preprocessing import MinMaxScaler
 
+def get_file_paths(station, horizon, model='ASTGCN'):
+    return {
+        "yhat": f'Results/{model}/{horizon} Hour Forecast/{station}/Predictions/result.csv',
+        "target": f'Results/{model}/{horizon} Hour Forecast/{station}/Targets/target.csv',
+        "metrics": f'Results/{model}/{horizon} Hour Forecast/{station}/Metrics/metrics.txt',
+        "actual_vs_predicted": f'Results/{model}/{horizon} Hour Forecast/{station}/Metrics/actual_vs_predicted.txt'
+    }
+
 def create_file_if_not_exists(file_path):
     # Get the directory from the file path
     directory = os.path.dirname(file_path)
