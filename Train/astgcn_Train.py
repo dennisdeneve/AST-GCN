@@ -3,6 +3,7 @@ import pandas as pd
 from Utils.utils import create_X_Y, min_max, dataSplit, create_file_if_not_exists
 from Model.astgcn import astgcnModel
 from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, sliding_window_AST_GCN
+from Utils.utils import create_file_if_not_exists, generate_execute_file_paths, get_file_paths
 
 def trainASTGCN(config):
     increment = config['increment']['default']
@@ -23,16 +24,8 @@ def trainASTGCN(config):
             targetData = []
             # Initializing the paths to relevant folders
             folder_path = f'Results/ASTGCN/{forecast_len} Hour Forecast/{station}'
-            targetFile = f'{folder_path}/Targets/target.csv'
-            resultsFile = f'{folder_path}/Predictions/result.csv'
-            lossFile = f'{folder_path}/Predictions/loss.csv'
-            actual_vs_predicted_file = f'{folder_path}/Predictions/actual_vs_predicted.csv'
-            # Define the file for the actual vs predicted data
-            create_file_if_not_exists(actual_vs_predicted_file)
-            create_file_if_not_exists(targetFile)
-            create_file_if_not_exists(resultsFile)
-            create_file_if_not_exists(lossFile)
-            
+            targetFile, resultsFile, lossFile, actual_vs_predicted_file = generate_execute_file_paths(folder_path)
+                
             # Applying a sliding window approach to the preprocessed data.
             input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, time_steps, num_nodes)
 
@@ -43,14 +36,8 @@ def trainASTGCN(config):
                 save_File = 'Garage/Final Models/ASTGCN/' + station + '/' + str(forecast_len) + ' Hour Models/Best_Model_' \
                             + str(forecast_len) + '_walk_' + str(k) + '.h5'
                 create_file_if_not_exists(save_File)          
-                # splitting the processed time series data
-                split = [increment[k], increment[k + 1], increment[k + 2]]
-                pre_standardize_train, pre_standardize_validation, pre_standardize_test = dataSplit(split, input_data)
-                # Scaling the data
-                train, validation, test = min_max(pre_standardize_train,
-                                                        pre_standardize_validation,
-                                                        pre_standardize_test) 
-                    
+                # splitting the processed train,val,test data in required splits
+                train, validation, test, split = split_data(input_data, increment,k)
                 # Creating the X and Y for forecasting (training), validation & testing
                 X_train, Y_train = create_X_Y(train, time_steps, num_nodes, forecast_len)
                 X_val, Y_val = create_X_Y(validation, time_steps, num_nodes, forecast_len)
@@ -107,3 +94,9 @@ def trainASTGCN(config):
             lossDF.to_csv(lossFile)
             targetDF.to_csv(targetFile)  
     print("AST-GCN training finished for all stations at all splits ! :)")
+    
+    
+def split_data(input_data, increment,k):
+    splits = [increment[k], increment[k + 1], increment[k + 2]]
+    pre_standardize_train, pre_standardize_validation, pre_standardize_test = dataSplit(splits, input_data)
+    return min_max(pre_standardize_train, pre_standardize_validation, pre_standardize_test, splits)

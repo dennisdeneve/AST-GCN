@@ -4,6 +4,19 @@ import numpy as np
 import os
 from sklearn.preprocessing import MinMaxScaler
 
+
+def generate_execute_file_paths(base_path):#, forecast_len, station):
+    target_path = f'{base_path}/Targets/target.csv'
+    result_path = f'{base_path}/Predictions/result.csv'
+    loss_path = f'{base_path}/Predictions/loss.csv'
+    actual_vs_predicted_path = f'{base_path}/Predictions/actual_vs_predicted.csv'
+
+    # Make sure all paths exist
+    for path in [target_path, result_path, loss_path, actual_vs_predicted_path]:
+        create_file_if_not_exists(path)
+        
+    return target_path, result_path, loss_path, actual_vs_predicted_path
+
 def get_file_paths(station, horizon, model='ASTGCN'):
     return {
         "yhat": f'Results/{model}/{horizon} Hour Forecast/{station}/Predictions/result.csv',
@@ -30,12 +43,12 @@ def dataSplit(split, series):
     test = series[split[1]:split[2]]
     return train, validation, test
 
-def min_max(train, validation, test):
+def min_max(train, validation, test, splits):
     norm = MinMaxScaler().fit(train.reshape(train.shape[0], -1))
     train_data = norm.transform(train.reshape(train.shape[0], -1))
     val_data = norm.transform(validation.reshape(validation.shape[0], -1))
     test_data = norm.transform(test.reshape(test.shape[0], -1))
-    return train_data, val_data, test_data
+    return train_data, val_data, test_data, splits
 
 def create_X_Y(ts: np.array, lag=1, num_nodes=1, n_ahead=1, target_index=0):
     X, Y = [], []

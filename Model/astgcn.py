@@ -36,7 +36,7 @@ def astgcnModel(time_steps, num_nodes, adjacency_matrix,
     """
     ######### splitting the Attribute data
     train_attribute, val_attribute, test_attribute = dataSplit(split, attribute_data)
-    train_Attribute, val_Attribute, test_Attribute = min_max(train_attribute.values, val_attribute.values, test_attribute.values) 
+    train_Attribute, val_Attribute, test_Attribute, split = min_max(train_attribute.values, val_attribute.values, test_attribute.values, split) 
     # Creating the X and Y for attribute forecasting (training), validation & testing
     X_attribute_train, Y_attribute_train = create_X_Y(train_Attribute, time_steps, num_nodes, forecast_len)
     X_val, Y_val = create_X_Y(val_Attribute, time_steps, num_nodes, forecast_len)
