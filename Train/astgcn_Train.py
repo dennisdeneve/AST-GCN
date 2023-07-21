@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 from Utils.utils import create_X_Y, min_max, dataSplit, create_file_if_not_exists
-from Model.astgcn import astgcnModel
+from Model.astgcn import AstGcn
 from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, sliding_window_AST_GCN
 from Utils.utils import create_file_if_not_exists, generate_execute_file_paths, get_file_paths
 
@@ -68,9 +68,16 @@ class ASTGCNTrainer:
         X_train, Y_train = create_X_Y(train, self.time_steps, num_nodes, self.forecast_len)
         X_val, Y_val = create_X_Y(validation, self.time_steps, num_nodes, self.forecast_len)
         X_test, Y_test = create_X_Y(test, self.time_steps, num_nodes, self.forecast_len)
-        model, history = astgcnModel(self.time_steps, num_nodes, adjacency_matrix, 
+        # model, history = astgcnModel(self.time_steps, num_nodes, adjacency_matrix, 
+        #                             attribute_data, save_File, self.forecast_len, 
+        #                             X_train, Y_train, X_val, Y_val, split)
+        # Instantiate the AstGcn class
+        astgcn = AstGcn(self.time_steps, num_nodes, adjacency_matrix, 
                                     attribute_data, save_File, self.forecast_len, 
                                     X_train, Y_train, X_val, Y_val, split)
+        # Train the model by calling the astgcnModel method
+        model, history = astgcn.astgcnModel()
+
         self.lossData.append([history.history['loss']])
         predictions = self.predict(model, num_nodes, scaler)
         yhat = model.predict(X_test)
