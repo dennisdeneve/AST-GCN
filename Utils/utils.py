@@ -76,7 +76,20 @@ def calculate_laplacian(adj):
     adj_normalized = normalize_adj(adj + np.eye(adj.shape[0]))
     return adj_normalized
 
-def calculate_laplacian_astgcn(adj):
+
+def prepare_data_astgcn(split,attribute_data, time_steps, num_nodes, forecast_len):
+    """
+    Split and normalize the attribute data and return the train, validation and test data.
+    """
+    train_attribute, val_attribute, test_attribute = dataSplit(split, attribute_data)
+    train_Attribute, val_Attribute, test_Attribute, split = min_max(train_attribute.values, val_attribute.values, test_attribute.values, split) 
+    X_attribute_train, Y_attribute_train = create_X_Y(train_Attribute, time_steps, num_nodes, forecast_len)
+    X_val, Y_val = create_X_Y(val_Attribute, time_steps, num_nodes, forecast_len)
+    X_test, Y_test = create_X_Y(test_Attribute, time_steps, num_nodes, forecast_len)
+    return X_attribute_train, Y_attribute_train
+    
+
+def calculate_laplacian_astgcn(adj, num_nodes):
     # Calculate the normalized Laplacian matrix
     adj = tf.convert_to_tensor(adj, dtype=tf.float32)
     adj = tf.sparse.reorder(tf.sparse.SparseTensor(indices=tf.where(adj != 0),
@@ -94,6 +107,10 @@ def calculate_laplacian_astgcn(adj):
     
     # Calculate the normalized Laplacian matrix
     laplacian = tf.eye(adj.shape[0]) - tf.matmul(tf.matmul(degree, adj), degree)
+    
+    # Rest of normalization that occured in model method before
+    laplacian = tf.convert_to_tensor(laplacian, dtype=tf.float32)
+    laplacian = tf.reshape(laplacian, [num_nodes, num_nodes])
     
     return laplacian
 

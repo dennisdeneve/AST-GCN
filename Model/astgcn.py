@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from Utils.utils import calculate_laplacian_astgcn
+from Utils.utils import calculate_laplacian_astgcn, prepare_data_astgcn
 from tensorflow.keras.layers import Input, Dense, LSTM, Reshape
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
@@ -42,58 +42,89 @@ class AstGcn:
         self.split = split
 
     def prepare_data(self):
-        """
-        Split and normalize the attribute data and return the train, validation and test data.
-        """
-        train_attribute, val_attribute, test_attribute = dataSplit(self.split, self.attribute_data)
-        train_Attribute, val_Attribute, test_Attribute, split = min_max(train_attribute.values, val_attribute.values, test_attribute.values, self.split) 
-        X_attribute_train, Y_attribute_train = create_X_Y(train_Attribute, self.time_steps, self.num_nodes, self.forecast_len)
-        X_val, Y_val = create_X_Y(val_Attribute, self.time_steps, self.num_nodes, self.forecast_len)
-        X_test, Y_test = create_X_Y(test_Attribute, self.time_steps, self.num_nodes, self.forecast_len)
-        return X_attribute_train, Y_attribute_train
-
-    def normalize_adjacency_matrix(self):
-        """
-        Normalize the adjacency matrix.
-        """
-        adj_normalized = calculate_laplacian_astgcn(self.adjacency_matrix)
-        adj_normalized = tf.convert_to_tensor(adj_normalized, dtype=tf.float32)
-        adj_normalized = tf.reshape(adj_normalized, [self.num_nodes, self.num_nodes])
-        return adj_normalized
-
-    def astgcnModel(self):
-        """
-        This method prepares data, constructs and trains the ASTGCN model, while monitoring 
-        validation loss for early stopping and best model checkpointing. 
-        
-        It reshapes the validation data to match model output shape and finally returns the 
-        trained model along with its training history.
-        
-        Returns:
-        - model: The trained model
-        - history: Training history
-        """
-        X_attribute_train, Y_attribute_train = self.prepare_data()
-        adj_normalized = self.normalize_adjacency_matrix()
+        """Prepare the data for model training."""
+        return prepare_data_astgcn(self.split,self.attribute_data, self.time_steps, self.num_nodes, self.forecast_len)
+    
+    def build_model(self, X_attribute_train, Y_attribute_train, adj_normalized):
+        """Build and return the initialized AST-GCN model."""
         inputs = Input(shape=(self.time_steps, 1, self.X_train.shape[-1]))
         x = GcnCell(63, adj_normalized, X_attribute_train, Y_attribute_train)(inputs)
-        x = Reshape((-1, self.time_steps * self.num_nodes ))(x)
+        x = Reshape((-1, self.time_steps * self.num_nodes))(x)
         x = LSTM(64, activation='relu', return_sequences=False)(x)
         outputs = Dense(40, activation='linear')(x)
         model = Model(inputs=inputs, outputs=outputs)
+        return model
+
+    def compile_and_train_model(self, model):
+        """Compile and train the model, using early stopping and model checkpointing."""
         model.compile(optimizer='adam', loss='mean_squared_error')
         early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=5)
         checkpoint = ModelCheckpoint(filepath=self.save_File, save_weights_only=False, monitor='val_loss', verbose=1, save_best_only=True, mode='min', save_freq='epoch')
         callback = [early_stop, checkpoint]
-        model.summary()
-        last_column_X = self.X_val[:, :, :, -1] 
-        self.X_val = np.repeat(np.expand_dims(last_column_X, axis=-1), 40, axis=-1) 
-        last_column_Y = self.Y_val[:, -1] 
-        self.Y_val = np.repeat(np.expand_dims(last_column_Y, axis=-1), 40, axis=-1)
         history = model.fit(self.X_train, self.Y_train, validation_data=(self.X_val, self.Y_val), batch_size=196, epochs=1, verbose=1, callbacks=callback)
-        y_pred = model.predict(self.X_val)
-        return model, history
+        return history
+
+    def predict(self, model):
+        """Use the model to make predictions on the validation set."""
+        return model.predict(self.X_val)
     
+    def astgcnModel(self):
+        """Orchestrate the preparation of data, building and training of model, and prediction."""
+        X_attribute_train, Y_attribute_train = self.prepare_data()
+        adj_normalized = calculate_laplacian_astgcn(self.adjacency_matrix, self.num_nodes)
+        model = self.build_model(X_attribute_train, Y_attribute_train, adj_normalized)
+        model.summary()
+        history = self.compile_and_train_model(model)
+        y_pred = self.predict(model)
+        return model, history
+
+    # def astgcnModel(self):
+    #     """
+    #     This method prepares data, constructs and trains the ASTGCN model, while monitoring 
+    #     validation loss for early stopping and best model checkpointing. 
+        
+    #     It reshapes the validation data to match model output shape and finally returns the 
+    #     trained model along with its training history.
+        
+    #     Returns:
+    #     - model: The trained model
+    #     - history: Training history
+    #     """
+    #     X_attribute_train, Y_attribute_train = prepare_data_astgcn(self.split,self.attribute_data, self.time_steps, self.num_nodes, self.forecast_len)
+    #     adj_normalized = calculate_laplacian_astgcn(self.adjacency_matrix, self.num_nodes)
+    #      # Define the AST-GCN model architecture
+    #     inputs = Input(shape=(self.time_steps, 1, self.X_train.shape[-1]))
+    #     x = GcnCell(63, adj_normalized, X_attribute_train, Y_attribute_train)(inputs)
+    #     x = Reshape((-1, self.time_steps * self.num_nodes ))(x)
+    #     x = LSTM(64, activation='relu', return_sequences=False)(x)
+    #     outputs = Dense(40, activation='linear')(x)
+    #     model = Model(inputs=inputs, outputs=outputs)
+    #     # Compile and train the T-GCN model
+    #     model.compile(optimizer='adam', loss='mean_squared_error')
+    #     # Define callbacks for early stopping and model checkpointing
+    #     early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=5)
+    #     checkpoint = ModelCheckpoint(filepath=self.save_File, 
+    #                                  save_weights_only=False, 
+    #                                  monitor='val_loss', verbose=1, 
+    #                                  save_best_only=True, mode='min', 
+    #                                  save_freq='epoch')
+    #     callback = [early_stop, checkpoint]
+    #     #Print out model summary statistics
+    #     model.summary()
+    #     # Reshape X & Y validation data
+    #     last_column_X = self.X_val[:, :, :, -1] 
+    #     self.X_val = np.repeat(np.expand_dims(last_column_X, axis=-1), 40, axis=-1) 
+    #     last_column_Y = self.Y_val[:, -1] 
+    #     self.Y_val = np.repeat(np.expand_dims(last_column_Y, axis=-1), 40, axis=-1)
+    #     ############# Training the model
+    #     history = model.fit(self.X_train, self.Y_train, 
+    #                         validation_data=(self.X_val, self.Y_val), 
+    #                         batch_size=196, epochs=1,
+    #                         verbose=1, callbacks=callback)
+    #     y_pred = model.predict(self.X_val)
+    #     return model, history
+    
+
 
 class GcnCell(tf.keras.layers.Layer):
     """
