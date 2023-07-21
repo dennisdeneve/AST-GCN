@@ -21,11 +21,7 @@ def main():
     ##############################  Training  ##################################
     if config['train_ast_gcn']['default']:
         print("************* Starting training process for the AST-GCN Model ************* ")
-        # trainASTGCN(config)
-        # Then you would create an instance of your trainer with the config
         trainer = ASTGCNTrainer(config)
-
-        # And finally, call the `train` method on your instance to start the training
         trainer.train()
         print("*************  Finished training process for the AST-GCN Model ************* ")
     

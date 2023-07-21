@@ -5,11 +5,9 @@ from Model.astgcn import astgcnModel
 from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, sliding_window_AST_GCN
 from Utils.utils import create_file_if_not_exists, generate_execute_file_paths, get_file_paths
 
-
-
-
 class ASTGCNTrainer:
     def __init__(self, config):
+        """Initializes an ASTGCNTrainer with a given configuration."""
         self.config = config
         self.station = None
         self.forecast_len = None
@@ -20,11 +18,13 @@ class ASTGCNTrainer:
         self.time_steps =config['time_steps']['default']
 
     def train(self):
+        """Trains the model for all forecast lengths and stations."""
         for self.forecast_len in self.forecasting_horizons:
             for self.station in self.stations:
                 self.train_single_station()
 
     def train_single_station(self):
+        """Trains the model for a single station."""
         print('********** AST-GCN model training started at ' + self.station) 
         print('------------------  Attributed-Augemented logic included ---------------------')
         processed_data, attribute_data, adjacency_matrix, num_nodes = self.data_preprocess()
@@ -32,19 +32,23 @@ class ASTGCNTrainer:
         self.train_model(processed_data, attribute_data, adjacency_matrix, num_nodes)
 
     def data_preprocess(self):
+        """Preprocesses the data for a single station."""
         return data_preprocess_AST_GCN(self.station)
     
     def split_data(self,input_data, increment,k):
+        """Splits the input data into training, validation, and test sets."""
         splits = [increment[k], increment[k + 1], increment[k + 2]]
         pre_standardize_train, pre_standardize_validation, pre_standardize_test = dataSplit(splits, input_data)
         return min_max(pre_standardize_train, pre_standardize_validation, pre_standardize_test, splits)
 
     def initialize_results(self):
+        """Initializes the results, loss, and target data lists."""
         self.lossData = []
         self.resultsData = []
         self.targetData = []
 
     def train_model(self, processed_data, attribute_data, adjacency_matrix, num_nodes):
+        """Trains the model with the preprocessed data, attribute data, and adjacency matrix."""
         folder_path = f'Results/ASTGCN/{self.forecast_len} Hour Forecast/{self.station}'
         self.targetFile, self.resultsFile, self.lossFile, self.actual_vs_predicted_file = generate_execute_file_paths(folder_path)
 
@@ -55,6 +59,7 @@ class ASTGCNTrainer:
             self.save_results()
 
     def train_single_split(self, k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler):
+        """Trains the model for a single split of the data."""
         print('ASTGCN training started on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, self.station, self.forecast_len, self.num_splits))
         save_File = 'Garage/Final Models/ASTGCN/' + self.station + '/' + str(self.forecast_len) + ' Hour Models/Best_Model_' \
                     + str(self.forecast_len) + '_walk_' + str(k) + '.h5'
@@ -75,11 +80,11 @@ class ASTGCNTrainer:
         self.save_actual_vs_predicted(Y_test, yhat)
         
     def predict(self, model, num_nodes, scaler):
+        """Generates a prediction from the model."""
         new_data = self.create_new_data()
         new_data = pd.concat([new_data]*10, axis=1)
         new_data = new_data[sorted(new_data.columns)]
         new_data = new_data.astype(float)
-        
         new_data = np.expand_dims(new_data, axis=0)  # Add batch dimension
         new_data = np.expand_dims(new_data, axis=2)  # Add node dimension
         new_data = new_data.reshape(-1, self.time_steps, 1, 40)
@@ -87,6 +92,7 @@ class ASTGCNTrainer:
         return scaler.inverse_transform(predictions.reshape(-1, num_nodes * 4))
 
     def create_new_data(self):
+        """Creates a new DataFrame with default data for prediction."""
         return pd.DataFrame({
                     'Pressure': [997.5] * self.time_steps,
                     'WindDir': [100.0] * self.time_steps,
@@ -97,6 +103,7 @@ class ASTGCNTrainer:
                 })
 
     def save_actual_vs_predicted(self, Y_test, yhat):
+        """Saves the actual vs predicted comparison to a CSV file."""
         actual_vs_predicted_data = pd.DataFrame({
             'Actual': Y_test.flatten(),
             'Predicted': yhat.flatten()
@@ -104,12 +111,14 @@ class ASTGCNTrainer:
         actual_vs_predicted_data.to_csv(self.actual_vs_predicted_file, index=False)
 
     def save_results(self):
+        """Saves the results, loss, and target data to CSV files."""
         resultsDF = pd.DataFrame(np.concatenate(self.resultsData))
         lossDF = pd.DataFrame(self.lossData)
         targetDF = pd.DataFrame(np.concatenate(self.targetData))
         resultsDF.to_csv(self.resultsFile)
         lossDF.to_csv(self.lossFile)
         targetDF.to_csv(self.targetFile)
+
 
 ######################## Old way was 1 big train method
 # def trainASTGCN(config):
