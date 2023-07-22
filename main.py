@@ -3,7 +3,6 @@ import yaml
 import argparse
 from Train.stgcn_Train import trainSTGCN as trainSTGCN
 from Train.astgcn_Train import ASTGCNTrainer
-# from Train.astgcn_Train import trainASTGCN as trainASTGCN
 from Evaluation.STGCN_eval import evalSTGCN as evalSTGCN
 from Evaluation.ASTGCN_eval import evalASTGCN as evalASTGCN
 

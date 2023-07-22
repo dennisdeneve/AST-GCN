@@ -61,16 +61,13 @@ class ASTGCNTrainer:
     def train_single_split(self, k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler):
         """Trains the model for a single split of the data."""
         print('ASTGCN training started on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, self.station, self.forecast_len, self.num_splits))
-        save_File = 'Garage/Final Models/ASTGCN/' + self.station + '/' + str(self.forecast_len) + ' Hour Models/Best_Model_' \
-                    + str(self.forecast_len) + '_walk_' + str(k) + '.h5'
+        save_File = f'Garage/Final Models/ASTGCN/{self.station}/{str(self.forecast_len)}Hour Models/Best_Model_\
+                    {str(self.forecast_len)}_walk_{str(k)}.h5'
         create_file_if_not_exists(save_File) 
         train, validation, test, split = self.split_data(input_data, self.increment,k)
         X_train, Y_train = create_X_Y(train, self.time_steps, num_nodes, self.forecast_len)
         X_val, Y_val = create_X_Y(validation, self.time_steps, num_nodes, self.forecast_len)
         X_test, Y_test = create_X_Y(test, self.time_steps, num_nodes, self.forecast_len)
-        # model, history = astgcnModel(self.time_steps, num_nodes, adjacency_matrix, 
-        #                             attribute_data, save_File, self.forecast_len, 
-        #                             X_train, Y_train, X_val, Y_val, split)
         # Instantiate the AstGcn class
         astgcn = AstGcn(self.time_steps, num_nodes, adjacency_matrix, 
                                     attribute_data, save_File, self.forecast_len, 

@@ -4,7 +4,6 @@ import numpy as np
 import os
 from sklearn.preprocessing import MinMaxScaler
 
-
 def generate_execute_file_paths(base_path):#, forecast_len, station):
     target_path = f'{base_path}/Targets/target.csv'
     result_path = f'{base_path}/Predictions/result.csv'
