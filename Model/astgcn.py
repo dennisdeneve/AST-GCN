@@ -12,7 +12,7 @@ class AstGcn:
     of an ASTGCN model for temperature forecasting.
     """
     def __init__(self, time_steps, num_nodes, adjacency_matrix, attribute_data, save_File, forecast_len,
-                 X_train, Y_train, X_val, Y_val, split):
+                 X_train, Y_train, X_val, Y_val, split, batch_size,epochs):
         """
         Initialize AstGcn with the provided parameters.
         Parameters:
@@ -34,11 +34,13 @@ class AstGcn:
         self.attribute_data = attribute_data
         self.save_File = save_File
         self.forecast_len = forecast_len
+        self.batch_size = batch_size
         self.X_train = X_train
         self.Y_train = Y_train
         self.X_val = X_val
         self.Y_val = Y_val
         self.split = split
+        self.epochs = epochs
 
     def build_model(self, X_attribute_train, Y_attribute_train, adj_normalized):
         """Build and return the initialized AST-GCN model."""
@@ -54,9 +56,12 @@ class AstGcn:
         """Compile and train the model, using early stopping and model checkpointing."""
         model.compile(optimizer='adam', loss='mean_squared_error')
         early_stop = EarlyStopping(monitor='val_loss', mode='min', patience=5)
-        checkpoint = ModelCheckpoint(filepath=self.save_File, save_weights_only=False, monitor='val_loss', verbose=1, save_best_only=True, mode='min', save_freq='epoch')
+        checkpoint = ModelCheckpoint(filepath=self.save_File, save_weights_only=False, 
+                                     monitor='val_loss', verbose=1, save_best_only=True,
+                                     mode='min', save_freq='epoch')
         callback = [early_stop, checkpoint]
-        history = model.fit(self.X_train, self.Y_train, validation_data=(self.X_val, self.Y_val), batch_size=196, epochs=1, verbose=1, callbacks=callback)
+        history = model.fit(self.X_train, self.Y_train, validation_data=(self.X_val, self.Y_val), 
+                            batch_size=self.batch_size, epochs=self.epochs, verbose=1, callbacks=callback)
         return history
 
     def predict(self, model):

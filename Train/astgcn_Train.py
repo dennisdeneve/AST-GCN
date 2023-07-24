@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
-from Utils.utils import create_X_Y, min_max, dataSplit, create_file_if_not_exists
 from Model.astgcn import AstGcn
+from Utils.utils import create_X_Y, min_max, dataSplit, create_file_if_not_exists
 from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, sliding_window_AST_GCN
 from Utils.utils import create_file_if_not_exists, generate_execute_file_paths, get_file_paths
 
@@ -16,6 +16,10 @@ class ASTGCNTrainer:
         self.forecasting_horizons = config['forecasting_horizons']['default']
         self.num_splits =config['num_splits']['default']
         self.time_steps =config['time_steps']['default']
+        self.single_time_step =config['single_time_step']['default']
+        self.multiple_time_steps =config['single_time_step']['default']
+        self.batch_size = config['batch_size']['default']
+        self.epochs = config['training_epoch']['default']
 
     def train(self):
         """Trains the model for all forecast lengths and stations."""
@@ -26,11 +30,12 @@ class ASTGCNTrainer:
     def train_single_station(self):
         """Trains the model for a single station."""
         print('********** AST-GCN model training started at ' + self.station) 
-        print('------------------  Attributed-Augemented logic included ---------------------')
+        print('------------------  Attribute-Augemented logic included ---------------------')
+        # print('Predicting a single time step ahead.')
         processed_data, attribute_data, adjacency_matrix, num_nodes = self.data_preprocess()
         self.initialize_results()
         self.train_model(processed_data, attribute_data, adjacency_matrix, num_nodes)
-
+            
     def data_preprocess(self):
         """Preprocesses the data for a single station."""
         return data_preprocess_AST_GCN(self.station)
@@ -51,12 +56,19 @@ class ASTGCNTrainer:
         """Trains the model with the preprocessed data, attribute data, and adjacency matrix."""
         folder_path = f'Results/ASTGCN/{self.forecast_len} Hour Forecast/{self.station}'
         self.targetFile, self.resultsFile, self.lossFile, self.actual_vs_predicted_file = generate_execute_file_paths(folder_path)
-
-        input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, self.time_steps, num_nodes)
-
-        for k in range(self.num_splits):
-            self.train_single_split(k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler)
-            self.save_results()
+        
+        if self.single_time_step:
+            print("Training for single step forecasting...")
+            input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, self.time_steps, num_nodes)
+            for k in range(self.num_splits):
+                self.train_single_split(k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler)
+                self.save_results()
+        else:
+            print("Training for multi-step forecasting...")
+            input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, self.time_steps, num_nodes)
+            for k in range(self.num_splits):
+                self.train_single_split(k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler)
+                self.save_results()
 
     def train_single_split(self, k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler):
         """Trains the model for a single split of the data."""
@@ -71,7 +83,7 @@ class ASTGCNTrainer:
         # Instantiate the AstGcn class
         astgcn = AstGcn(self.time_steps, num_nodes, adjacency_matrix, 
                                     attribute_data, save_File, self.forecast_len, 
-                                    X_train, Y_train, X_val, Y_val, split)
+                                    X_train, Y_train, X_val, Y_val, split, self.batch_size,self.epochs)
         # Train the model by calling the astgcnModel method
         model, history = astgcn.astgcnModel()
 

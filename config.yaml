@@ -12,10 +12,15 @@ train_st_gcn:
   type: bool
   default: false
   help: whether to train ST-GCN model (Spatial-Temporal Graph Convolutional Network)
-eval_st_gcn:
+
+single_time_step:
+  type: bool
+  default: true
+  help: training AST-GCN model to predict 1 time step ahead. For example, given data at time steps [t-3, t-2, t-1], your model will predict data at time step t.
+multiple_time_steps:
   type: bool
   default: false
-  help: whether to evaluate ST-GCN model (Spatial-Temporal Graph Convolutional Network)
+  help: training AST-GCN model to predict more than one step ahead. The window size represents the number of future steps to be predicted.
 
 stations:
   type: str[]
@@ -54,7 +59,7 @@ n_stations:
 
 num_splits:
   type: int
-  default: 7
+  default: 1
   help: number of splits in walk-forward validation
 
 time_steps:
@@ -79,7 +84,7 @@ learning_rate:
 
 training_epoch:
   type: int
-  default : 2
+  default : 1
   help :  Number of epochs to train. 
   
 gru_units : 
@@ -104,7 +109,7 @@ train_rate :
       
 batch_size :
   type :  int  
-  default : 64 
+  default : 196 #WF is 64 
   help :  batch size. 
       
 dataset :

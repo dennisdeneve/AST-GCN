@@ -29,12 +29,7 @@ def main():
         trainSTGCN(config)
         print("*************  Finished training process for the ST-GCN Model ************* ")
     
-    ##############################  Evaluation  ##################################
-    if config['eval_st_gcn']['default']:
-        print("************* Starting eval process for the ST-GCN Model ************* ")
-        evalSTGCN(config)
-        print("*************  Finished eval process for the ST-GCN Model ************* ")
-        
+    ##############################  Evaluation  ##################################     
     if config['eval_ast_gcn']['default']:
         print("************* Starting eval process for the AST-GCN Model ************* ")
         evalASTGCN(config)
