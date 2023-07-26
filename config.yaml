@@ -15,12 +15,12 @@ train_st_gcn:
 
 single_time_step:
   type: bool
-  default: false
-  help: training AST-GCN model to predict 1 time step ahead. For example, given data at time steps [t-3, t-2, t-1], your model will predict data at time step t.
+  default: true
+  help: training/evaluating AST-GCN model to predict 1 time step ahead. For example, given data at time steps [t-3, t-2, t-1], your model will predict data at time step t.
 multiple_time_steps:
   type: bool
   default: false
-  help: training AST-GCN model to predict more than one step ahead. The window size represents the number of future steps to be predicted.
+  help: training/evaluating AST-GCN model to predict more than one step ahead. The window size represents the number of future steps to be predicted.
 
 forecasting_horizons:
   type: int[]
