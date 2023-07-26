@@ -15,12 +15,22 @@ train_st_gcn:
 
 single_time_step:
   type: bool
-  default: true
+  default: false
   help: training AST-GCN model to predict 1 time step ahead. For example, given data at time steps [t-3, t-2, t-1], your model will predict data at time step t.
 multiple_time_steps:
   type: bool
   default: false
   help: training AST-GCN model to predict more than one step ahead. The window size represents the number of future steps to be predicted.
+
+forecasting_horizons:
+  type: int[]
+  default: [3, 6, 9, 12, 24]
+  help: forecast horizons for multi time step forecasting
+
+forecasting_horizon:
+  type: int
+  default: [3]
+  help: forecast horizon for single time step forecasting
 
 stations:
   type: str[]
@@ -46,11 +56,6 @@ increment:
     8784 is one year's worth of data, the next step is 3 months of data, and the following step is also 3 months of 
     data, resulting in rolling walk-forward validation where the train size increases each increment, with the 
     validation and test sets each being 3 months' worth of data.
-
-forecasting_horizons:
-  type: int[]
-  default: [3, 6, 9, 12, 24]
-  help: forecast horizons
 
 n_stations:
   type: int

@@ -14,24 +14,36 @@ class ASTGCNTrainer:
         self.increment = config['increment']['default']
         self.stations = config['stations']['default']
         self.forecasting_horizons = config['forecasting_horizons']['default']
+        self.forecasting_horizon = config['forecasting_horizon']['default']
         self.num_splits =config['num_splits']['default']
         self.time_steps =config['time_steps']['default']
         self.single_time_step =config['single_time_step']['default']
-        self.multiple_time_steps =config['single_time_step']['default']
+        self.multiple_time_steps =config['multiple_time_steps']['default']
         self.batch_size = config['batch_size']['default']
         self.epochs = config['training_epoch']['default']
 
     def train(self):
-        """Trains the model for all forecast lengths and stations."""
-        for self.forecast_len in self.forecasting_horizons:
-            for self.station in self.stations:
-                self.train_single_station()
+        """Trains the model for all forecast lengths and stations. Either set to single or multiple 
+        time steps to forecast"""
+        if self.single_time_step:
+            print("Training for single-step forecasting...")
+            print("Horizon currently set to " + str(self.forecasting_horizon));
+            for self.forecast_len in self.forecasting_horizon:
+                for self.station in self.stations:
+                    self.train_single_station()
+        if self.multiple_time_steps:
+            print("Training for multi-step forecasting...")
+            print("Horizons currently set to " + str(self.forecasting_horizons));
+            for self.forecast_len in self.forecasting_horizons:
+                for self.station in self.stations:
+                    self.train_single_station()
+        else:
+            print("Please set a configuration setting to true for either single time step or multiple time steps forecasting for the AST-GCN model")
 
     def train_single_station(self):
         """Trains the model for a single station."""
         print('********** AST-GCN model training started at ' + self.station) 
         print('------------------  Attribute-Augemented logic included ---------------------')
-        # print('Predicting a single time step ahead.')
         processed_data, attribute_data, adjacency_matrix, num_nodes = self.data_preprocess()
         self.initialize_results()
         self.train_model(processed_data, attribute_data, adjacency_matrix, num_nodes)
@@ -56,19 +68,10 @@ class ASTGCNTrainer:
         """Trains the model with the preprocessed data, attribute data, and adjacency matrix."""
         folder_path = f'Results/ASTGCN/{self.forecast_len} Hour Forecast/{self.station}'
         self.targetFile, self.resultsFile, self.lossFile, self.actual_vs_predicted_file = generate_execute_file_paths(folder_path)
-        
-        if self.single_time_step:
-            print("Training for single step forecasting...")
-            input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, self.time_steps, num_nodes)
-            for k in range(self.num_splits):
-                self.train_single_split(k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler)
-                self.save_results()
-        else:
-            print("Training for multi-step forecasting...")
-            input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, self.time_steps, num_nodes)
-            for k in range(self.num_splits):
-                self.train_single_split(k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler)
-                self.save_results()
+        input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, self.time_steps, num_nodes)
+        for k in range(self.num_splits):
+            self.train_single_split(k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler)
+            self.save_results()
 
     def train_single_split(self, k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler):
         """Trains the model for a single split of the data."""
@@ -134,6 +137,8 @@ class ASTGCNTrainer:
         resultsDF.to_csv(self.resultsFile)
         lossDF.to_csv(self.lossFile)
         targetDF.to_csv(self.targetFile)
+
+
 
 
 ######################## Old way was 1 big train method
