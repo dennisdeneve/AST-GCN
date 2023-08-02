@@ -1,6 +1,5 @@
 import pandas as pd
-from astgcnUtils.astgcnUtils import create_file_if_not_exists, get_file_paths
-from astgcnUtils.metrics import SMAPE, MSE, RMSE, MAE
+import astgcnUtils.astgcnUtils as utils
 
 def evalASTGCN(config):
     stations = config['stations']['default']
@@ -15,10 +14,10 @@ def evalASTGCN(config):
         for station in stations:
             for horizon in single_horizon:
                 print(f'ASTGCN evaluation started at {station} for the horizon of {horizon}')
-                paths = get_file_paths(station, horizon)
+                paths = utils.get_file_paths(station, horizon)
                 try:
                     for path in paths.values():
-                        create_file_if_not_exists(path)
+                        utils.create_file_if_not_exists(path)
                     # Read the predictions and targets from the CSV files
                     preds = pd.read_csv(paths['yhat']).drop(['Unnamed: 0'], axis=1)
                     targets = pd.read_csv(paths['target']).drop(['Unnamed: 0'], axis=1)
@@ -27,10 +26,10 @@ def evalASTGCN(config):
                     actual_vs_predicted.to_csv(paths['actual_vs_predicted'], index=False)
                     # Calculate the metrics &  Write the metrics to the files
                     metrics = {
-                        'MSE': MSE(targets.values, preds.values),
-                        'RMSE': RMSE(targets.values, preds.values),
-                        'MAE': MAE(targets.values, preds.values),
-                        'SMAPE': SMAPE(targets.values, preds.values)
+                        'MSE': utils.MSE(targets.values, preds.values),
+                        'RMSE': utils.RMSE(targets.values, preds.values),
+                        'MAE': utils.MAE(targets.values, preds.values),
+                        'SMAPE': utils.SMAPE(targets.values, preds.values)
                     }
                     with open(paths['metrics'], 'w') as metric_file:
                         for name, value in metrics.items():
@@ -50,10 +49,10 @@ def evalASTGCN(config):
         for station in stations:
             for horizon in horizons:
                 print(f'ASTGCN evaluation started at {station} for the horizon of {horizon}')
-                paths = get_file_paths(station, horizon)
+                paths = utils.utils.get_file_paths(station, horizon)
                 try:
                     for path in paths.values():
-                        create_file_if_not_exists(path)
+                        utils.create_file_if_not_exists(path)
                     # Read the predictions and targets from the CSV files
                     preds = pd.read_csv(paths['yhat']).drop(['Unnamed: 0'], axis=1)
                     targets = pd.read_csv(paths['target']).drop(['Unnamed: 0'], axis=1)
@@ -62,10 +61,10 @@ def evalASTGCN(config):
                     actual_vs_predicted.to_csv(paths['actual_vs_predicted'], index=False)
                     # Calculate the metrics &  Write the metrics to the files
                     metrics = {
-                        'MSE': MSE(targets.values, preds.values),
-                        'RMSE': RMSE(targets.values, preds.values),
-                        'MAE': MAE(targets.values, preds.values),
-                        'SMAPE': SMAPE(targets.values, preds.values)
+                        'MSE': utils.MSE(targets.values, preds.values),
+                        'RMSE': utils.RMSE(targets.values, preds.values),
+                        'MAE': utils.MAE(targets.values, preds.values),
+                        'SMAPE': utils.SMAPE(targets.values, preds.values)
                     }
                     with open(paths['metrics'], 'w') as metric_file:
                         for name, value in metrics.items():

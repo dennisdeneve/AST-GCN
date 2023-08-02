@@ -4,8 +4,7 @@ from Model.astgcn import AstGcn
 import astgcnUtils.astgcnUtils as utils
 from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, sliding_window_AST_GCN
 
-
-class astgcnExecute:
+class astgcnHPO:
     def __init__(self, config):
         """Initializes an ASTGCNTrainer with a given configuration."""
         self.config = config
@@ -22,6 +21,72 @@ class astgcnExecute:
         self.batch_size = config['batch_size']['default']
         self.epochs = config['training_epoch']['default']
 
+    def hpo(self):
+          pass
+#         increment = self.sharedConfig['increment']['default']
+#         data = self.prepare_data() 
+#         textFile = 'HPO/Best Parameters/GWN/configurations.txt'
+#         f = open(textFile, 'w')
+
+#         # best_mse = np.inf
+
+#         num_splits = 2
+#         for i in range(self.sharedConfig['num_configs']['default']):
+#             config = util.generateRandomParameters(self.gwnConfig)
+#             valid_config = True
+#             targets = []
+#             preds = []
+
+#             for k in range(num_splits):
+#                 modelFile = 'Garage/HPO Models/GWN/model_split_' + str(k)
+#                 n_stations= int(self.sharedConfig['n_stations']['default'])
+#                 data_sets, split = self.split_data(data, increment, num_splits, n_stations)
+#                 # split = [increment[k] * n_stations, increment[k + 1] * n_stations, increment[k + 2] * n_stations]
+#                 # data_sets = [data[:split[0]], data[split[0]:split[1]], data[split[1]:split[2]]]
+                
+#                 adj_matrix = util.load_adj(adjFile=self.gwnConfig['adjdata']['default'], 
+#                                            adjtype=self.gwnConfig['adjtype']['default'])
+#                 supports = [torch.tensor(i).to(self.gwnConfig['device']['default']) for i in adj_matrix]
+
+#                 if self.gwnConfig['randomadj']['default']:
+#                     adjinit = None
+#                 else:
+#                     adjinit = supports[0]
+#                 if self.gwnConfig['aptonly']['default']:
+#                     supports = None
+
+#                 torch.manual_seed(0)
+
+#                 try:
+#                     print('This is the HPO configuration: \n',
+#                           'Dropout - ', self.gwnConfig['dropout']['default'], '\n',
+#                           'Lag_length - ', self.gwnConfig['lag_length']['default'], '\n',
+#                           'Hidden Units - ', self.gwnConfig['nhid']['default'], '\n',
+#                           'Layers - ', self.gwnConfig['num_layers']['default'], '\n',
+#                           'Batch Size - ', self.gwnConfig['batch_size']['default'], '\n',
+#                           'Epochs - ', self.gwnConfig['epochs']['default'])
+
+#                     output, real = self.train_model(self.sharedConfig, self.gwnConfig, data_sets, split, supports, adjinit, modelFile)
+#                 except Warning:
+#                     valid_config = False
+#                     break
+
+#                 targets.append(np.array(real).flatten())
+#                 preds.append(np.array(output).flatten())
+
+#             if valid_config:
+#                 mse = metrics.mse(np.concatenate(np.array(targets, dtype=object)),
+#                                   np.concatenate(np.array(preds, dtype=object)))
+#                 if mse < best_mse:
+#                     best_cfg = config
+#                     best_mse = mse
+
+#         f.write('This is the best configuration ' + str(best_cfg) + ' with an MSE of ' + str(best_mse))
+#         f.close()
+#         self.model_logger.info('gwnHPO : GWN best configuration found = ' +str(best_cfg) + ' with an MSE of ' + str(best_mse))
+#         self.model_logger.info('gwnHPO : GWN HPO finished at all stations :)')
+        
+        
     def train(self):
         """Trains the model for all forecast lengths and stations. Either set to single or multiple 
         time steps to forecast"""

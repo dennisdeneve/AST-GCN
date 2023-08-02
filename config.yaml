@@ -3,10 +3,14 @@ train_ast_gcn:
   type: bool
   default: false
   help: whether to train AST-GCN model (Attribute-Augmented Spatiotemporal Graph Convolutional Network)
+hpo_ast_gcn: 
+  type: bool
+  default: false
+  help: whether to perform HPO AST-GCN model 
 eval_ast_gcn:
   type: bool
   default: true
-  help: whether to evaluate AST-GCN model (Spatial-Temporal Graph Convolutional Network)
+  help: whether to evaluate AST-GCN model 
 
 single_time_step:
   type: bool

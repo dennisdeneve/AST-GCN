@@ -1,4 +1,4 @@
-from Evaluation.metrics import MaxMinNormalization
+from astgcnUtils.metrics import MaxMinNormalization
 import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler

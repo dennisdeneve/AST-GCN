@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-from Utils.utils import calculate_laplacian_astgcn, prepare_data_astgcn
+from astgcnUtils.astgcnUtils import calculate_laplacian_astgcn, prepare_data_astgcn
 from tensorflow.keras.layers import Input, Dense, LSTM, Reshape
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping

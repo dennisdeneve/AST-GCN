@@ -2,7 +2,8 @@ import time
 import yaml
 import argparse
 from Execute.astgcnExecute import astgcnExecute
-from Evaluation.ASTGCN_eval import evalASTGCN as evalASTGCN
+from HPO.astgcnHPO import astgcnHPO as astgcnHPO
+from Logs.ASTGCN_eval import evalASTGCN as evalASTGCN
 
 def main():
     time_start = time.time()
@@ -20,6 +21,13 @@ def main():
         trainer = astgcnExecute(config)
         trainer.train()
         print("*************  Finished training process for the AST-GCN Model ************* ")
+    
+    ##############################  HPO  ##################################     
+    if config['hpo_ast_gcn']['default']:
+        print("************* Starting HPO process for the AST-GCN Model ************* ")
+        hpo = astgcnHPO(config)
+        hpo.hpo()
+        print("*************  Finished HPO process for the AST-GCN Model ************* ")
     
     ##############################  Evaluation  ##################################     
     if config['eval_ast_gcn']['default']:
