@@ -2,6 +2,7 @@ import tensorflow as tf
 import scipy.sparse as sp
 import numpy as np
 import os
+import random
 from sklearn.preprocessing import MinMaxScaler
 
 def generate_execute_file_paths(base_path):#, forecast_len, station):
@@ -207,32 +208,18 @@ def MAE(target, pred):
     return mean_absolute_error(target, pred)
 
 
-# Old metrics file used
-# def metrics(a, b):
-#     """
-#     Calculate evaluation metrics for comparing actual values 'a' and predicted values 'b'.
-#     a: actual values
-#     b: predicted values
-#     """
-#     # RMSE and MAE calculations
-#     rmse = math.sqrt(mean_squared_error(a, b))
-#     mae = mean_absolute_error(a, b)
-    
-#     # MAPE calculation
-#     mape = np.zeros_like(a)
-#     idx = a != 0
-#     mape[idx] = np.abs((a[idx] - b[idx]) / a[idx]) * 100
-    
-#     # SMAPE calculation
-#     smape = np.zeros_like(a)
-#     idx = (a != 0) & (b != 0)
-#     smape[idx] = np.abs(a[idx] - b[idx]) / ((np.abs(a[idx]) + np.abs(b[idx])) / 2) * 100
-    
-#     F_norm = la.norm(a - b, 'fro') / la.norm(a, 'fro')
-#     r2 = 1 - ((a - b) ** 2).sum() / ((a - a.mean()) ** 2).sum()
-#     var = 1 - (np.var(a - b)) / np.var(a)
-    
-#     return rmse, mae, np.mean(mape), np.mean(smape), 1 - F_norm, r2, var
+def generateRandomParameters(config):
+    # pass
+    batch_size = [32,64, 128]
+    epochs = [30, 40, 50, 60]
+
+    batch = batch_size[random.randint(0,len(batch_size)-1)]
+    epoch = epochs[random.randint(0,len(epochs)-1)]
+
+    config['batch_size']['default'] = batch
+    config['training_epoch']['default'] = epoch
+
+    return [batch, epoch]
 
 ### Perturbation Analysis
 def MaxMinNormalization(x,Max,Min):

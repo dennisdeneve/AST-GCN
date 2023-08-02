@@ -4,6 +4,7 @@ from sklearn.utils import shuffle
 from sklearn.preprocessing import MinMaxScaler
 from numpy import random
 
+
 def create_dataset(station):
     """
     Creates a dataset from the original weather station data

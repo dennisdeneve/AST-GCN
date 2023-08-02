@@ -6,293 +6,116 @@ from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, sliding_win
 
 class astgcnHPO:
     def __init__(self, config):
-        """Initializes an ASTGCNTrainer with a given configuration."""
         self.config = config
-        self.station = None
-        self.forecast_len = None
-        self.increment = config['increment']['default']
-        self.stations = config['stations']['default']
-        self.forecasting_horizons = config['forecasting_horizons']['default']
-        self.forecasting_horizon = config['forecasting_horizon']['default']
-        self.num_splits =config['num_splits']['default']
-        self.time_steps =config['time_steps']['default']
-        self.single_time_step =config['single_time_step']['default']
-        self.multiple_time_steps =config['multiple_time_steps']['default']
-        self.batch_size = config['batch_size']['default']
-        self.epochs = config['training_epoch']['default']
 
     def hpo(self):
-          pass
-#         increment = self.sharedConfig['increment']['default']
-#         data = self.prepare_data() 
-#         textFile = 'HPO/Best Parameters/GWN/configurations.txt'
-#         f = open(textFile, 'w')
+        increment = self.config['increment']['default']
+        stations = self.config['stations']['default']
+        forecasting_horizons = self.config['forecasting_horizons']['default']
+        num_splits = self.config['num_splits']['default']
+        time_steps = self.config['time_steps']['default']
+        batch_size = self.config['batch_size']['default']
+        epochs = self.config['training_epoch']['default']
 
-#         # best_mse = np.inf
-
-#         num_splits = 2
-#         for i in range(self.sharedConfig['num_configs']['default']):
-#             config = util.generateRandomParameters(self.gwnConfig)
-#             valid_config = True
-#             targets = []
-#             preds = []
-
-#             for k in range(num_splits):
-#                 modelFile = 'Garage/HPO Models/GWN/model_split_' + str(k)
-#                 n_stations= int(self.sharedConfig['n_stations']['default'])
-#                 data_sets, split = self.split_data(data, increment, num_splits, n_stations)
-#                 # split = [increment[k] * n_stations, increment[k + 1] * n_stations, increment[k + 2] * n_stations]
-#                 # data_sets = [data[:split[0]], data[split[0]:split[1]], data[split[1]:split[2]]]
+        for forecast_len in forecasting_horizons:
+            for station in stations:
+                print('********** AST-GCN model HPO started at ' + station)
                 
-#                 adj_matrix = util.load_adj(adjFile=self.gwnConfig['adjdata']['default'], 
-#                                            adjtype=self.gwnConfig['adjtype']['default'])
-#                 supports = [torch.tensor(i).to(self.gwnConfig['device']['default']) for i in adj_matrix]
+                processed_data, attribute_data, adjacency_matrix, num_nodes = data_preprocess_AST_GCN(station)
+                lossData = []
+                resultsData = []
+                targetData = []
 
-#                 if self.gwnConfig['randomadj']['default']:
-#                     adjinit = None
-#                 else:
-#                     adjinit = supports[0]
-#                 if self.gwnConfig['aptonly']['default']:
-#                     supports = None
+                folder_path = f'Results/ASTGCN/{forecast_len} Hour Forecast/{station}'
+                targetFile, resultsFile, lossFile, actual_vs_predicted_file = utils.generate_execute_file_paths(folder_path)
+                input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, time_steps, num_nodes)
 
-#                 torch.manual_seed(0)
-
-#                 try:
-#                     print('This is the HPO configuration: \n',
-#                           'Dropout - ', self.gwnConfig['dropout']['default'], '\n',
-#                           'Lag_length - ', self.gwnConfig['lag_length']['default'], '\n',
-#                           'Hidden Units - ', self.gwnConfig['nhid']['default'], '\n',
-#                           'Layers - ', self.gwnConfig['num_layers']['default'], '\n',
-#                           'Batch Size - ', self.gwnConfig['batch_size']['default'], '\n',
-#                           'Epochs - ', self.gwnConfig['epochs']['default'])
-
-#                     output, real = self.train_model(self.sharedConfig, self.gwnConfig, data_sets, split, supports, adjinit, modelFile)
-#                 except Warning:
-#                     valid_config = False
-#                     break
-
-#                 targets.append(np.array(real).flatten())
-#                 preds.append(np.array(output).flatten())
-
-#             if valid_config:
-#                 mse = metrics.mse(np.concatenate(np.array(targets, dtype=object)),
-#                                   np.concatenate(np.array(preds, dtype=object)))
-#                 if mse < best_mse:
-#                     best_cfg = config
-#                     best_mse = mse
-
-#         f.write('This is the best configuration ' + str(best_cfg) + ' with an MSE of ' + str(best_mse))
-#         f.close()
-#         self.model_logger.info('gwnHPO : GWN best configuration found = ' +str(best_cfg) + ' with an MSE of ' + str(best_mse))
-#         self.model_logger.info('gwnHPO : GWN HPO finished at all stations :)')
-        
-        
-    def train(self):
-        """Trains the model for all forecast lengths and stations. Either set to single or multiple 
-        time steps to forecast"""
-        if self.single_time_step:
-            print("Training for single-step forecasting...")
-            print("Horizon currently set to " + str(self.forecasting_horizon));
-            for self.forecast_len in self.forecasting_horizon:
-                for self.station in self.stations:
-                    self.train_single_station()
-        if self.multiple_time_steps:
-            print("Training for multi-step forecasting...")
-            print("Horizons currently set to " + str(self.forecasting_horizons));
-            for self.forecast_len in self.forecasting_horizons:
-                for self.station in self.stations:
-                    self.train_single_station()
-        else:
-            print("Please set a configuration setting to true for either single time step or multiple time steps forecasting for the AST-GCN model")
-
-    def train_single_station(self):
-        """Trains the model for a single station."""
-        print('********** AST-GCN model training started at ' + self.station) 
-        print('------------------  Attribute-Augemented logic included ---------------------')
-        processed_data, attribute_data, adjacency_matrix, num_nodes = self.data_preprocess()
-        self.initialize_results()
-        self.train_model(processed_data, attribute_data, adjacency_matrix, num_nodes)
-            
-    def data_preprocess(self):
-        """Preprocesses the data for a single station."""
-        return data_preprocess_AST_GCN(self.station)
-    
-    def split_data(self,input_data, increment,k):
-        """Splits the input data into training, validation, and test sets."""
-        splits = [increment[k], increment[k + 1], increment[k + 2]]
-        pre_standardize_train, pre_standardize_validation, pre_standardize_test = utils.dataSplit(splits, input_data)
-        return utils.min_max(pre_standardize_train, pre_standardize_validation, pre_standardize_test, splits)
-
-    def initialize_results(self):
-        """Initializes the results, loss, and target data lists."""
-        self.lossData = []
-        self.resultsData = []
-        self.targetData = []
-
-    def train_model(self, processed_data, attribute_data, adjacency_matrix, num_nodes):
-        """Trains the model with the preprocessed data, attribute data, and adjacency matrix."""
-        folder_path = f'Results/ASTGCN/{self.forecast_len} Hour Forecast/{self.station}'
-        self.targetFile, self.resultsFile, self.lossFile, self.actual_vs_predicted_file = utils.generate_execute_file_paths(folder_path)
-        input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, self.time_steps, num_nodes)
-        for k in range(self.num_splits):
-            self.train_single_split(k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler)
-            self.save_results()
-
-    def train_single_split(self, k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler):
-        """Trains the model for a single split of the data."""
-        print('ASTGCN training started on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, self.station, self.forecast_len, self.num_splits))
-        save_File = f'Garage/Final Models/ASTGCN/{self.station}/{str(self.forecast_len)}Hour Models/Best_Model_\
-                    {str(self.forecast_len)}_walk_{str(k)}.h5'
-        utils.create_file_if_not_exists(save_File) 
-        train, validation, test, split = self.split_data(input_data, self.increment,k)
-        X_train, Y_train = utils.create_X_Y(train, self.time_steps, num_nodes, self.forecast_len)
-        X_val, Y_val = utils.create_X_Y(validation, self.time_steps, num_nodes, self.forecast_len)
-        X_test, Y_test = utils.create_X_Y(test, self.time_steps, num_nodes, self.forecast_len)
-        # Instantiate the AstGcn class
-        astgcn = AstGcn(self.time_steps, num_nodes, adjacency_matrix, 
-                                    attribute_data, save_File, self.forecast_len, 
-                                    X_train, Y_train, X_val, Y_val, split, self.batch_size,self.epochs)
-        # Train the model by calling the astgcnModel method
-        model, history = astgcn.astgcnModel()
-
-        self.lossData.append([history.history['loss']])
-        predictions = self.predict(model, num_nodes, scaler)
-        yhat = model.predict(X_test)
-        Y_test = np.expand_dims(Y_test, axis=2)  
-        self.resultsData.append(yhat.reshape(-1,))
-        self.targetData.append(Y_test.reshape(-1,))
-        self.save_actual_vs_predicted(Y_test, yhat)
-        
-    def predict(self, model, num_nodes, scaler):
-        """Generates a prediction from the model."""
-        new_data = self.create_new_data()
-        new_data = pd.concat([new_data]*10, axis=1)
-        new_data = new_data[sorted(new_data.columns)]
-        new_data = new_data.astype(float)
-        new_data = np.expand_dims(new_data, axis=0)  # Add batch dimension
-        new_data = np.expand_dims(new_data, axis=2)  # Add node dimension
-        new_data = new_data.reshape(-1, self.time_steps, 1, 40)
-        predictions = model.predict(new_data)
-        return scaler.inverse_transform(predictions.reshape(-1, num_nodes * 4))
-
-    def create_new_data(self):
-        """Creates a new DataFrame with default data for prediction."""
-        return pd.DataFrame({
-                    'Pressure': [997.5] * self.time_steps,
-                    'WindDir': [100.0] * self.time_steps,
-                    'WindSpeed': [2.0] * self.time_steps,
-                    'Humidity': [70.0] * self.time_steps,
-                    'Rain': [0.0] * self.time_steps,
-                    'Temperature': [25.5] * self.time_steps
-                })
-
-    def save_actual_vs_predicted(self, Y_test, yhat):
-        """Saves the actual vs predicted comparison to a CSV file."""
-        actual_vs_predicted_data = pd.DataFrame({
-            'Actual': Y_test.flatten(),
-            'Predicted': yhat.flatten()
-        })
-        actual_vs_predicted_data.to_csv(self.actual_vs_predicted_file, index=False)
-
-    def save_results(self):
-        """Saves the results, loss, and target data to CSV files."""
-        resultsDF = pd.DataFrame(np.concatenate(self.resultsData))
-        lossDF = pd.DataFrame(self.lossData)
-        targetDF = pd.DataFrame(np.concatenate(self.targetData))
-        resultsDF.to_csv(self.resultsFile)
-        lossDF.to_csv(self.lossFile)
-        targetDF.to_csv(self.targetFile)
-
-
-
-
-######################## Old way was 1 big train method
-# def trainASTGCN(config):
-#     increment = config['increment']['default']
-#     stations = config['stations']['default']
-#     forecasting_horizons = config['forecasting_horizons']['default']
-#     num_splits =config['num_splits']['default']
-#     time_steps =config['time_steps']['default']
-    
-#     for forecast_len in forecasting_horizons:
-#         for station in stations:
-#             print('********** AST-GCN model training started at ' + station) 
-#             print('------------------  Attributed-Augemented logic included ---------------------')
-#             # Preprocessing the data specific to the AST-GCN model.
-#             processed_data, attribute_data, adjacency_matrix, num_nodes = data_preprocess_AST_GCN(station)
-#             # Initializing the loss, results and target data lists
-#             lossData = []
-#             resultsData = []
-#             targetData = []
-#             # Initializing the paths to relevant folders
-#             folder_path = f'Results/ASTGCN/{forecast_len} Hour Forecast/{station}'
-#             targetFile, resultsFile, lossFile, actual_vs_predicted_file = generate_execute_file_paths(folder_path)
-                
-#             # Applying a sliding window approach to the preprocessed data.
-#             input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, time_steps, num_nodes)
-
-#             for k in range(num_splits):
-#                 print('ASTGCN training started on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,
-#                                                                                                             forecast_len, num_splits))
-                
-#                 save_File = 'Garage/Final Models/ASTGCN/' + station + '/' + str(forecast_len) + ' Hour Models/Best_Model_' \
-#                             + str(forecast_len) + '_walk_' + str(k) + '.h5'
-#                 create_file_if_not_exists(save_File)          
-#                 # splitting the processed train,val,test data in required splits
-#                 train, validation, test, split = split_data(input_data, increment,k)
-#                 # Creating the X and Y for forecasting (training), validation & testing
-#                 X_train, Y_train = create_X_Y(train, time_steps, num_nodes, forecast_len)
-#                 X_val, Y_val = create_X_Y(validation, time_steps, num_nodes, forecast_len)
-#                 X_test, Y_test = create_X_Y(test, time_steps, num_nodes, forecast_len)
-                
-#                 # Getting the model from astgcnModel method and training it.
-#                 model, history = astgcnModel(time_steps, num_nodes, adjacency_matrix, 
-#                                             attribute_data, save_File,forecast_len, 
-#                                             X_train, Y_train, X_val, Y_val, split)
                
-#                 # validation and train loss to dataframe
-#                 lossData.append([history.history['loss']])
+                textFile = 'HPO/Best Parameters/AST-GCN/configurations.txt'
+                f = open(textFile, 'w')
+                best_mse = np.inf
+
+                num_splits = 1
+                for i in range(self.config['num_configs']['default']):
+                    config = utils.generateRandomParameters(self.config)
+                    valid_config = True
+                    targets = []
+                    preds = []
                 
-#                 # Use the trained model for predictions
-#                 new_data = pd.DataFrame({
-#                     'Pressure': [997.5] * time_steps,
-#                     'WindDir': [100.0] * time_steps,
-#                     'WindSpeed': [2.0] * time_steps,
-#                     'Humidity': [70.0] * time_steps,
-#                     'Rain': [0.0] * time_steps,
-#                     'Temperature': [25.5] * time_steps
-# #                 })
-#                 new_data = pd.concat([new_data]*10, axis=1)
-#                 new_data = new_data[sorted(new_data.columns)]
-#                 new_data = new_data.astype(float)
-#                 new_data = np.expand_dims(new_data, axis=0)  # Add batch dimension
-#                 new_data = np.expand_dims(new_data, axis=2)  # Add node dimension
-#                 new_data = new_data.reshape(-1, time_steps, 1, 40)
+                    for k in range(num_splits):
+                        print('ASTGCN training started on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k + 1, station, forecast_len, num_splits))
+                        save_File = f'Garage/Final Models/ASTGCN/{station}/{str(forecast_len)}Hour Models/Best_Model_' + \
+                                    f'{str(forecast_len)}_walk_{str(k)}.h5'
+                        utils.create_file_if_not_exists(save_File)
+                        splits = [increment[k], increment[k + 1], increment[k + 2]]
+                        pre_standardize_train, pre_standardize_validation, pre_standardize_test = utils.dataSplit(splits, input_data)
+                        train, validation, test, split = utils.min_max(pre_standardize_train, pre_standardize_validation,
+                                                                    pre_standardize_test, splits)
+                        X_train, Y_train = utils.create_X_Y(train, time_steps, num_nodes, forecast_len)
+                        X_val, Y_val = utils.create_X_Y(validation, time_steps, num_nodes, forecast_len)
+                        X_test, Y_test = utils.create_X_Y(test, time_steps, num_nodes, forecast_len)
+                        
+                        try:
+                            print('This is the HPO configuration: \n',
+                                'Batch Size - ', self.config['batch_size']['default'], '\n',
+                                'Epochs - ', self.config['training_epoch']['default'])
+                            
+                            # Instantiation and training
+                            astgcn = AstGcn(time_steps, num_nodes, adjacency_matrix,
+                                            attribute_data, save_File, forecast_len,
+                                            X_train, Y_train, X_val, Y_val, split, 
+                                            self.config['batch_size']['default'], self.config['training_epoch']['default'])
+                            model, history = astgcn.astgcnModel()
+                            lossData.append([history.history['loss']])
+                            # Prediction
+                            new_data = pd.DataFrame({
+                                'Pressure': [997.5] * time_steps,
+                                'WindDir': [100.0] * time_steps,
+                                'WindSpeed': [2.0] * time_steps,
+                                'Humidity': [70.0] * time_steps,
+                                'Rain': [0.0] * time_steps,
+                                'Temperature': [25.5] * time_steps
+                            })
+                            new_data = pd.concat([new_data] * 10, axis=1)
+                            new_data = new_data[sorted(new_data.columns)]
+                            new_data = new_data.astype(float)
+                            new_data = np.expand_dims(new_data, axis=0)  # Add batch dimension
+                            new_data = np.expand_dims(new_data, axis=2)  # Add node dimension
+                            new_data = new_data.reshape(-1, time_steps, 1, 40)
+                            predictions = model.predict(new_data)
+                            predictions = scaler.inverse_transform(predictions.reshape(-1, num_nodes * 4))
+                            yhat = model.predict(X_test)
+                            Y_test = np.expand_dims(Y_test, axis=2)
+                            resultsData.append(yhat.reshape(-1,))
+                            targetData.append(Y_test.reshape(-1,))
+                            # Save results
+                            actual_vs_predicted_data = pd.DataFrame({
+                                'Actual': Y_test.flatten(),
+                                'Predicted': yhat.flatten()
+                            })
+                            actual_vs_predicted_data.to_csv(actual_vs_predicted_file, index=False)
+                            resultsDF = pd.DataFrame(np.concatenate(resultsData))
+                            lossDF = pd.DataFrame(lossData)
+                            targetDF = pd.DataFrame(np.concatenate(targetData))
+
+                        except Warning:
+                            valid_config = False
+                            break
+
+                        targets.append(np.array(targetData).flatten())
+                        preds.append(np.array(resultsData).flatten())
+
+                    if valid_config:
+                        mse = utils.MSE(np.concatenate(np.array(targets, dtype=object)),
+                                        np.concatenate(np.array(preds, dtype=object)))
+                        if mse < best_mse:
+                            print("current mse {mse} is better than previous mse {best_mse}")
+                            best_cfg = config
+                            best_mse = mse
+
+                f.write('This is the best configuration ' + str(best_cfg) + ' with an MSE of ' + str(best_mse))
+                f.close()
+                # self.model_logger.info('gwnHPO : GWN best configuration found = ' +str(best_cfg) + ' with an MSE of ' + str(best_mse))
+                # self.model_logger.info('gwnHPO : GWN HPO finished at all stations :)')
                 
-#                 # Making prediction and inverse transforming the predictions.
-#                 predictions = model.predict(new_data)
-#                 predictions = scaler.inverse_transform(predictions.reshape(-1, num_nodes * 4))
-                
-#                 yhat = model.predict(X_test)
-#                 Y_test = np.expand_dims(Y_test, axis=2)  
-#                 # Append results and target data 
-#                 resultsData.append(yhat.reshape(-1,))
-#                 targetData.append(Y_test.reshape(-1,))
-                
-#                 # After getting the predictions and actual values
-#                 actual_vs_predicted_data = pd.DataFrame({
-#                     'Actual': Y_test.flatten(),
-#                     'Predicted': yhat.flatten()
-#                 })
-#                 # Write to the file
-#                 actual_vs_predicted_data.to_csv(actual_vs_predicted_file, index=False)
-#             print('AST-GCN training finished on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, station,
-#                                                                                                             forecast_len, num_splits)) 
-#             # Create DataFrames from the lists and save the relevant results to the,
-#             resultsDF = pd.DataFrame(np.concatenate(resultsData))
-#             lossDF = pd.DataFrame(lossData)
-#             targetDF = pd.DataFrame(np.concatenate(targetData))
-#             resultsDF.to_csv(resultsFile)
-#             lossDF.to_csv(lossFile)
-#             targetDF.to_csv(targetFile)  
-#     print("AST-GCN training finished for all stations at all splits ! :)")
+                print('HPO finished at {station}')

@@ -4,7 +4,6 @@ from Model.astgcn import AstGcn
 import astgcnUtils.astgcnUtils as utils
 from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, sliding_window_AST_GCN
 
-
 class astgcnExecute:
     def __init__(self, config):
         """Initializes an ASTGCNTrainer with a given configuration."""
@@ -137,6 +136,7 @@ class astgcnExecute:
         resultsDF.to_csv(self.resultsFile)
         lossDF.to_csv(self.lossFile)
         targetDF.to_csv(self.targetFile)
+
 
 
 

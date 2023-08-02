@@ -5,8 +5,6 @@ def evalASTGCN(config):
     stations = config['stations']['default']
     horizons = config['forecasting_horizons']['default']
     single_horizon = config['forecasting_horizon']['default']
-    single_time_step =config['single_time_step']['default']
-    multiple_time_steps =config['multiple_time_steps']['default']
     
     if config['single_time_step']['default']:
         print("Evaluating for single-step forecasting...")
@@ -77,7 +75,6 @@ def evalASTGCN(config):
                 except Exception as e:
                     print(f'Error! Unable to read data or write metrics: {str(e)}')
         print('Finished evaluation of ASTGCN error metrics for all stations.')
-    
     
     else:
         print("Please set a configuration setting to true for either single time step or multiple time steps forecasting for the AST-GCN model")

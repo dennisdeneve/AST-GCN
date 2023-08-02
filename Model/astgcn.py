@@ -45,6 +45,8 @@ class AstGcn:
     def build_model(self, X_attribute_train, Y_attribute_train, adj_normalized):
         """Build and return the initialized AST-GCN model."""
         inputs = Input(shape=(self.time_steps, 1, self.X_train.shape[-1]))
+        # x = GcnCell(64, adj_normalized, X_attribute_train, Y_attribute_train)(inputs)
+        # Old way used 63 units
         x = GcnCell(63, adj_normalized, X_attribute_train, Y_attribute_train)(inputs)
         x = Reshape((-1, self.time_steps * self.num_nodes))(x)
         x = LSTM(64, activation='relu', return_sequences=False)(x)
