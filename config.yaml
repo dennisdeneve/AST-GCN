@@ -1,17 +1,12 @@
 ############################ General data configurations ############################
 train_ast_gcn:
   type: bool
-  default: true
+  default: false
   help: whether to train AST-GCN model (Attribute-Augmented Spatiotemporal Graph Convolutional Network)
 eval_ast_gcn:
   type: bool
-  default: false
+  default: true
   help: whether to evaluate AST-GCN model (Spatial-Temporal Graph Convolutional Network)
-
-train_st_gcn:
-  type: bool
-  default: false
-  help: whether to train ST-GCN model (Spatial-Temporal Graph Convolutional Network)
 
 single_time_step:
   type: bool

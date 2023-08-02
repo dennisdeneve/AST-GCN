@@ -1,17 +1,14 @@
 import time
 import yaml
 import argparse
-from Train.stgcn_Train import trainSTGCN as trainSTGCN
-from Train.astgcn_Train import ASTGCNTrainer
-from Evaluation.STGCN_eval import evalSTGCN as evalSTGCN
+from Execute.astgcnExecute import astgcnExecute
 from Evaluation.ASTGCN_eval import evalASTGCN as evalASTGCN
 
 def main():
     time_start = time.time()
     print("Timer started for experimentation! :p ")
-
     parser = argparse.ArgumentParser()
-    parser.add_argument('--config', type=str, help='path to YAML config file')
+    parser.add_argument('--mode', type=str, help='path to YAML config file')
     args = parser.parse_args()
     # Load the YAML config file which contains all the required settings for platform
     with open('config.yaml', 'r') as file:
@@ -20,14 +17,9 @@ def main():
     ##############################  Training  ##################################
     if config['train_ast_gcn']['default']:
         print("************* Starting training process for the AST-GCN Model ************* ")
-        trainer = ASTGCNTrainer(config)
+        trainer = astgcnExecute(config)
         trainer.train()
         print("*************  Finished training process for the AST-GCN Model ************* ")
-    
-    if config['train_st_gcn']['default']:
-        print("************* Starting training process for the ST-GCN Model ************* ")
-        trainSTGCN(config)
-        print("*************  Finished training process for the ST-GCN Model ************* ")
     
     ##############################  Evaluation  ##################################     
     if config['eval_ast_gcn']['default']:

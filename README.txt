@@ -21,7 +21,7 @@ python3 main.py --model_name ast-gcn
 
 
 ## new
-python3 main.py --config config.yaml
+python3 main.py --mode config.yaml
 
 -> --model_name flag can be set amongst other options specified in the main.py program, model
 can be either tgcn or ast-gcn
