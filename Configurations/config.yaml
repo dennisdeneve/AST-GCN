@@ -28,7 +28,7 @@ vis:
   help: whether to create visualisations
 modelVis:
   type: str
-  default: AST-GCN
+  default: ASTGCN
   help: the model to visualise
 horizonVis:
   type: str

@@ -13,7 +13,6 @@ source myenv/bin/activate
 
 pip install -r requirements.txt
 
-
 4) Run the main.py program with the initial command 
 
 ## old 
