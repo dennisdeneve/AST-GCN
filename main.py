@@ -4,7 +4,7 @@ import argparse
 from Execute.astgcnExecute import astgcnExecute
 from HPO.astgcnHPO import astgcnHPO as astgcnHPO
 from Logs.ASTGCN_eval import evalASTGCN as evalASTGCN
-# import Visualisations.visualise as visualise
+import Visualisations.visualise as visualise
 
 def main():
     time_start = time.time()
@@ -37,8 +37,8 @@ def main():
         print("*************  Finished eval process for the AST-GCN Model ************* ")
         
     # ############ Visualisations #############
-    # if config['vis']['default'] :
-    #     visualise.plot(config)
+    if config['vis']['default'] :
+        visualise.plot(config)
         
     time_end = time.time()
     print("Time taken for the experimental pipeline :@ " ,time_end-time_start,'s')

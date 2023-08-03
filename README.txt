@@ -7,7 +7,7 @@ python -m venv env_name
 
 2) Activate that virtual environment
 
-source env_name/bin/activate
+source myenv/bin/activate
 
 3) Install the dependencies listed in the 'requirements.txt' file
 
