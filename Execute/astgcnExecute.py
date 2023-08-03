@@ -25,13 +25,13 @@ class astgcnExecute:
         """Trains the model for all forecast lengths and stations. Either set to single or multiple 
         time steps to forecast"""
         if self.single_time_step:
-            print("Training for single-step forecasting...")
+            print("Executing experimentation process for single-step forecasting...")
             print("Horizon currently set to " + str(self.forecasting_horizon));
             for self.forecast_len in self.forecasting_horizon:
                 for self.station in self.stations:
                     self.train_single_station()
         if self.multiple_time_steps:
-            print("Training for multi-step forecasting...")
+            print("Executing experimentation process for multi-step forecasting...")
             print("Horizons currently set to " + str(self.forecasting_horizons));
             for self.forecast_len in self.forecasting_horizons:
                 for self.station in self.stations:

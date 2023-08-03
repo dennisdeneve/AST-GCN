@@ -1,11 +1,11 @@
-############################ General data configurations ############################
+############################ Experimentation configurations ############################
 train_ast_gcn:
   type: bool
-  default: false
+  default: true
   help: whether to train AST-GCN model (Attribute-Augmented Spatiotemporal Graph Convolutional Network)
 hpo_ast_gcn: 
   type: bool
-  default: true
+  default: false
   help: whether to perform HPO AST-GCN model 
 eval_ast_gcn:
   type: bool
@@ -20,6 +20,31 @@ multiple_time_steps:
   type: bool
   default: false
   help: training/evaluating AST-GCN model to predict more than one step ahead. The window size represents the number of future steps to be predicted.
+
+############################ Visualise Adjacency Matrix ############################
+vis:
+  type: bool
+  default: false
+  help: whether to create visualisations
+modelVis:
+  type: str
+  default: AST-GCN
+  help: the model to visualise
+horizonVis:
+  type: str
+  default: "3"
+  help: the horizon to visualise
+splitVis:
+  type: str
+  default: 2
+  help: the split number up to which visualisations should be generated for
+locations_path:
+  type: str
+  default: 'data/Locations/Locations.csv'
+  help: path to csv containg station coordinates
+
+
+############################ General data configurations ############################
 
 forecasting_horizons:
   type: int[]
