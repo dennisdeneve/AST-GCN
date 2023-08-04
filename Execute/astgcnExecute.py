@@ -154,11 +154,11 @@ class astgcnExecute:
         """Saves the results, loss, target data, and the actual vs predicted comparison to CSV files."""
         
         # Save Results, Loss, and Target
-        self.logger.info(f'Saving the results of predictions to' + str(self.resultsFile))
+        self.logger.info(f'Saving the results of predictions to ' + str(self.resultsFile))
         print(f'Saving the results of predictions to' + str(self.resultsFile) )
         resultsDF = pd.DataFrame(np.concatenate(self.resultsData))
-        self.logger.info(f'Saving the targets of actual values to' + str(self.targetFile) )
-        print(f'Saving the targets of actual values to' + str(self.targetFile) )
+        self.logger.info(f'Saving the targets of actual values to ' + str(self.targetFile) )
+        print(f'Saving the targets of actual values to ' + str(self.targetFile) )
         targetDF = pd.DataFrame(np.concatenate(self.targetData))
         self.logger.info(f'Saving the loss to' + str(self.lossFile) )
         print(f'Saving the loss to' + str(self.lossFile) )
@@ -188,6 +188,8 @@ class astgcnExecute:
             self.logger.info(f'Date {date} Index {index} - Actual: {row["Actual"]}, Predicted: {row["Predicted"]}')
         
         actual_vs_predicted_data.to_csv(self.actual_vs_predicted_file, index=False)
+        
+        
         
         
     def save_actual_vs_predicted(self, Y_test, yhat):
