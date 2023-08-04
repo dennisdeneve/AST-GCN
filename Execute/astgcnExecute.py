@@ -8,7 +8,6 @@ import Logs.findingDate as findingDate
 import io
 from contextlib import redirect_stdout
 
-
 class astgcnExecute:
     def __init__(self, config):
         """Initializes an ASTGCNTrainer with a given configuration."""
