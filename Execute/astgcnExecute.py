@@ -25,9 +25,7 @@ class astgcnExecute:
         self.multiple_time_steps =config['multiple_time_steps']['default']
         self.batch_size = config['batch_size']['default']
         self.epochs = config['training_epoch']['default']
-        
         self.logger = None
-        
 
     def train(self):
         """Trains the model for all forecast lengths and stations. Either set to single or multiple 
@@ -50,12 +48,8 @@ class astgcnExecute:
             print("Please set a configuration setting to true for either single time step or multiple time steps forecasting for the AST-GCN model")
 
     def train_single_station(self):
-        """Trains the model for a single station."""
-               
+        """Trains the model for a single station."""     
         self.logger.info(f'********** AST-GCN model training started at {self.station}')
-        
-        # print('********** AST-GCN model training started at ' + self.station) 
-        # print('------------------  Attribute-Augemented logic included ---------------------')
         processed_data, attribute_data, adjacency_matrix, num_nodes = self.data_preprocess()
         self.initialize_results()   
         self.train_model(processed_data, attribute_data, adjacency_matrix, num_nodes)
