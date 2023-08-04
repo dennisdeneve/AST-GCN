@@ -3,6 +3,11 @@ import pandas as pd
 from Model.astgcn import AstGcn
 import astgcnUtils.astgcnUtils as utils
 from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, sliding_window_AST_GCN
+from Logs.modelLogger import modelLogger 
+import Logs.findingDate as findingDate
+import io
+from contextlib import redirect_stdout
+
 
 class astgcnExecute:
     def __init__(self, config):
@@ -20,6 +25,9 @@ class astgcnExecute:
         self.multiple_time_steps =config['multiple_time_steps']['default']
         self.batch_size = config['batch_size']['default']
         self.epochs = config['training_epoch']['default']
+        
+        self.logger = None
+        
 
     def train(self):
         """Trains the model for all forecast lengths and stations. Either set to single or multiple 
@@ -29,26 +37,32 @@ class astgcnExecute:
             print("Horizon currently set to " + str(self.forecasting_horizon));
             for self.forecast_len in self.forecasting_horizon:
                 for self.station in self.stations:
+                    self.logger = modelLogger('ASTGCN', str(self.station),'Logs/astgcn/Train/' + str(self.forecast_len) + ' Hour Forecast/'+str(self.station) +'/'+'astgcn_' + str(self.station) + '.txt' , log_enabled=True)
                     self.train_single_station()
         if self.multiple_time_steps:
             print("Executing experimentation process for multi-step forecasting...")
             print("Horizons currently set to " + str(self.forecasting_horizons));
             for self.forecast_len in self.forecasting_horizons:
                 for self.station in self.stations:
+                    self.logger = modelLogger('ASTGCN', self.station,'Logs/astgcn/Train/' + self.forecast_len + ' Hour Forecast/'+self.station +'/'+'astgcn_' + self.station + '.txt' , log_enabled=True)
                     self.train_single_station()
         else:
             print("Please set a configuration setting to true for either single time step or multiple time steps forecasting for the AST-GCN model")
 
     def train_single_station(self):
         """Trains the model for a single station."""
-        print('********** AST-GCN model training started at ' + self.station) 
-        print('------------------  Attribute-Augemented logic included ---------------------')
+               
+        self.logger.info(f'********** AST-GCN model training started at {self.station}')
+        
+        # print('********** AST-GCN model training started at ' + self.station) 
+        # print('------------------  Attribute-Augemented logic included ---------------------')
         processed_data, attribute_data, adjacency_matrix, num_nodes = self.data_preprocess()
-        self.initialize_results()
+        self.initialize_results()   
         self.train_model(processed_data, attribute_data, adjacency_matrix, num_nodes)
             
     def data_preprocess(self):
         """Preprocesses the data for a single station."""
+        self.logger.info(f'Starting data preprocessing for station {self.station}')
         return data_preprocess_AST_GCN(self.station)
     
     def split_data(self,input_data, increment,k):
@@ -65,15 +79,17 @@ class astgcnExecute:
 
     def train_model(self, processed_data, attribute_data, adjacency_matrix, num_nodes):
         """Trains the model with the preprocessed data, attribute data, and adjacency matrix."""
+        self.logger.debug('Starting to train the model')
         folder_path = f'Results/ASTGCN/{self.forecast_len} Hour Forecast/{self.station}'
         self.targetFile, self.resultsFile, self.lossFile, self.actual_vs_predicted_file = utils.generate_execute_file_paths(folder_path)
         input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, self.time_steps, num_nodes)
         for k in range(self.num_splits):
             self.train_single_split(k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler)
-            self.save_results()
+        self.logger.info('Model training completed')
 
     def train_single_split(self, k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler):
         """Trains the model for a single split of the data."""
+
         print('ASTGCN training started on split {0}/{3} at {1} station forecasting {2} hours ahead.'.format(k+1, self.station, self.forecast_len, self.num_splits))
         save_File = f'Garage/Final Models/ASTGCN/{self.station}/{str(self.forecast_len)}Hour Models/Best_Model_\
                     {str(self.forecast_len)}_walk_{str(k)}.h5'
@@ -88,14 +104,27 @@ class astgcnExecute:
                                     X_train, Y_train, X_val, Y_val, split, self.batch_size,self.epochs)
         # Train the model by calling the astgcnModel method
         model, history = astgcn.astgcnModel()
-
+        
+        # Log the model summary
+        with io.StringIO() as buf, redirect_stdout(buf):
+            model.summary()
+            model_summary = buf.getvalue()
+        self.logger.info(f'Model Summary:\n{model_summary}')
+        
+         # Log the training metrics
+        for metric, values in history.history.items():
+            for epoch, value in enumerate(values):
+                self.logger.info(f'Epoch {epoch+1} {metric}: {value}')
+        
         self.lossData.append([history.history['loss']])
         predictions = self.predict(model, num_nodes, scaler)
         yhat = model.predict(X_test)
         Y_test = np.expand_dims(Y_test, axis=2)  
         self.resultsData.append(yhat.reshape(-1,))
         self.targetData.append(Y_test.reshape(-1,))
-        self.save_actual_vs_predicted(Y_test, yhat)
+        self.save_data(Y_test, yhat)
+        # self.save_actual_vs_predicted(Y_test, yhat)
+        # self.save_results()
         
     def predict(self, model, num_nodes, scaler):
         """Generates a prediction from the model."""
@@ -120,22 +149,84 @@ class astgcnExecute:
                     'Temperature': [25.5] * self.time_steps
                 })
 
-    def save_actual_vs_predicted(self, Y_test, yhat):
-        """Saves the actual vs predicted comparison to a CSV file."""
+
+    def save_data(self, Y_test, yhat):
+        """Saves the results, loss, target data, and the actual vs predicted comparison to CSV files."""
+        
+        # Save Results, Loss, and Target
+        self.logger.info(f'Saving the results of predictions to' + str(self.resultsFile))
+        print(f'Saving the results of predictions to' + str(self.resultsFile) )
+        resultsDF = pd.DataFrame(np.concatenate(self.resultsData))
+        self.logger.info(f'Saving the targets of actual values to' + str(self.targetFile) )
+        print(f'Saving the targets of actual values to' + str(self.targetFile) )
+        targetDF = pd.DataFrame(np.concatenate(self.targetData))
+        self.logger.info(f'Saving the loss to' + str(self.lossFile) )
+        print(f'Saving the loss to' + str(self.lossFile) )
+        lossDF = pd.DataFrame(self.lossData)
+        
+        resultsDF.to_csv(self.resultsFile)
+        lossDF.to_csv(self.lossFile)
+        targetDF.to_csv(self.targetFile)
+        
+        # Save Actual vs Predicted
+        self.logger.info(f'Saving the actual vs predicted comparison to a CSV file.')
         actual_vs_predicted_data = pd.DataFrame({
             'Actual': Y_test.flatten(),
             'Predicted': yhat.flatten()
         })
+        
+        # Log all actual vs predicted values
+        previous_year = None
+        for index, row in actual_vs_predicted_data.iterrows():
+            file_path = 'data/Weather Station Data/'+ str(self.station) +'.csv'
+            date = findingDate.get_timestamp_at_index(file_path, index)
+            current_year = date.split('-')[0]
+            # Prints to screen when years are changing to show progress
+            if previous_year and current_year != previous_year:
+                print(f"The year changed from {previous_year} to {current_year} for performing the logging")
+            previous_year = current_year
+            self.logger.info(f'Date {date} Index {index} - Actual: {row["Actual"]}, Predicted: {row["Predicted"]}')
+        
         actual_vs_predicted_data.to_csv(self.actual_vs_predicted_file, index=False)
-
+        
+        
+    def save_actual_vs_predicted(self, Y_test, yhat):
+        """Saves the actual vs predicted comparison to a CSV file."""
+        self.logger.info(f'Saving the actual vs predicted comparison to a CSV file.')
+        actual_vs_predicted_data = pd.DataFrame({
+            'Actual': Y_test.flatten(),
+            'Predicted': yhat.flatten()
+        })
+        previous_year = None
+         # Log all actual vs predicted values
+        for index, row in actual_vs_predicted_data.iterrows():
+            file_path = 'data/Weather Station Data/'+ str(self.station) +'.csv'
+            date = findingDate.get_timestamp_at_index(file_path, index)
+            # date = findingDate.get_timestamp_at_index(self.logger.log_file_path, index)
+            
+            # Prints to screen when years are changing
+            current_year = date.split('-')[0]  
+            if previous_year and current_year != previous_year:
+                print(f"The year changed from {previous_year} to {current_year} for performing the logging")
+            previous_year = current_year
+            
+            self.logger.info(f'Date {date} Index {index} - Actual: {row["Actual"]}, Predicted: {row["Predicted"]}')
+            
+        actual_vs_predicted_data.to_csv(self.actual_vs_predicted_file, index=False)
+        
+        
     def save_results(self):
         """Saves the results, loss, and target data to CSV files."""
         resultsDF = pd.DataFrame(np.concatenate(self.resultsData))
         lossDF = pd.DataFrame(self.lossData)
         targetDF = pd.DataFrame(np.concatenate(self.targetData))
+            
         resultsDF.to_csv(self.resultsFile)
         lossDF.to_csv(self.lossFile)
         targetDF.to_csv(self.targetFile)
+        
+       
+
 
 
 

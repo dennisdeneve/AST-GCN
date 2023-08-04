@@ -1,4 +1,5 @@
 import logging
+import os
 """ 
 logger class that uses Python's logging module as a flexible logging framework.
 It allows you to log messages at different levels, define custom log handlers, and configure log formatting. 
@@ -16,6 +17,10 @@ class modelLogger:
         # Could create a logger once, name becomes both model_name & station  
         # self.logger = logging.getLogger(f"{model_name}-{station}")
         # self.logger.setLevel(logging.DEBUG)
+        
+        # Create the directory if it doesn't exist
+        os.makedirs(os.path.dirname(log_file), exist_ok=True)
+        self.log_file_path = log_file # Storing the log file path
         
         self.logger = logging.getLogger(model_name)
         self.logger.setLevel(logging.DEBUG)
