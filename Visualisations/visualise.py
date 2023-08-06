@@ -17,12 +17,17 @@ def create_graph(adj_matrix, config):
         for row in reader:
             number, station_name, lat, lon, province = row
             G.add_node(number, pos=(float(lon), float(lat)), province=province)
+
     for i in range(adj_matrix.shape[1]):  # Iterate over the columns instead of rows
         strongest_influence_indices = np.argsort(adj_matrix[i, :])[-1:]  # Enter number of influential stations
         for j in strongest_influence_indices:
             if adj_matrix[i, j] > 0:  # Use adj_matrix[i, j] instead of adj_matrix[j, i]
                 G.add_edge(list(G.nodes())[j], list(G.nodes())[i])  # Swap the order of nodes
+
     return G
+
+
+
 
 def plot_map(adj_matrix, config, split):
     hex_colors = {
@@ -36,6 +41,7 @@ def plot_map(adj_matrix, config, split):
 
     G = create_graph(adj_matrix, config)
     node_positions = nx.get_node_attributes(G, 'pos')
+
     fig, ax = plt.subplots(figsize=(8, 8), dpi=300)
 
     min_lon = min(pos[0] for pos in node_positions.values())
@@ -85,26 +91,36 @@ def plot_map(adj_matrix, config, split):
 
     directory = 'Visualisations/' + config['modelVis']['default']+ '/horizon_' + config['horizonVis']['default'] + '/' + 'geographicVis/'
     filename = 'geoVis_split_' + split + '.png'
+
     # Create the directory if it doesn't exist
     if not os.path.exists(directory):
         os.makedirs(directory)
+
     filepath = os.path.join(directory, filename)
     fig.savefig(filepath)
+
 
 def plot_heatmap(adj_matrix, config, split):
     fig_heatmap, ax_heatmap = plt.subplots()
     sns.heatmap(adj_matrix, cmap='YlGnBu', ax=ax_heatmap)
     ax_heatmap.set_title("Adjacency Matrix Heatmap")
 
+
+
     directory = 'Visualisations/' + config['modelVis']['default']+ '/horizon_' + config['horizonVis']['default'] + '/' + 'heatmap/'
     filename = 'heatmap_split_' + split + '.png'
+
     # Create the directory if it doesn't exist
     if not os.path.exists(directory):
         os.makedirs(directory)
+
     filepath = os.path.join(directory, filename)
     fig_heatmap.savefig(filepath)
 
+
+
 def plot(config):
+    
     number_of_splits = int(config['splitVis']['default'])
     for split in range(number_of_splits+1):
         split=str(split)

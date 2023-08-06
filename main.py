@@ -5,6 +5,7 @@ from Execute.astgcnExecute import astgcnExecute
 from HPO.astgcnHPO import astgcnHPO as astgcnHPO
 from Logs.ASTGCN_eval import evalASTGCN as evalASTGCN
 import Visualisations.visualise as visualise
+import Plots.plotter as plotter
 
 def main():
     time_start = time.time()
@@ -34,7 +35,10 @@ def main():
     if config['eval_ast_gcn']['default']:
         print("************* Starting eval process for the AST-GCN Model ************* ")
         evalASTGCN(config)
+        print("************* Plotting ************* ")
+        plotter.create('ASTGCN',config)
         print("*************  Finished eval process for the AST-GCN Model ************* ")
+        
         
     # ############ Visualisations #############
     if config['vis']['default'] :

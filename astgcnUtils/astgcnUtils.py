@@ -169,8 +169,19 @@ def SMAPE(actual, predicted):
     Returns:
         smape - returns smape metric
     """
-
     return np.mean(abs(predicted - actual) / ((abs(predicted) + abs(actual)) / 2)) * 100
+
+def smape_std(actual, predicted):
+        """
+        Calculates the standard deviation of SMAPE values
+        Parameters:
+            actual - target values
+            predicted - output values predicted by model
+        Returns:
+            std - returns the standard deviation of SMAPE values
+        """
+        smapes = abs(predicted - actual) / ((abs(predicted) + abs(actual)) / 2) * 100
+        return np.std(smapes)
 
 def MSE(target, pred):
     """
@@ -181,7 +192,6 @@ def MSE(target, pred):
     Returns:
         mse - returns MSE metric
     """
-
     return mean_squared_error(target, pred, squared=True)
 
 def RMSE(target, pred):
@@ -193,7 +203,6 @@ def RMSE(target, pred):
     Returns:
         root - returns RMSE metric
     """
-
     root = math.sqrt(mean_squared_error(target, pred))
     return root
 

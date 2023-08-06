@@ -11,7 +11,6 @@ def evalASTGCN(config):
             print(f'ASTGCN evaluation started at {station} for the horizon of {horizon}')
             logger = modelLogger('ASTGCN', str(station),'Logs/ASTGCN/Eval/' + str(horizon) + ' Hour Forecast/'+str(station) +'/'+'astgcn_' + str(station) + '.txt' , log_enabled=False)
             logger.info("ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}")
-                
             paths = utils.get_file_paths(station, horizon)
             try:
                 for path in paths.values():
@@ -26,7 +25,8 @@ def evalASTGCN(config):
                     'MSE': utils.MSE(targets.values, preds.values),
                     'RMSE': utils.RMSE(targets.values, preds.values),
                     'MAE': utils.MAE(targets.values, preds.values),
-                    'SMAPE': utils.SMAPE(targets.values, preds.values)
+                    'SMAPE': utils.SMAPE(targets.values, preds.values),
+                    'std_dev_smape': utils.smape_std(targets.values, preds.values)
                 }
                 with open(paths['metrics'], 'w') as metric_file:
                     for name, value in metrics.items():

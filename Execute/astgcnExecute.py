@@ -103,8 +103,6 @@ class astgcnExecute:
         self.resultsData.append(yhat.reshape(-1,))
         self.targetData.append(Y_test.reshape(-1,))
         self.save_data(Y_test, yhat)
-        # self.save_actual_vs_predicted(Y_test, yhat)
-        # self.save_results()
         
     def predict(self, model, num_nodes, scaler):
         """Generates a prediction from the model."""
@@ -129,10 +127,8 @@ class astgcnExecute:
                     'Temperature': [25.5] * self.time_steps
                 })
 
-
     def save_data(self, Y_test, yhat):
         """Saves the results, loss, target data, and the actual vs predicted comparison to CSV files."""
-        
         # Save Results, Loss, and Target
         self.logger.info(f'Saving the results of predictions to ' + str(self.resultsFile))
         print(f'Saving the results of predictions to' + str(self.resultsFile) )
@@ -140,8 +136,8 @@ class astgcnExecute:
         self.logger.info(f'Saving the targets of actual values to ' + str(self.targetFile) )
         print(f'Saving the targets of actual values to ' + str(self.targetFile) )
         targetDF = pd.DataFrame(np.concatenate(self.targetData))
-        self.logger.info(f'Saving the loss to' + str(self.lossFile) )
-        print(f'Saving the loss to' + str(self.lossFile) )
+        self.logger.info(f'Saving the loss to ' + str(self.lossFile) )
+        print(f'Saving the loss to ' + str(self.lossFile) )
         lossDF = pd.DataFrame(self.lossData)
         
         resultsDF.to_csv(self.resultsFile)
@@ -150,6 +146,7 @@ class astgcnExecute:
         
         # Save Actual vs Predicted
         self.logger.info(f'Saving the actual vs predicted comparison to a CSV file.')
+        print(f'Saving the actual vs predicted comparison to a CSV file now - it takes a while ...')
         actual_vs_predicted_data = pd.DataFrame({
             'Actual': Y_test.flatten(),
             'Predicted': yhat.flatten()
@@ -167,47 +164,8 @@ class astgcnExecute:
             previous_year = current_year
             self.logger.info(f'Date {date} Index {index} - Actual: {row["Actual"]}, Predicted: {row["Predicted"]}')
         
-        actual_vs_predicted_data.to_csv(self.actual_vs_predicted_file, index=False)
-        
-        
-        
-        
-    def save_actual_vs_predicted(self, Y_test, yhat):
-        """Saves the actual vs predicted comparison to a CSV file."""
-        self.logger.info(f'Saving the actual vs predicted comparison to a CSV file.')
-        actual_vs_predicted_data = pd.DataFrame({
-            'Actual': Y_test.flatten(),
-            'Predicted': yhat.flatten()
-        })
-        actual_vs_predicted_data.to_csv(self.actual_vs_predicted_file, index=False)
-        
-        previous_year = None
-         # Log all actual vs predicted values
-        for index, row in actual_vs_predicted_data.iterrows():
-            file_path = 'data/Weather Station Data/'+ str(self.station) +'.csv'
-            date = findingDate.get_timestamp_at_index(file_path, index)
-            # date = findingDate.get_timestamp_at_index(self.logger.log_file_path, index)
-            
-            # Prints to screen when years are changing
-            current_year = date.split('-')[0]  
-            if previous_year and current_year != previous_year:
-                print(f"The year changed from {previous_year} to {current_year} for performing the logging")
-            previous_year = current_year
-            
-            self.logger.info(f'Date {date} Index {index} - Actual: {row["Actual"]}, Predicted: {row["Predicted"]}')
-            
-        
-        
-        
-    def save_results(self):
-        """Saves the results, loss, and target data to CSV files."""
-        resultsDF = pd.DataFrame(np.concatenate(self.resultsData))
-        lossDF = pd.DataFrame(self.lossData)
-        targetDF = pd.DataFrame(np.concatenate(self.targetData))
-            
-        resultsDF.to_csv(self.resultsFile)
-        lossDF.to_csv(self.lossFile)
-        targetDF.to_csv(self.targetFile)
+        actual_vs_predicted_data.to_csv(self.actual_vs_predicted_file, index=False)  
+    
         
        
 

@@ -1,7 +1,7 @@
 ############################ Experimentation configurations ############################
 train_ast_gcn:
   type: bool
-  default: true
+  default: false
   help: whether to train AST-GCN model (Attribute-Augmented Spatiotemporal Graph Convolutional Network)
 hpo_ast_gcn: 
   type: bool
@@ -9,7 +9,7 @@ hpo_ast_gcn:
   help: whether to perform HPO AST-GCN model 
 eval_ast_gcn:
   type: bool
-  default: trfalseue
+  default: true
   help: whether to evaluate AST-GCN model 
 
 ############################ Visualise Adjacency Matrix ############################
@@ -42,14 +42,16 @@ forecasting_horizons:
 
 stations:
   type: str[]
+  # default: ['ADDO ELEPHANT PARK', 'ALEXANDERBAAI', 'ALIWAL-NORTH PLAATKOP', 'BARKLY-OOS (CAERLEON)',
+  #               'BRANDVLEI', 'CALVINIA WO', 'CAPE TOWN WO', 'DE AAR WO', 'DOHNE - AGR', 'EAST LONDON WO',
+  #               'EXCELSIOR CERES', 'FORT BEAUFORT', 'FRASERBURG', 'GEORGE WITFONTEIN', 'GEORGE WO', 
+  #               'GRAAFF - REINET', 'GRAHAMSTOWN', 'KOINGNAAS', 'LADISMITH', 'LAINGSBURG', 'LANGGEWENS',
+  #               'MALMESBURY', 'MOLTENO RESERVOIR','NOUPOORT','OUDTSHOORN', 'PATENSIE','POFADDER', 
+  #               'PORT ALFRED - AIRPORT','PORT ELIZABETH AWOS', 'PORT ELIZABETH AWS','PORT NOLLOTH','PORTERVILLE', 
+  #               'PRIESKA', 'REDELINGSHUYS-AWS','RIVERSDALE','SOMERSET EAST','SPRINGBOK WO','TWEE RIVIEREN',
+  #               'UITENHAGE','UPINGTON WO', 'VANWYKSVLEI','VIOOLSDRIF - AWS','VREDENDAL','WILLOWMORE','WORCESTER-AWS']
   default: ['ADDO ELEPHANT PARK', 'ALEXANDERBAAI', 'ALIWAL-NORTH PLAATKOP', 'BARKLY-OOS (CAERLEON)',
-                'BRANDVLEI', 'CALVINIA WO', 'CAPE TOWN WO', 'DE AAR WO', 'DOHNE - AGR', 'EAST LONDON WO',
-                'EXCELSIOR CERES', 'FORT BEAUFORT', 'FRASERBURG', 'GEORGE WITFONTEIN', 'GEORGE WO', 
-                'GRAAFF - REINET', 'GRAHAMSTOWN', 'KOINGNAAS', 'LADISMITH', 'LAINGSBURG', 'LANGGEWENS',
-                'MALMESBURY', 'MOLTENO RESERVOIR','NOUPOORT','OUDTSHOORN', 'PATENSIE','POFADDER', 
-                'PORT ALFRED - AIRPORT','PORT ELIZABETH AWOS', 'PORT ELIZABETH AWS','PORT NOLLOTH','PORTERVILLE', 
-                'PRIESKA', 'REDELINGSHUYS-AWS','RIVERSDALE','SOMERSET EAST','SPRINGBOK WO','TWEE RIVIEREN',
-                'UITENHAGE','UPINGTON WO', 'VANWYKSVLEI','VIOOLSDRIF - AWS','VREDENDAL','WILLOWMORE','WORCESTER-AWS']
+                'BRANDVLEI']
   help: list of all stations names
 
 increment: 
@@ -60,7 +62,7 @@ increment:
   #                67920, 70128, 72288, 74472, 76680, 78888, 81048, 83232, 85440,
   #                87648, 89832, 92016, 94224, 96432, 98592, 100776, 102984, 105192,
   #                107352, 109536, 111744, 113929]
-  default: [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800]
+  default: [100, 200, 300]
   help:  List of points to split data in train, validation, and test sets for walk-forward validation. The first marker, 
     8784 is one year's worth of data, the next step is 3 months of data, and the following step is also 3 months of 
     data, resulting in rolling walk-forward validation where the train size increases each increment, with the 
