@@ -1,7 +1,7 @@
 ############################ Experimentation configurations ############################
 train_ast_gcn:
   type: bool
-  default: false
+  default: true
   help: whether to train AST-GCN model (Attribute-Augmented Spatiotemporal Graph Convolutional Network)
 hpo_ast_gcn: 
   type: bool
@@ -9,17 +9,8 @@ hpo_ast_gcn:
   help: whether to perform HPO AST-GCN model 
 eval_ast_gcn:
   type: bool
-  default: true
+  default: trfalseue
   help: whether to evaluate AST-GCN model 
-
-single_time_step:
-  type: bool
-  default: true
-  help: training/evaluating AST-GCN model to predict 1 time step ahead. For example, given data at time steps [t-3, t-2, t-1], your model will predict data at time step t.
-multiple_time_steps:
-  type: bool
-  default: false
-  help: training/evaluating AST-GCN model to predict more than one step ahead. The window size represents the number of future steps to be predicted.
 
 ############################ Visualise Adjacency Matrix ############################
 vis:
@@ -43,18 +34,11 @@ locations_path:
   default: 'data/Locations/Locations.csv'
   help: path to csv containg station coordinates
 
-
 ############################ General data configurations ############################
-
 forecasting_horizons:
   type: int[]
-  default: [3, 6, 9, 12, 24]
-  help: multiple forecast horizons for multi time step forecasting
-
-forecasting_horizon:
-  type: int
   default: [24]
-  help: single forecast horizon for single time step forecasting
+  help: multiple forecast horizons for multi time step forecasting
 
 stations:
   type: str[]
@@ -70,12 +54,13 @@ stations:
 
 increment: 
   type: int[]
-  default: [8760, 10920, 13106, 15312, 17520, 19704, 21888, 24096, 26304,
-                 28464, 30648, 32856, 35064, 37224, 39408, 41616, 43824, 45984,
-                 48168, 50376, 52584, 54768, 56952, 59160, 61368, 63528, 65712,
-                 67920, 70128, 72288, 74472, 76680, 78888, 81048, 83232, 85440,
-                 87648, 89832, 92016, 94224, 96432, 98592, 100776, 102984, 105192,
-                 107352, 109536, 111744, 113929]
+  # default: [8760, 10920, 13106, 15312, 17520, 19704, 21888, 24096, 26304,
+  #                28464, 30648, 32856, 35064, 37224, 39408, 41616, 43824, 45984,
+  #                48168, 50376, 52584, 54768, 56952, 59160, 61368, 63528, 65712,
+  #                67920, 70128, 72288, 74472, 76680, 78888, 81048, 83232, 85440,
+  #                87648, 89832, 92016, 94224, 96432, 98592, 100776, 102984, 105192,
+  #                107352, 109536, 111744, 113929]
+  default: [200, 400, 600, 800, 1000, 1200, 1400, 1600, 1800]
   help:  List of points to split data in train, validation, and test sets for walk-forward validation. The first marker, 
     8784 is one year's worth of data, the next step is 3 months of data, and the following step is also 3 months of 
     data, resulting in rolling walk-forward validation where the train size increases each increment, with the 
@@ -145,28 +130,3 @@ batch_size :
   type :  int  
   default : 196 #WF is 64 
   help :  batch size. 
-      
-# dataset :
-#   type :  str  
-#   default :  sz  
-#   help :  dataset 
-      
-# scheme :
-#   type :  str  
-#   default :  1  
-#   help :  scheme 
-      
-# noise_name :
-#   type :  str  
-#   default :  None  
-#   help :  None or Gauss or Possion 
-      
-# noise_param :
-#   type :  int  
-#   default : 0 
-#   help :  Parameter for noise 
-      
-# dim :
-#   type :  int  
-#   default : 64 # was 20 for Unit classes in acell.py
-#   help :  hidden dimension of the first STGCN layer. 

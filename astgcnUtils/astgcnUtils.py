@@ -36,6 +36,7 @@ def create_file_if_not_exists(file_path):
     # If the file does not exist, create it
     if not os.path.isfile(file_path):
         open(file_path, 'w').close()
+        
 
 def dataSplit(split, series):
     train = series[0:split[0]]

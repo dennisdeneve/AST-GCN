@@ -17,11 +17,8 @@ class astgcnExecute:
         self.increment = config['increment']['default']
         self.stations = config['stations']['default']
         self.forecasting_horizons = config['forecasting_horizons']['default']
-        self.forecasting_horizon = config['forecasting_horizon']['default']
         self.num_splits =config['num_splits']['default']
         self.time_steps =config['time_steps']['default']
-        self.single_time_step =config['single_time_step']['default']
-        self.multiple_time_steps =config['multiple_time_steps']['default']
         self.batch_size = config['batch_size']['default']
         self.epochs = config['training_epoch']['default']
         self.logger = None
@@ -29,23 +26,13 @@ class astgcnExecute:
     def train(self):
         """Trains the model for all forecast lengths and stations. Either set to single or multiple 
         time steps to forecast"""
-        if self.single_time_step:
-            print("Executing experimentation process for single-step forecasting...")
-            print("Horizon currently set to " + str(self.forecasting_horizon));
-            for self.forecast_len in self.forecasting_horizon:
-                for self.station in self.stations:
-                    self.logger = modelLogger('ASTGCN', str(self.station),'Logs/astgcn/Train/' + str(self.forecast_len) + ' Hour Forecast/'+str(self.station) +'/'+'astgcn_' + str(self.station) + '.txt' , log_enabled=True)
-                    self.train_single_station()
-        if self.multiple_time_steps:
-            print("Executing experimentation process for multi-step forecasting...")
-            print("Horizons currently set to " + str(self.forecasting_horizons));
-            for self.forecast_len in self.forecasting_horizons:
-                for self.station in self.stations:
-                    self.logger = modelLogger('ASTGCN', self.station,'Logs/astgcn/Train/' + self.forecast_len + ' Hour Forecast/'+self.station +'/'+'astgcn_' + self.station + '.txt' , log_enabled=True)
-                    self.train_single_station()
-        else:
-            print("Please set a configuration setting to true for either single time step or multiple time steps forecasting for the AST-GCN model")
-
+        print("Executing experimentation for time series prediction for weather forecasting")
+        print("Horizons currently set to " + str(self.forecasting_horizons));
+        for self.forecast_len in self.forecasting_horizons:
+            for self.station in self.stations:
+                self.logger = modelLogger('ASTGCN', str(self.station),'Logs/astgcn/Train/' + str(self.forecast_len) + ' Hour Forecast/'+ str(self.station) +'/astgcn_' + str(self.station) + '.txt' , log_enabled=True)
+                self.train_single_station()
+        
     def train_single_station(self):
         """Trains the model for a single station."""     
         self.logger.info(f'********** AST-GCN model training started at {self.station}')
@@ -192,6 +179,8 @@ class astgcnExecute:
             'Actual': Y_test.flatten(),
             'Predicted': yhat.flatten()
         })
+        actual_vs_predicted_data.to_csv(self.actual_vs_predicted_file, index=False)
+        
         previous_year = None
          # Log all actual vs predicted values
         for index, row in actual_vs_predicted_data.iterrows():
@@ -207,7 +196,7 @@ class astgcnExecute:
             
             self.logger.info(f'Date {date} Index {index} - Actual: {row["Actual"]}, Predicted: {row["Predicted"]}')
             
-        actual_vs_predicted_data.to_csv(self.actual_vs_predicted_file, index=False)
+        
         
         
     def save_results(self):
