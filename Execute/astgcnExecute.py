@@ -27,7 +27,7 @@ class astgcnExecute:
         """Trains the model for all forecast lengths and stations. Either set to single or multiple 
         time steps to forecast"""
         print("Executing experimentation for time series prediction for weather forecasting")
-        print("Horizons currently set to " + str(self.forecasting_horizons));
+        print("Forecasting horizons currently set to " + str(self.forecasting_horizons));
         for self.forecast_len in self.forecasting_horizons:
             for self.station in self.stations:
                 self.logger = modelLogger('ASTGCN', str(self.station),'Logs/astgcn/Train/' + str(self.forecast_len) + ' Hour Forecast/'+ str(self.station) +'/astgcn_' + str(self.station) + '.txt' , log_enabled=True)
@@ -81,7 +81,7 @@ class astgcnExecute:
         # Instantiate the AstGcn class
         astgcn = AstGcn(self.time_steps, num_nodes, adjacency_matrix, 
                                     attribute_data, save_File, self.forecast_len, 
-                                    X_train, Y_train, X_val, Y_val, split, self.batch_size,self.epochs)
+                                    X_train, Y_train, X_val, Y_val, split, self.batch_size, self.epochs)
         # Train the model by calling the astgcnModel method
         model, history = astgcn.astgcnModel()
         

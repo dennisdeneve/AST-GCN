@@ -76,6 +76,7 @@ class AstGcn:
                                                                    self.time_steps, self.num_nodes, 
                                                                    self.forecast_len)
         adj_normalized = calculate_laplacian_astgcn(self.adjacency_matrix, self.num_nodes)
+        # adj_normalized = calculate_laplacian_astgcn((self.create_adjacency_matrix(self.num_nodes)), self.num_nodes)
         model = self.build_model(X_attribute_train, Y_attribute_train, adj_normalized)
         model.summary()
         history = self.compile_and_train_model(model)
@@ -138,6 +139,8 @@ class GcnCell(tf.keras.layers.Layer):
             'Y_attribute': self.Y_attribute
         })
         return config
+
+
 
 
 # # This function creates, compiles, and trains a st-gnn model for temperature forecasting.
