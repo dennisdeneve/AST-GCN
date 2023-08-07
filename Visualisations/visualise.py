@@ -4,6 +4,8 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from mpl_toolkits.basemap import Basemap
 import seaborn as sns
+import geopandas as gpd
+from shapely.geometry import Point
 import csv
 import os
 
@@ -86,6 +88,8 @@ def plot_map(adj_matrix, config, split):
     filepath = os.path.join(directory, filename)
     fig.savefig(filepath)
 
+
+
 def plot_map_simple(adj_matrix, config):
     G = create_graph(adj_matrix, config)
     node_positions = nx.get_node_attributes(G, 'pos')
@@ -106,6 +110,8 @@ def plot_map_simple(adj_matrix, config):
         resolution='i', ax=ax
     )
     m.drawcoastlines(linewidth=0.5)
+    m.drawcountries(linewidth=0.5)  # Draw country borders
+    m.drawstates(linewidth=0.5)  # Draw provincial/state borders
     m.drawmapboundary(fill_color='lightblue')
     m.fillcontinents(color='white', lake_color='lightblue')
 
@@ -114,19 +120,15 @@ def plot_map_simple(adj_matrix, config):
         x, y = m(lon, lat)  # Convert lon, lat to x, y coordinates on the map
         m.plot(x, y, 'o', color='blue', markersize=6)  # 'o' for circle marker
 
-    ax.set_title("Stations in South Africa")
+    ax.set_title("Stations in South Africa with Provincial Borders")
     directory = 'Visualisations/' + config['modelVis']['default']+ '/horizon_' + config['horizonVis']['default'] + '/' + 'simpleMap/'
-    filename =  '.png'
+    filename =  'mapSA_with_borders'
     # Create the directory if it doesn't exist
     if not os.path.exists(directory):
         os.makedirs(directory)
     filepath = os.path.join(directory, filename)
     fig.savefig(filepath)
-    
-    # plt.show()
 
-# Then call this function with necessary arguments:
-# plot_map_simple(adj_matrix, config)
 
 
 def plot_heatmap(adj_matrix, config, split):

@@ -16,6 +16,9 @@ def main():
     # Load the YAML config file which contains all the required settings for platform
     with open('Configurations/config.yaml', 'r') as file:
         config = yaml.safe_load(file)
+    
+    models_list = ['ASTGCN'] # list of models for plotter
+    
 
     ##############################  Training  ##################################
     if config['train_ast_gcn']['default']:
@@ -36,15 +39,17 @@ def main():
         print("************* Starting eval process for the AST-GCN Model ************* ")
         evalASTGCN(config)
         print("************* Plotting ************* ")
-        plotter.create('ASTGCN',config)
+        # plotter.create('ASTGCN',config)
+        plotter.create_boxplots_for_models(models_list, config)
         print("*************  Finished eval process for the AST-GCN Model ************* ")
-        
         
     # ############ Visualisations #############
     if config['vis']['default'] :
         visualise.plot(config)
         
     time_end = time.time()
-    print("Time taken for the experimental pipeline :@ " ,time_end-time_start,'s')
+    elapsed_time = time_end - time_start
+    elapsed_minutes = elapsed_time / 60
+    print(f"Time taken for the experimental pipeline :@ {elapsed_minutes:.2f} minutes")
 if __name__ == '__main__':
     main()

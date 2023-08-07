@@ -16,16 +16,16 @@ def data_preprocess_AST_GCN(station):
     # Adjust weather station nodes and adjacency matrix
     weather_stations = weather_data['StasName'].unique()
     num_nodes = len(weather_stations)
-    # adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Adjacency Matrix/adj_mx.csv', index_col=0)
-    # adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
+    adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Adjacency Matrix/adj_mx.csv', index_col=0)
+    adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
    
+    # Already extracted adj matrix before hand
     # Extract station coordinates
-    stations_coords = weather_data.groupby('StasName')[['Latitude', 'Longitude']].first().values
-    adjacency_matrix = calculate_adjacency_matrix(stations_coords,1000)
+    # stations_coords = weather_data.groupby('StasName')[['Latitude', 'Longitude']].first().values
+    # adjacency_matrix = calculate_adjacency_matrix(stations_coords,1000)
     # print("Stations Coordinates:\n", stations_coords)
     
     return processed_data, attribute_data, adjacency_matrix, num_nodes
-
 
 def calculate_adjacency_matrix(stations_coords, threshold=None, decay_factor=0.01):
     num_stations = len(stations_coords)

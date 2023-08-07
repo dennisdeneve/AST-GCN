@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 import yaml
 import os
 
+def create_boxplots_for_models(models, config):
+    for model in models:
+        create(model, config)
+
 def create(model, config):
     print("Creating box and whiskers plot")
     metrics = {'MSE': {3:[],6:[],9:[],12:[],24:[]},'MAE': {3:[],6:[],9:[],12:[],24:[]},'RMSE': {3:[],6:[],9:[],12:[],24:[]},'SMAPE': {3:[],6:[],9:[],12:[],24:[]}}
