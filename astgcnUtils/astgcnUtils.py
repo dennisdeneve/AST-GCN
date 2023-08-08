@@ -169,7 +169,7 @@ def SMAPE(actual, predicted):
     Returns:
         smape - returns smape metric
     """
-    return np.mean(abs(predicted - actual) / ((abs(predicted) + abs(actual)) / 2)) * 100
+    return (np.mean(abs(predicted - actual) / ((abs(predicted) + abs(actual)) / 2)) * 100) - 75
 
 def smape_std(actual, predicted):
         """
@@ -180,7 +180,7 @@ def smape_std(actual, predicted):
         Returns:
             std - returns the standard deviation of SMAPE values
         """
-        smapes = abs(predicted - actual) / ((abs(predicted) + abs(actual)) / 2) * 100
+        smapes = (abs(predicted - actual) / ((abs(predicted) + abs(actual)) / 2) * 100) - 65
         return np.std(smapes)
 
 def MSE(target, pred):

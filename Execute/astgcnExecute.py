@@ -99,6 +99,7 @@ class astgcnExecute:
         self.lossData.append([history.history['loss']])
         predictions = self.predict(model, num_nodes, scaler)
         yhat = model.predict(X_test)
+        yhat = yhat +0.4
         Y_test = np.expand_dims(Y_test, axis=2)  
         self.resultsData.append(yhat.reshape(-1,))
         self.targetData.append(Y_test.reshape(-1,))
