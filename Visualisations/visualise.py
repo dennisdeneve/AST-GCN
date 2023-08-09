@@ -79,7 +79,8 @@ def plot_map(adj_matrix, config, split):
         G, pos=node_positions, edgelist=G.out_edges([node[0] for node in top_nodes]),
         edge_color=edge_colors, arrows=True, arrowstyle='->', width=1, ax=ax
     )
-    ax.set_title("Strongest Dependencies")
+    # ax.set_title("Strongest Dependencies of "+ str(model))
+    ax.set_title("Strongest Dependencies of GWN")
     directory = 'Visualisations/' + config['modelVis']['default']+ '/horizon_' + config['horizonVis']['default'] + '/' + 'geographicVis/'
     filename = 'geoVis_split_' + split + '.png'
     # Create the directory if it doesn't exist
@@ -89,11 +90,9 @@ def plot_map(adj_matrix, config, split):
     fig.savefig(filepath)
 
 
-
 def plot_map_simple(adj_matrix, config):
     G = create_graph(adj_matrix, config)
     node_positions = nx.get_node_attributes(G, 'pos')
-
     fig, ax = plt.subplots(figsize=(8, 8), dpi=300)
 
     # Extracting the min and max latitude and longitude for setting map boundaries
@@ -103,7 +102,6 @@ def plot_map_simple(adj_matrix, config):
     max_lat = max(pos[1] for pos in node_positions.values())
     width = max_lon - min_lon
     height = max_lat - min_lat
-
     m = Basemap(
         llcrnrlon=min_lon - 0.1 * width, llcrnrlat=min_lat - 0.1 * height,
         urcrnrlon=max_lon + 0.1 * width, urcrnrlat=max_lat + 0.1 * height,
@@ -114,7 +112,6 @@ def plot_map_simple(adj_matrix, config):
     m.drawstates(linewidth=0.5)  # Draw provincial/state borders
     m.drawmapboundary(fill_color='lightblue')
     m.fillcontinents(color='white', lake_color='lightblue')
-
     # Plot nodes on the map
     for node, (lon, lat) in node_positions.items():
         x, y = m(lon, lat)  # Convert lon, lat to x, y coordinates on the map
@@ -129,12 +126,10 @@ def plot_map_simple(adj_matrix, config):
     filepath = os.path.join(directory, filename)
     fig.savefig(filepath)
 
-
-
 def plot_heatmap(adj_matrix, config, split):
     fig_heatmap, ax_heatmap = plt.subplots()
     sns.heatmap(adj_matrix, cmap='YlGnBu', ax=ax_heatmap)
-    ax_heatmap.set_title("Adjacency Matrix Heatmap")
+    ax_heatmap.set_title("Adjacency Matrix Heatmap GWN")
     directory = 'Visualisations/' + config['modelVis']['default']+ '/horizon_' + config['horizonVis']['default'] + '/' + 'heatmap/'
     filename = 'heatmap_split_' + split + '.png'
     # Create the directory if it doesn't exist
@@ -145,12 +140,12 @@ def plot_heatmap(adj_matrix, config, split):
 
 def plot(config):
     number_of_splits = int(config['splitVis']['default'])
-    for split in range(number_of_splits+1):
+    for split in range(number_of_splits):
         split=str(split)
         matrix_path = "Results/" + config['modelVis']['default'] + "/" + config['horizonVis']['default'] + " Hour Forecast/Matrices/adjacency_matrix_" + split + ".csv"
         print("Matrix path: " + matrix_path)
         df = pd.read_csv(matrix_path, index_col=0)
         adj_matrix = df.values
         plot_map(adj_matrix, config , split)
-        plot_map_simple(adj_matrix, config)
+        # plot_map_simple(adj_matrix, config)
         plot_heatmap(adj_matrix, config, split)

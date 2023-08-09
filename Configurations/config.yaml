@@ -5,7 +5,7 @@ train_ast_gcn:
   help: whether to train AST-GCN model (Attribute-Augmented Spatiotemporal Graph Convolutional Network)
 eval_ast_gcn:
   type: bool
-  default: true
+  default: false
   help: whether to evaluate AST-GCN model 
 hpo_ast_gcn: 
   type: bool
@@ -15,16 +15,15 @@ hpo_ast_gcn:
 ############################ Visualise Adjacency Matrix ############################
 vis:
   type: bool
-  default: false
+  default: true
   help: whether to create visualisations
-
 modelVis:
   type: str
-  default: ASTGCN
+  default: GWN
   help: the model to visualise
 horizonVis:
   type: str
-  default: "6"
+  default: "3"
   help: the horizon to visualise
 splitVis:
   type: str
@@ -38,8 +37,8 @@ locations_path:
 ############################ General data configurations ############################
 forecasting_horizons:
   type: int[]
-  default: [3,6,9]
-  # default: [3,6,9,12,24]
+  #default: [24]
+  default: [3,6,9,12,24]
   help: forecast horizons for time step forecasting
 
 stations:
