@@ -61,7 +61,7 @@ def create_X_Y(ts: np.array, lag=1, num_nodes=1, n_ahead=1, target_index=0):
     X, Y = np.array(X), np.array(Y)
 
     num_samples = len(X)
-    time_steps = 10
+    time_steps = 10 
     num_samples -= num_samples % time_steps
     X = X[:num_samples]
     Y = Y[:num_samples]
@@ -137,7 +137,7 @@ def SMAPE(actual, predicted):
     Returns:
         smape - returns smape metric
     """
-    return (np.mean(abs(predicted - actual) / ((abs(predicted) + abs(actual)) / 2)) * 100) - 70
+    return (np.mean(abs(predicted - actual)  / ((abs(predicted) + abs(actual)) / 2)) * 100) 
 
 def smape_std(actual, predicted):
         """
@@ -148,8 +148,8 @@ def smape_std(actual, predicted):
         Returns:
             std - returns the standard deviation of SMAPE values
         """
-        smapes = abs(predicted - actual) / ((abs(predicted) + abs(actual)) / 2) * 100
-        return (np.std(smapes)) -65
+        smapes = abs(predicted - actual)  / ((abs(predicted) + abs(actual)) / 2) * 100
+        return (np.std(smapes)) 
 
 def MSE(target, pred):
     """

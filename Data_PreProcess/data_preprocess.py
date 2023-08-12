@@ -16,14 +16,17 @@ def data_preprocess_AST_GCN(station):
     # Adjust weather station nodes and adjacency matrix
     weather_stations = weather_data['StasName'].unique()
     num_nodes = len(weather_stations)
-    adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Adjacency Matrix/adj_mx.csv', index_col=0)
-    adjacency_matrix = adjacency_matrix.iloc[:num_nodes, :num_nodes].values
-   
+    
+    # adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Aπdjacency Matrix/adj_mx.csv', index_col=0)
+    # adjacency_matrix = adjacency_matrix.iloc[:num_nodeSs, :num_nodes].values
+  
+
     # Already extracted adj matrix before hand
     # Extract station coordinates
-    # stations_coords = weather_data.groupby('StasName')[['Latitude', 'Longitude']].first().values
-    # adjacency_matrix = calculate_adjacency_matrix(stations_coords,1000)
+    stations_coords = weather_data.groupby('StasName')[['Latitude', 'Longitude']].first().values
+    adjacency_matrix = calculate_adjacency_matrix(stations_coords,1000)
     # print("Stations Coordinates:\n", stations_coords)
+    # adjacency_matrix = random_adjacency_matrix(num_nodes)
     
     return processed_data, attribute_data, adjacency_matrix, num_nodes
 
@@ -51,6 +54,16 @@ def calculate_adjacency_matrix(stations_coords, threshold=None, decay_factor=0.0
 
     return adjacency_matrix
 
+def random_adjacency_matrix(num_stations, threshold=0.5):
+    # Generate random values between 0 and 1
+    matrix = np.random.rand(num_stations, num_stations)
+    # Set values below threshold to 0 and above threshold to 1 to ensure binary matrix
+    matrix[matrix < threshold] = 0
+    matrix[matrix >= threshold] = 1
+    # Ensure zero diagonal (no self-connections)
+    np.fill_diagonal(matrix, 0)
+    
+    return matrix
 
 def sliding_window_AST_GCN(processed_data, time_steps, num_nodes):
     input_data = []
@@ -122,3 +135,10 @@ def sliding_window_ST_GCN(processed_data, time_steps, num_nodes):
     target_data = np.reshape(target_data, (target_data.shape[0], -1))
     
     return input_data, target_data, scaler
+
+def get_timestamp_at_index(csv_file_path, index_to_find):
+     # Read only the 'DateT' column
+    df = pd.read_csv(csv_file_path, usecols=['DateT'], error_bad_lines=False)
+    # Retrieve the DateT value at the specified index
+    timestamp = df.loc[index_to_find, 'DateT']
+    return timestamp

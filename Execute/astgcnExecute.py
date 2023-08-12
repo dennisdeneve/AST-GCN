@@ -1,11 +1,10 @@
+import io
 import numpy as np
 import pandas as pd
 from Model.astgcn import AstGcn
 import astgcnUtils.astgcnUtils as utils
-from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, sliding_window_AST_GCN
+import Data_PreProcess.data_preprocess as data_preprocess
 from Logs.modelLogger import modelLogger 
-import Logs.findingDate as findingDate
-import io
 from contextlib import redirect_stdout
 
 class astgcnExecute:
@@ -43,7 +42,7 @@ class astgcnExecute:
     def data_preprocess(self):
         """Preprocesses the data for a single station."""
         self.logger.info(f'Starting data preprocessing for station {self.station}')
-        return data_preprocess_AST_GCN(self.station)
+        return data_preprocess.data_preprocess_AST_GCN(self.station)
     
     def split_data(self,input_data, increment,k):
         """Splits the input data into training, validation, and test sets."""
@@ -62,7 +61,7 @@ class astgcnExecute:
         self.logger.debug('Starting to train the model')
         folder_path = f'Results/ASTGCN/{self.forecast_len} Hour Forecast/{self.station}'
         self.targetFile, self.resultsFile, self.lossFile, self.actual_vs_predicted_file = utils.generate_execute_file_paths(folder_path)
-        input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, self.time_steps, num_nodes)
+        input_data, target_data, scaler = data_preprocess.sliding_window_AST_GCN(processed_data, self.time_steps, num_nodes)
         for k in range(self.num_splits):
             self.train_single_split(k, input_data, attribute_data, adjacency_matrix, num_nodes, scaler)
         self.logger.info('Model training completed')
@@ -157,7 +156,7 @@ class astgcnExecute:
         previous_year = None
         for index, row in actual_vs_predicted_data.iterrows():
             file_path = 'data/Weather Station Data/'+ str(self.station) +'.csv'
-            date = findingDate.get_timestamp_at_index(file_path, index)
+            date = data_preprocess.get_timestamp_at_index(file_path, index)
             current_year = date.split('-')[0]
             # Prints to screen when years are changing to show progress
             if previous_year and current_year != previous_year:
