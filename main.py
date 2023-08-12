@@ -14,7 +14,7 @@ def main():
     parser.add_argument('--mode', type=str, help='path to YAML config file')
     args = parser.parse_args()
     # Load the YAML config file which contains all the required settings for platform
-    with open('Configurations/config.yaml', 'r') as file:
+    with open('Configurations/astgcn_config.yaml', 'r') as file:
         config = yaml.safe_load(file)
     models_list = ['ASTGCN'] # list of models for plotter
 
