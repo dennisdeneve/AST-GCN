@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from Model.astgcn import AstGcn
+from Model.ASTGCN.astgcn import AstGcn
 import astgcnUtils.astgcnUtils as utils
 from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, sliding_window_AST_GCN
 from Logs.modelLogger import modelLogger 

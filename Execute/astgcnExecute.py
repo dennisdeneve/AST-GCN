@@ -1,7 +1,7 @@
 import io
 import numpy as np
 import pandas as pd
-from Model.astgcn import AstGcn
+from Model.ASTGCN.astgcn import AstGcn
 import astgcnUtils.astgcnUtils as utils
 import Data_PreProcess.data_preprocess as data_preprocess
 from Logs.modelLogger import modelLogger 
