@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 from geopy.distance import geodesic
+from datetime import datetime,timedelta
 
 ###############################  AST-GCN pre-process methods  ###############################
 
@@ -136,9 +137,21 @@ def sliding_window_ST_GCN(processed_data, time_steps, num_nodes):
     
     return input_data, target_data, scaler
 
-def get_timestamp_at_index(csv_file_path, index_to_find):
-     # Read only the 'DateT' column
-    df = pd.read_csv(csv_file_path, usecols=['DateT'], error_bad_lines=False)
-    # Retrieve the DateT value at the specified index
-    timestamp = df.loc[index_to_find, 'DateT']
-    return timestamp
+# def get_timestamp_at_index(csv_file_path, index_to_find):
+#      # Read only the 'DateT' column
+#     df = pd.read_csv(csv_file_path, usecols=['DateT'], error_bad_lines=False)
+#     # Retrieve the DateT value at the specified index
+#     timestamp = df.loc[index_to_find, 'DateT']
+#     return timestamp
+
+def get_timestamp_at_index(hours):
+    # Create a datetime object
+    date_string = "2010-01-01 00:00:00"
+    formatted_date = datetime.strptime(date_string, "%Y-%m-%d %H:%M:%S")
+    # Number of hours to add
+    hours_to_add = hours//45
+    # Create a timedelta representing the number of hours to add
+    time_delta = timedelta(hours=hours_to_add)
+    # Add the timedelta to the original date
+    new_date = formatted_date + time_delta
+    return new_date

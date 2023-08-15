@@ -5,6 +5,9 @@ from tensorflow.keras.layers import Input, Dense, LSTM, Reshape
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping
 tf.config.run_functions_eagerly(False)
+import warnings
+# Filter out specific runtime warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 class AstGcn:
     """

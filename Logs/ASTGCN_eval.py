@@ -1,6 +1,9 @@
 import pandas as pd
 import astgcnUtils.astgcnUtils as utils
 from Logs.modelLogger import modelLogger 
+import warnings
+# Filter out specific runtime warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 def evalASTGCN(config):
     stations = config['stations']['default']
@@ -9,7 +12,7 @@ def evalASTGCN(config):
     for station in stations:
         for horizon in horizons:
             print(f'ASTGCN evaluation started at {station} for the horizon of {horizon}')
-            logger = modelLogger('ASTGCN', str(station),'Logs/ASTGCN/Eval/' + str(horizon) + ' Hour Forecast/'+str(station) +'/'+'astgcn_' + str(station) + '.txt' , log_enabled=False)
+            logger = modelLogger('ASTGCN', str(station),'Logs/ASTGCN/Eval/' + str(horizon) + ' Hour Forecast/'+str(station) +'/'+'astgcn_' + str(station) + '.txt' , log_enabled=True)  
             logger.info("ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}")
             paths = utils.get_file_paths(station, horizon)
             try:

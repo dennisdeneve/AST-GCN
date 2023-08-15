@@ -6,6 +6,9 @@ import astgcnUtils.astgcnUtils as utils
 import Data_PreProcess.data_preprocess as data_preprocess
 from Logs.modelLogger import modelLogger 
 from contextlib import redirect_stdout
+import warnings
+# Filter out specific runtime warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 
 class astgcnExecute:
     def __init__(self, config):
@@ -156,8 +159,9 @@ class astgcnExecute:
         previous_year = None
         for index, row in actual_vs_predicted_data.iterrows():
             file_path = 'data/Weather Station Data/'+ str(self.station) +'.csv'
-            date = data_preprocess.get_timestamp_at_index(file_path, index)
-            current_year = date.split('-')[0]
+            date = data_preprocess.get_timestamp_at_index(index)
+            # current_year = date.split('-')[0]
+            current_year = date.year
             # Prints to screen when years are changing to show progress
             if previous_year and current_year != previous_year:
                 print(f"The year changed from {previous_year} to {current_year} for performing the logging")
