@@ -1,0 +1,16 @@
+2023-08-15 21:41:43,600 - BARKLY-OOS (CAERLEON) - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 21:41:43,780 - BARKLY-OOS (CAERLEON) - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 21:41:43,780 - BARKLY-OOS (CAERLEON) - INFO - And was saved to {paths["metrics"]}
+2023-08-15 21:41:43,780 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,780 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,781 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,781 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,781 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,227 - BARKLY-OOS (CAERLEON) - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 21:51:41,399 - BARKLY-OOS (CAERLEON) - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 21:51:41,399 - BARKLY-OOS (CAERLEON) - INFO - And was saved to {paths["metrics"]}
+2023-08-15 21:51:41,399 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,399 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,399 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,400 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,400 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.

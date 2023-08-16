@@ -1,0 +1,16 @@
+2023-08-15 22:10:37,688 - DE AAR WO - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 22:10:37,843 - DE AAR WO - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 22:10:37,843 - DE AAR WO - INFO - And was saved to {paths["metrics"]}
+2023-08-15 22:10:37,843 - DE AAR WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:10:37,843 - DE AAR WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:10:37,843 - DE AAR WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:10:37,843 - DE AAR WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:10:37,844 - DE AAR WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:50,129 - DE AAR WO - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 22:16:50,274 - DE AAR WO - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 22:16:50,275 - DE AAR WO - INFO - And was saved to {paths["metrics"]}
+2023-08-15 22:16:50,275 - DE AAR WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:50,275 - DE AAR WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:50,275 - DE AAR WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:50,275 - DE AAR WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:50,275 - DE AAR WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.

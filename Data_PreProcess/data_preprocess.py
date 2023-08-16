@@ -24,13 +24,14 @@ def data_preprocess_AST_GCN(station):
 
     # Already extracted adj matrix before hand
     # Extract station coordinates
-    stations_coords = weather_data.groupby('StasName')[['Latitude', 'Longitude']].first().values
-    adjacency_matrix = calculate_adjacency_matrix(stations_coords,1000)
+    # stations_coords = weather_data.groupby('StasName')[['Latitude', 'Longitude']].first().values
+    # adjacency_matrix = calculate_adjacency_matrix(stations_coords,1000)
     # print("Stations Coordinates:\n", stations_coords)
-    # adjacency_matrix = random_adjacency_matrix(num_nodes)
+    adjacency_matrix = random_adjacency_matrix(num_nodes)
     
     return processed_data, attribute_data, adjacency_matrix, num_nodes
 
+### Using euclidean distances for adj mx
 def calculate_adjacency_matrix(stations_coords, threshold=None, decay_factor=0.01):
     num_stations = len(stations_coords)
     adjacency_matrix = np.zeros((num_stations, num_stations))
@@ -46,7 +47,6 @@ def calculate_adjacency_matrix(stations_coords, threshold=None, decay_factor=0.0
                         adjacency_matrix[i][j] = 1
                 else:  # for weighted connections
                     adjacency_matrix[i][j] = decayed_distance / (distance + 1e-5)  # added small value to avoid division by zero
-
     # Now, Z-score normalization for non-zero entries
     non_zero_entries = adjacency_matrix[adjacency_matrix != 0]
     mean_distance = np.mean(non_zero_entries)
@@ -55,6 +55,7 @@ def calculate_adjacency_matrix(stations_coords, threshold=None, decay_factor=0.0
 
     return adjacency_matrix
 
+### Random initializing adj mx
 def random_adjacency_matrix(num_stations, threshold=0.5):
     # Generate random values between 0 and 1
     matrix = np.random.rand(num_stations, num_stations)
@@ -63,7 +64,6 @@ def random_adjacency_matrix(num_stations, threshold=0.5):
     matrix[matrix >= threshold] = 1
     # Ensure zero diagonal (no self-connections)
     np.fill_diagonal(matrix, 0)
-    
     return matrix
 
 def sliding_window_AST_GCN(processed_data, time_steps, num_nodes):

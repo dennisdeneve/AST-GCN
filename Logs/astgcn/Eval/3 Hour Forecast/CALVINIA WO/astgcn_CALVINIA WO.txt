@@ -1,0 +1,16 @@
+2023-08-15 22:10:37,351 - CALVINIA WO - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 22:10:37,524 - CALVINIA WO - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 22:10:37,524 - CALVINIA WO - INFO - And was saved to {paths["metrics"]}
+2023-08-15 22:10:37,524 - CALVINIA WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:10:37,524 - CALVINIA WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:10:37,524 - CALVINIA WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:10:37,524 - CALVINIA WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:10:37,525 - CALVINIA WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:49,813 - CALVINIA WO - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 22:16:49,979 - CALVINIA WO - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 22:16:49,979 - CALVINIA WO - INFO - And was saved to {paths["metrics"]}
+2023-08-15 22:16:49,979 - CALVINIA WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:49,980 - CALVINIA WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:49,980 - CALVINIA WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:49,980 - CALVINIA WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:49,980 - CALVINIA WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.

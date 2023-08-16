@@ -1,0 +1,16 @@
+2023-08-15 22:10:37,525 - CAPE TOWN WO - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 22:10:37,686 - CAPE TOWN WO - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 22:10:37,686 - CAPE TOWN WO - INFO - And was saved to {paths["metrics"]}
+2023-08-15 22:10:37,686 - CAPE TOWN WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:10:37,686 - CAPE TOWN WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:10:37,686 - CAPE TOWN WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:10:37,687 - CAPE TOWN WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:10:37,687 - CAPE TOWN WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:49,981 - CAPE TOWN WO - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 22:16:50,128 - CAPE TOWN WO - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 22:16:50,128 - CAPE TOWN WO - INFO - And was saved to {paths["metrics"]}
+2023-08-15 22:16:50,128 - CAPE TOWN WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:50,129 - CAPE TOWN WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:50,129 - CAPE TOWN WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:50,129 - CAPE TOWN WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 22:16:50,129 - CAPE TOWN WO - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.

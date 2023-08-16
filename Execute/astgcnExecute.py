@@ -86,7 +86,7 @@ class astgcnExecute:
                                     X_train, Y_train, X_val, Y_val, split, self.batch_size, self.epochs)
         # Train the model by calling the astgcnModel method
         model, history = astgcn.astgcnModel()
-        
+
         # Log the model summary
         with io.StringIO() as buf, redirect_stdout(buf):
             model.summary()

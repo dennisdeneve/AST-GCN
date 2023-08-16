@@ -1,0 +1,18 @@
+2023-08-15 21:41:43,782 - BRANDVLEI - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 21:41:43,966 - BRANDVLEI - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 21:41:43,966 - BRANDVLEI - INFO - And was saved to {paths["metrics"]}
+2023-08-15 21:41:43,967 - BRANDVLEI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,967 - BRANDVLEI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,967 - BRANDVLEI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,967 - BRANDVLEI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,967 - BRANDVLEI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,967 - BRANDVLEI - INFO - Finished evaluation of ASTGCN error metrics for all stations
+2023-08-15 21:51:41,400 - BRANDVLEI - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 21:51:41,577 - BRANDVLEI - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 21:51:41,577 - BRANDVLEI - INFO - And was saved to {paths["metrics"]}
+2023-08-15 21:51:41,577 - BRANDVLEI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,577 - BRANDVLEI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,578 - BRANDVLEI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,578 - BRANDVLEI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,578 - BRANDVLEI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,578 - BRANDVLEI - INFO - Finished evaluation of ASTGCN error metrics for all stations

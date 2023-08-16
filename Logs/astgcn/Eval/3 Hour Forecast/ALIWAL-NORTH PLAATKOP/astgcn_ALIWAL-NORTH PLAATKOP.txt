@@ -1,0 +1,16 @@
+2023-08-15 21:41:43,424 - ALIWAL-NORTH PLAATKOP - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 21:41:43,598 - ALIWAL-NORTH PLAATKOP - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 21:41:43,598 - ALIWAL-NORTH PLAATKOP - INFO - And was saved to {paths["metrics"]}
+2023-08-15 21:41:43,598 - ALIWAL-NORTH PLAATKOP - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,598 - ALIWAL-NORTH PLAATKOP - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,598 - ALIWAL-NORTH PLAATKOP - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,598 - ALIWAL-NORTH PLAATKOP - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,599 - ALIWAL-NORTH PLAATKOP - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:40,919 - ALIWAL-NORTH PLAATKOP - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 21:51:41,225 - ALIWAL-NORTH PLAATKOP - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 21:51:41,225 - ALIWAL-NORTH PLAATKOP - INFO - And was saved to {paths["metrics"]}
+2023-08-15 21:51:41,225 - ALIWAL-NORTH PLAATKOP - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,225 - ALIWAL-NORTH PLAATKOP - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,225 - ALIWAL-NORTH PLAATKOP - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,225 - ALIWAL-NORTH PLAATKOP - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:41,226 - ALIWAL-NORTH PLAATKOP - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.

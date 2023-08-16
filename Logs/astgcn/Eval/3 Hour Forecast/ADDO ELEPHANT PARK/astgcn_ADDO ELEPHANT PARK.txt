@@ -1,0 +1,16 @@
+2023-08-15 21:41:43,028 - ADDO ELEPHANT PARK - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 21:41:43,253 - ADDO ELEPHANT PARK - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 21:41:43,254 - ADDO ELEPHANT PARK - INFO - And was saved to {paths["metrics"]}
+2023-08-15 21:41:43,254 - ADDO ELEPHANT PARK - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,254 - ADDO ELEPHANT PARK - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,254 - ADDO ELEPHANT PARK - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,254 - ADDO ELEPHANT PARK - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:41:43,254 - ADDO ELEPHANT PARK - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:40,454 - ADDO ELEPHANT PARK - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-15 21:51:40,700 - ADDO ELEPHANT PARK - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-15 21:51:40,700 - ADDO ELEPHANT PARK - INFO - And was saved to {paths["metrics"]}
+2023-08-15 21:51:40,700 - ADDO ELEPHANT PARK - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:40,700 - ADDO ELEPHANT PARK - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:40,700 - ADDO ELEPHANT PARK - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:40,700 - ADDO ELEPHANT PARK - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-15 21:51:40,700 - ADDO ELEPHANT PARK - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
