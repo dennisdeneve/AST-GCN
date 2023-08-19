@@ -14,3 +14,30 @@
 2023-08-15 21:51:41,399 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
 2023-08-15 21:51:41,400 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
 2023-08-15 21:51:41,400 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:10,334 - BARKLY-OOS (CAERLEON) - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-16 19:34:10,461 - BARKLY-OOS (CAERLEON) - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-16 19:34:10,461 - BARKLY-OOS (CAERLEON) - INFO - And was saved to {paths["metrics"]}
+2023-08-16 19:34:10,461 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:10,461 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:10,462 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:10,462 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:10,462 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:10,462 - BARKLY-OOS (CAERLEON) - INFO - Finished evaluation of ASTGCN error metrics for all stations
+2023-08-16 19:34:31,223 - BARKLY-OOS (CAERLEON) - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-16 19:34:31,355 - BARKLY-OOS (CAERLEON) - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-16 19:34:31,355 - BARKLY-OOS (CAERLEON) - INFO - And was saved to {paths["metrics"]}
+2023-08-16 19:34:31,355 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:31,355 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:31,355 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:31,356 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:31,356 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:31,356 - BARKLY-OOS (CAERLEON) - INFO - Finished evaluation of ASTGCN error metrics for all stations
+2023-08-16 19:34:50,499 - BARKLY-OOS (CAERLEON) - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-16 19:34:50,627 - BARKLY-OOS (CAERLEON) - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-16 19:34:50,627 - BARKLY-OOS (CAERLEON) - INFO - And was saved to {paths["metrics"]}
+2023-08-16 19:34:50,627 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:50,627 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:50,627 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:50,627 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:50,627 - BARKLY-OOS (CAERLEON) - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-16 19:34:50,627 - BARKLY-OOS (CAERLEON) - INFO - Finished evaluation of ASTGCN error metrics for all stations

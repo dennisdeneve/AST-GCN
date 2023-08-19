@@ -149,23 +149,15 @@ class astgcnExecute:
         
         # Save Actual vs Predicted
         self.logger.info(f'Saving the actual vs predicted comparison to a CSV file.')
-        print(f'Saving the actual vs predicted comparison to a CSV file now - it takes a while ...')
         actual_vs_predicted_data = pd.DataFrame({
             'Actual': Y_test.flatten(),
             'Predicted': yhat.flatten()
         })
         
         # Log all actual vs predicted values
-        previous_year = None
         for index, row in actual_vs_predicted_data.iterrows():
             file_path = 'data/Weather Station Data/'+ str(self.station) +'.csv'
             date = data_preprocess.get_timestamp_at_index(index)
-            # current_year = date.split('-')[0]
-            current_year = date.year
-            # Prints to screen when years are changing to show progress
-            if previous_year and current_year != previous_year:
-                print(f"The year changed from {previous_year} to {current_year} for performing the logging")
-            previous_year = current_year
             self.logger.info(f'Date {date} Index {index} - Actual: {row["Actual"]}, Predicted: {row["Predicted"]}')
         
         actual_vs_predicted_data.to_csv(self.actual_vs_predicted_file, index=False)  

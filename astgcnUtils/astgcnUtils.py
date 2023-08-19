@@ -189,13 +189,14 @@ def MAE(target, pred):
 def generateRandomParameters(config):
     # pass
     batch_size = [32,64, 128]
-    epochs = [30, 40, 50, 60]
+    epochs = [1, 2, 3]
 
     batch = batch_size[random.randint(0,len(batch_size)-1)]
     epoch = epochs[random.randint(0,len(epochs)-1)]
 
     config['batch_size']['default'] = batch
     config['training_epoch']['default'] = epoch
+
 
     return [batch, epoch]
 

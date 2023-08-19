@@ -81,7 +81,7 @@ class AstGcn:
         adj_normalized = calculate_laplacian_astgcn(self.adjacency_matrix, self.num_nodes)
         # adj_normalized = calculate_laplacian_astgcn((self.create_adjacency_matrix(self.num_nodes)), self.num_nodes)
         model = self.build_model(X_attribute_train, Y_attribute_train, adj_normalized)
-        model.summary()
+        #model.summary()
         history = self.compile_and_train_model(model)
         y_pred = self.predict(model)
         return model, history
