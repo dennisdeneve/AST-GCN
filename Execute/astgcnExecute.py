@@ -83,7 +83,8 @@ class astgcnExecute:
         # Instantiate the AstGcn class
         astgcn = AstGcn(self.time_steps, num_nodes, adjacency_matrix, 
                                     attribute_data, save_File, self.forecast_len, 
-                                    X_train, Y_train, X_val, Y_val, split, self.batch_size, self.epochs, self.config['gru_units']['default'])
+                                    X_train, Y_train, X_val, Y_val, split, self.batch_size, self.epochs, 
+                                    self.config['gru_units']['default'], self.config['lstm_neurons']['default'])
         # Train the model by calling the astgcnModel method
         model, history = astgcn.astgcnModel()
 

@@ -72,13 +72,14 @@ class astgcnHPO:
                         'Batch Size - ', self.config['batch_size']['default'], '\n',
                         'Epochs - ', self.config['training_epoch']['default'], '\n',
                         'Hidden GRU units - ', self.config['gru_units']['default'], '\n'
+                        'LSTM units - ', self.config['lstm_neurons']['default'], '\n'
                         )   
                     # Instantiation and training
                     astgcn = AstGcn(time_steps, num_nodes, adjacency_matrix,
                                                 attribute_data, save_File, horizon,
                                                 X_train, Y_train, X_val, Y_val, split, 
                                                 self.config['batch_size']['default'], self.config['training_epoch']['default'], 
-                                                self.config['gru_units']['default'])
+                                                self.config['gru_units']['default'], self.config['lstm_neurons']['default'])
                     model, history = astgcn.astgcnModel()
                     lossData.append([history.history['loss']])
                     yhat = model.predict(X_test)

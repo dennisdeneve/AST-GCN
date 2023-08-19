@@ -191,17 +191,20 @@ def generateRandomParameters(config):
     batch_size = [32,64, 128]
     epochs = [1, 2, 3]
     gru_units = [33,63,93]
+    lstm_units = [32,64,128]
 
     batch = batch_size[random.randint(0,len(batch_size)-1)]
     epoch = epochs[random.randint(0,len(epochs)-1)]
     gru_unit =gru_units[random.randint(0,len(epochs)-1)]
+    lstm_unit =lstm_units[random.randint(0,len(epochs)-1)]
 
     config['batch_size']['default'] = batch
     config['training_epoch']['default'] = epoch
     config['gru_units']['default'] = gru_unit
+    config['lstm_neurons']['default'] = lstm_unit
 
 
-    return [batch, epoch, gru_unit]
+    return [batch, epoch, gru_unit, lstm_unit]
 
 ### Perturbation Analysis
 def MaxMinNormalization(x,Max,Min):
