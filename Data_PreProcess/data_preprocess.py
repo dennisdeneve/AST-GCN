@@ -11,23 +11,15 @@ def data_preprocess_HPO_AST_GCN():
     # Load and preprocess the weather station data & attribute data 
     print("Starting to read csv with all weather stations ...")
     weather_data = pd.read_csv('data/Graph Neural Network Data/Graph Station Data/graph.csv')
+    print("Successfully read it in...")
     processed_data = weather_data[['Pressure', 'Humidity', 'Rain', 'Temperature']]
     attribute_data = weather_data[['WindDir', 'WindSpeed']]  # Extract attribute data
     processed_data = processed_data.astype(float)
     # Adjust weather station nodes and adjacency matrix
     weather_stations = weather_data['StasName'].unique()
     num_nodes = len(weather_stations)
-    
-    # adjacency_matrix = pd.read_csv('data/Graph Neural Network Data/Aπdjacency Matrix/adj_mx.csv', index_col=0)
-    # adjacency_matrix = adjacency_matrix.iloc[:num_nodeSs, :num_nodes].values
-  
-    # Already extracted adj matrix before hand
-    # Extract station coordinates
-    # stations_coords = weather_data.groupby('StasName')[['Latitude', 'Longitude']].first().values
-    # adjacency_matrix = calculate_adjacency_matrix(stations_coords,1000)
-    # print("Stations Coordinates:\n", stations_coords)
+    print("data preprocessing done, now creating adjacency matrix")
     adjacency_matrix = random_adjacency_matrix(num_nodes)
-    
     return processed_data, attribute_data, adjacency_matrix, num_nodes
 
 

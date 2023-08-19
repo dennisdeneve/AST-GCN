@@ -3,7 +3,7 @@ import pandas as pd
 import os
 from Model.ASTGCN.astgcn import AstGcn
 import astgcnUtils.astgcnUtils as utils
-from Data_PreProcess.data_preprocess import data_preprocess_HPO_AST_GCN, sliding_window_AST_GCN
+from Data_PreProcess.data_preprocess import data_preprocess_AST_GCN, data_preprocess_HPO_AST_GCN, sliding_window_AST_GCN
 from Logs.modelLogger import modelLogger 
 
 class astgcnHPO:
@@ -30,7 +30,9 @@ class astgcnHPO:
        
         print('********** AST-GCN model HPO started at all stations') 
             
-        processed_data, attribute_data, adjacency_matrix, num_nodes = data_preprocess_HPO_AST_GCN()
+        # processed_data, attribute_data, adjacency_matrix, num_nodes = data_preprocess_HPO_AST_GCN()
+        processed_data, attribute_data, adjacency_matrix, num_nodes = data_preprocess_AST_GCN("ADDO ELEPHANT PARK")
+        
         lossData, resultsData, targetData = [], [], []
             
         folder_path = f'Results/ASTGCN/{horizon} Hour Forecast/all_stations'
@@ -38,6 +40,7 @@ class astgcnHPO:
         input_data, target_data, scaler = sliding_window_AST_GCN(processed_data, time_steps, num_nodes)
 
         textFile = 'HPO/Best Parameters/AST-GCN/configurations.txt'
+        print("File with best configs is in ", textFile)
         f = open(textFile, 'w')
         best_mse = np.inf
 
@@ -49,7 +52,8 @@ class astgcnHPO:
             self.model_logger.info(f"Trying configuration {i+1}/{self.config['num_configs']['default']}: {config}")
                 
             valid_config = True
-            targets, preds = []
+            targets = []
+            preds = []
                 
             for k in range(num_splits):
                 print('ASTGCN training started on split {0}/{2} at all stations forecasting {1} hours ahead.'.format(k + 1, horizon, num_splits))
@@ -81,10 +85,6 @@ class astgcnHPO:
                     Y_test = np.expand_dims(Y_test, axis=2)
                     resultsData.append(yhat.reshape(-1,))
                     targetData.append(Y_test.reshape(-1,))
-                            # Save results
-                    actual_vs_predicted_data = pd.DataFrame({
-                            'Actual': Y_test.flatten(),
-                            'Predicted': yhat.flatten()})
                 except Warning:
                     valid_config = False
                     print(f"Error encountered during training with configuration {config}. Error message: {e}")
@@ -93,7 +93,7 @@ class astgcnHPO:
                 preds.append(np.array(resultsData).flatten())
             if valid_config:
                 mse = utils.MSE(np.concatenate(np.array(targets, dtype=object)),
-                                    np.concatenate(np.array(preds, dtype=object)))
+                                np.concatenate(np.array(preds, dtype=object)))
                 if mse < best_mse:
                     print(f"Current MSE {mse:.2f} is better than previous best MSE {best_mse:.2f}.")
                     best_cfg = config
@@ -102,6 +102,7 @@ class astgcnHPO:
                     print(f"Current MSE {mse:.2f} is NOT better than previous best MSE {best_mse:.2f}.")
 
         f.write('This is the best configuration ' + str(best_cfg) + ' with an MSE of ' + str(best_mse))
+        print('This is the best configuration ' + str(best_cfg) + ' with an MSE of ' + str(best_mse))
         f.close()
                 # self.model_logger.info('gwnHPO : GWN best configuration found = ' +str(best_cfg) + ' with an MSE of ' + str(best_mse))
                 # self.model_logger.info('gwnHPO : GWN HPO finished at all stations :)')

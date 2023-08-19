@@ -1,0 +1,12 @@
+2023-08-19 20:30:37,419 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 20:30:37,419 - all_stations - INFO - Trying configuration 1/5: [64, 1]
+2023-08-19 20:31:08,561 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 20:31:08,561 - all_stations - INFO - Trying configuration 1/5: [128, 1]
+2023-08-19 20:31:16,341 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 20:31:16,341 - all_stations - INFO - Trying configuration 2/5: [32, 1]
+2023-08-19 20:31:22,275 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 20:31:22,275 - all_stations - INFO - Trying configuration 3/5: [64, 1]
+2023-08-19 20:31:27,708 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 20:31:27,709 - all_stations - INFO - Trying configuration 4/5: [64, 1]
+2023-08-19 20:31:32,674 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 20:31:32,674 - all_stations - INFO - Trying configuration 5/5: [64, 3]

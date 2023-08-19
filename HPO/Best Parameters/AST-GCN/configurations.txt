@@ -1,1 +1,1 @@
-This is the best configuration [128, 3] with an MSE of 0.09961713722565951
+This is the best configuration [64, 3] with an MSE of 0.14108035856822587
