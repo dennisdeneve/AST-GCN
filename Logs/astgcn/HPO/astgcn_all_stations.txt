@@ -10,3 +10,29 @@
 2023-08-19 20:31:27,709 - all_stations - INFO - Trying configuration 4/5: [64, 1]
 2023-08-19 20:31:32,674 - all_stations - INFO - Generating random parameters for ASTGCN
 2023-08-19 20:31:32,674 - all_stations - INFO - Trying configuration 5/5: [64, 3]
+2023-08-19 20:54:03,436 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 20:54:03,436 - all_stations - INFO - Trying configuration 1/5: [128, 3]
+2023-08-19 20:54:13,864 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 20:54:13,864 - all_stations - INFO - Trying configuration 2/5: [128, 2]
+2023-08-19 20:54:25,263 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 20:54:25,264 - all_stations - INFO - Trying configuration 3/5: [64, 1]
+2023-08-19 20:54:34,235 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 20:54:34,235 - all_stations - INFO - Trying configuration 4/5: [32, 3]
+2023-08-19 23:05:27,680 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 23:05:27,681 - all_stations - INFO - Trying configuration 1/5: [32, 2]
+2023-08-19 23:05:34,837 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 23:05:34,837 - all_stations - INFO - Trying configuration 2/5: [128, 2]
+2023-08-19 23:05:41,791 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 23:05:41,791 - all_stations - INFO - Trying configuration 3/5: [128, 3]
+2023-08-19 23:26:29,279 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 23:26:29,279 - all_stations - INFO - Trying configuration 1/5: [128, 3, 63]
+2023-08-19 23:26:37,360 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 23:26:37,360 - all_stations - INFO - Trying configuration 2/5: [32, 2, 93]
+2023-08-19 23:26:44,398 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 23:26:44,398 - all_stations - INFO - Trying configuration 3/5: [32, 3, 33]
+2023-08-19 23:26:50,457 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 23:26:50,458 - all_stations - INFO - Trying configuration 4/5: [128, 3, 63]
+2023-08-19 23:26:59,567 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-19 23:26:59,567 - all_stations - INFO - Trying configuration 5/5: [32, 1, 93]
+2023-08-19 23:27:06,394 - all_stations - INFO - This is the best configuration [32, 3, 33] with an MSE of 0.0665276456847772
+2023-08-19 23:27:06,395 - all_stations - INFO - HPO finished successfully

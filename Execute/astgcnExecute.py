@@ -83,7 +83,7 @@ class astgcnExecute:
         # Instantiate the AstGcn class
         astgcn = AstGcn(self.time_steps, num_nodes, adjacency_matrix, 
                                     attribute_data, save_File, self.forecast_len, 
-                                    X_train, Y_train, X_val, Y_val, split, self.batch_size, self.epochs)
+                                    X_train, Y_train, X_val, Y_val, split, self.batch_size, self.epochs, self.config['gru_units']['default'])
         # Train the model by calling the astgcnModel method
         model, history = astgcn.astgcnModel()
 
@@ -134,13 +134,13 @@ class astgcnExecute:
         """Saves the results, loss, target data, and the actual vs predicted comparison to CSV files."""
         # Save Results, Loss, and Target
         self.logger.info(f'Saving the results of predictions to ' + str(self.resultsFile))
-        print(f'Saving the results of predictions to' + str(self.resultsFile) )
+        # print(f'Saving the results of predictions to' + str(self.resultsFile) )
         resultsDF = pd.DataFrame(np.concatenate(self.resultsData))
         self.logger.info(f'Saving the targets of actual values to ' + str(self.targetFile) )
-        print(f'Saving the targets of actual values to ' + str(self.targetFile) )
+        # print(f'Saving the targets of actual values to ' + str(self.targetFile) )
         targetDF = pd.DataFrame(np.concatenate(self.targetData))
         self.logger.info(f'Saving the loss to ' + str(self.lossFile) )
-        print(f'Saving the loss to ' + str(self.lossFile) )
+        # print(f'Saving the loss to ' + str(self.lossFile) )
         lossDF = pd.DataFrame(self.lossData)
         
         resultsDF.to_csv(self.resultsFile)

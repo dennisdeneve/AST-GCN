@@ -15,7 +15,7 @@ class AstGcn:
     of an ASTGCN model for temperature forecasting.
     """
     def __init__(self, time_steps, num_nodes, adjacency_matrix, attribute_data, save_File, forecast_len,
-                 X_train, Y_train, X_val, Y_val, split, batch_size,epochs):
+                 X_train, Y_train, X_val, Y_val, split, batch_size,epochs, gru_units):
         """
         Initialize AstGcn with the provided parameters.
         Parameters:
@@ -44,13 +44,14 @@ class AstGcn:
         self.Y_val = Y_val
         self.split = split
         self.epochs = epochs
+        self.gru_units = gru_units
 
-    def build_model(self, X_attribute_train, Y_attribute_train, adj_normalized):
+    def build_model(self, X_attribute_train, Y_attribute_train, adj_normalized, gru_units):
         """Build and return the initialized AST-GCN model."""
         inputs = Input(shape=(self.time_steps, 1, self.X_train.shape[-1]))
         # x = GcnCell(64, adj_normalized, X_attribute_train, Y_attribute_train)(inputs)
         # Old way used 63 units
-        x = GcnCell(63, adj_normalized, X_attribute_train, Y_attribute_train)(inputs)
+        x = GcnCell(gru_units, adj_normalized, X_attribute_train, Y_attribute_train)(inputs)
         x = Reshape((-1, self.time_steps * self.num_nodes))(x)
         x = LSTM(64, activation='relu', return_sequences=False)(x)
         outputs = Dense(40, activation='linear')(x)
@@ -80,7 +81,7 @@ class AstGcn:
                                                                    self.forecast_len)
         adj_normalized = calculate_laplacian_astgcn(self.adjacency_matrix, self.num_nodes)
         # adj_normalized = calculate_laplacian_astgcn((self.create_adjacency_matrix(self.num_nodes)), self.num_nodes)
-        model = self.build_model(X_attribute_train, Y_attribute_train, adj_normalized)
+        model = self.build_model(X_attribute_train, Y_attribute_train, adj_normalized, self.gru_units)
         #model.summary()
         history = self.compile_and_train_model(model)
         y_pred = self.predict(model)

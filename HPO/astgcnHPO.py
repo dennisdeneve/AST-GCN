@@ -54,9 +54,9 @@ class astgcnHPO:
             valid_config = True
             targets = []
             preds = []
-                
+            
             for k in range(num_splits):
-                print('ASTGCN training started on split {0}/{2} at all stations forecasting {1} hours ahead.'.format(k + 1, horizon, num_splits))
+                print('ASTGCN HPO training started on split {0}/{2} at all stations forecasting {1} hours ahead.'.format(k + 1, horizon, num_splits))
                 save_File = f'Garage/Final Models/ASTGCN/{str(horizon)}Hour Models/all_stations/Best_Model_' + \
                                 f'{str(horizon)}_walk_{str(k)}.h5'
                 utils.create_file_if_not_exists(save_File)
@@ -67,18 +67,18 @@ class astgcnHPO:
                 X_train, Y_train = utils.create_X_Y(train, time_steps, num_nodes, horizon)
                 X_val, Y_val = utils.create_X_Y(validation, time_steps, num_nodes, horizon)
                 X_test, Y_test = utils.create_X_Y(test, time_steps, num_nodes, horizon)
-                            
                 try:
                     print('This is the HPO configuration: \n',
                         'Batch Size - ', self.config['batch_size']['default'], '\n',
                         'Epochs - ', self.config['training_epoch']['default'], '\n',
-                        )
-                            
+                        'Hidden GRU units - ', self.config['gru_units']['default'], '\n'
+                        )   
                     # Instantiation and training
                     astgcn = AstGcn(time_steps, num_nodes, adjacency_matrix,
                                                 attribute_data, save_File, horizon,
                                                 X_train, Y_train, X_val, Y_val, split, 
-                                                self.config['batch_size']['default'], self.config['training_epoch']['default'])
+                                                self.config['batch_size']['default'], self.config['training_epoch']['default'], 
+                                                self.config['gru_units']['default'])
                     model, history = astgcn.astgcnModel()
                     lossData.append([history.history['loss']])
                     yhat = model.predict(X_test)
@@ -104,7 +104,6 @@ class astgcnHPO:
         f.write('This is the best configuration ' + str(best_cfg) + ' with an MSE of ' + str(best_mse))
         print('This is the best configuration ' + str(best_cfg) + ' with an MSE of ' + str(best_mse))
         f.close()
-                # self.model_logger.info('gwnHPO : GWN best configuration found = ' +str(best_cfg) + ' with an MSE of ' + str(best_mse))
-                # self.model_logger.info('gwnHPO : GWN HPO finished at all stations :)')
-                    
+        self.model_logger.info('This is the best configuration ' + str(best_cfg) + ' with an MSE of ' + str(best_mse))
+        self.model_logger.info("HPO finished successfully")
         print(f'HPO finished at all stations at {horizon} hour horizon')
