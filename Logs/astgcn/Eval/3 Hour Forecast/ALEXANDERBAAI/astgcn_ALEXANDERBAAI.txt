@@ -38,3 +38,11 @@
 2023-08-16 19:34:50,363 - ALEXANDERBAAI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
 2023-08-16 19:34:50,363 - ALEXANDERBAAI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
 2023-08-16 19:34:50,363 - ALEXANDERBAAI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-20 11:46:17,844 - ALEXANDERBAAI - INFO - ASTGCN evaluation for single time-step started at {station} for the horizon of {horizon}
+2023-08-20 11:46:17,976 - ALEXANDERBAAI - INFO - ASTGCN evaluation done at {station} for the horizon of {horizon}
+2023-08-20 11:46:17,976 - ALEXANDERBAAI - INFO - And was saved to {paths["metrics"]}
+2023-08-20 11:46:17,976 - ALEXANDERBAAI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-20 11:46:17,977 - ALEXANDERBAAI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-20 11:46:17,977 - ALEXANDERBAAI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-20 11:46:17,977 - ALEXANDERBAAI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.
+2023-08-20 11:46:17,977 - ALEXANDERBAAI - INFO - {name}: {value} at the {station} station forecasting {horizon} hours ahead.

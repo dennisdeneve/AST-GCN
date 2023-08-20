@@ -54,3 +54,9 @@
 2023-08-19 23:47:04,593 - all_stations - INFO - Trying configuration 5/5: [32, 3, 33, 32]
 2023-08-19 23:47:09,800 - all_stations - INFO - This is the best configuration [32, 2, 93, 64] with an MSE of 0.05959442179433064
 2023-08-19 23:47:09,800 - all_stations - INFO - HPO finished successfully
+2023-08-20 11:47:46,906 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-20 11:47:46,906 - all_stations - INFO - Trying configuration 1/5: [32, 2, 93, 64]
+2023-08-20 11:47:53,086 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-20 11:47:53,087 - all_stations - INFO - Trying configuration 2/5: [64, 2, 33, 128]
+2023-08-20 11:47:58,310 - all_stations - INFO - Generating random parameters for ASTGCN
+2023-08-20 11:47:58,310 - all_stations - INFO - Trying configuration 3/5: [128, 1, 33, 128]
