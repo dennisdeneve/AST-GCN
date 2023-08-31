@@ -1,7 +1,7 @@
 ############################ Experimentation configurations ############################
 train_ast_gcn:
   type: bool
-  default: false
+  default: true
   help: whether to train AST-GCN model (Attribute-Augmented Spatiotemporal Graph Convolutional Network)
 eval_ast_gcn:
   type: bool
@@ -9,13 +9,13 @@ eval_ast_gcn:
   help: whether to evaluate AST-GCN model 
 hpo_ast_gcn: 
   type: bool
-  default: true
+  default: false
   help: whether to perform HPO AST-GCN model 
 
 ############################ Visualise Adjacency Matrix ############################
 vis:
   type: bool
-  default: true
+  default: false
   help: whether to create visualisations
 modelVis:
   type: str
@@ -37,21 +37,21 @@ locations_path:
 ############################ General data configurations ############################
 forecasting_horizons:
   type: int[]
-  default: [3]
-  # default: [3,6,9,12,24]
+  # default: [3]
+  default: [3,6,9,12,24]
   help: forecast horizons for time step forecasting
 
 stations:
   type: str[]
-  # default: ['ADDO ELEPHANT PARK', 'ALEXANDERBAAI', 'ALIWAL-NORTH PLAATKOP', 'BARKLY-OOS (CAERLEON)',
-  #               'BRANDVLEI', 'CALVINIA WO', 'CAPE TOWN WO', 'DE AAR WO', 'DOHNE - AGR', 'EAST LONDON WO',
-  #               'EXCELSIOR CERES', 'FORT BEAUFORT', 'FRASERBURG', 'GEORGE WITFONTEIN', 'GEORGE WO', 
-  #               'GRAAFF - REINET', 'GRAHAMSTOWN', 'KOINGNAAS', 'LADISMITH', 'LAINGSBURG', 'LANGGEWENS',
-  #               'MALMESBURY', 'MOLTENO RESERVOIR','NOUPOORT','OUDTSHOORN', 'PATENSIE','POFADDER', 
-  #               'PORT ALFRED - AIRPORT','PORT ELIZABETH AWOS', 'PORT ELIZABETH AWS','PORT NOLLOTH','PORTERVILLE', 
-  #               'PRIESKA', 'REDELINGSHUYS-AWS','RIVERSDALE','SOMERSET EAST','SPRINGBOK WO','TWEE RIVIEREN',
-  #               'UITENHAGE','UPINGTON WO', 'VANWYKSVLEI','VIOOLSDRIF - AWS','VREDENDAL','WILLOWMORE','WORCESTER-AWS']
-  default: ['ADDO ELEPHANT PARK', 'ALEXANDERBAAI', 'ALIWAL-NORTH PLAATKOP', 'BARKLY-OOS (CAERLEON)']
+  default: ['ADDO ELEPHANT PARK', 'ALEXANDERBAAI', 'ALIWAL-NORTH PLAATKOP', 'BARKLY-OOS (CAERLEON)',
+                'BRANDVLEI', 'CALVINIA WO', 'CAPE TOWN WO', 'DE AAR WO', 'DOHNE - AGR', 'EAST LONDON WO',
+                'EXCELSIOR CERES', 'FORT BEAUFORT', 'FRASERBURG', 'GEORGE WITFONTEIN', 'GEORGE WO', 
+                'GRAAFF - REINET', 'GRAHAMSTOWN', 'KOINGNAAS', 'LADISMITH', 'LAINGSBURG', 'LANGGEWENS',
+                'MALMESBURY', 'MOLTENO RESERVOIR','NOUPOORT','OUDTSHOORN', 'PATENSIE','POFADDER', 
+                'PORT ALFRED - AIRPORT','PORT ELIZABETH AWOS', 'PORT ELIZABETH AWS','PORT NOLLOTH','PORTERVILLE', 
+                'PRIESKA', 'REDELINGSHUYS-AWS','RIVERSDALE','SOMERSET EAST','SPRINGBOK WO','TWEE RIVIEREN',
+                'UITENHAGE','UPINGTON WO', 'VANWYKSVLEI','VIOOLSDRIF - AWS','VREDENDAL','WILLOWMORE','WORCESTER-AWS']
+  # default: ['ADDO ELEPHANT PARK', 'ALEXANDERBAAI', 'ALIWAL-NORTH PLAATKOP', 'BARKLY-OOS (CAERLEON)']
   help: list of all stations names
 
 increment: 
@@ -118,25 +118,25 @@ adjdata:
 
 num_configs:
   type: int
-  default: 5
+  default: 30
   help: number of random configurations to search through
 
 batch_size :
   type :  int  
-  default : 196 #WF is 64 
+  default : 64
   help :  batch size. 
 
 training_epoch:
   type: int
-  default : 1
+  default : 20
   help :  Number of epochs to train. 
 
 gru_units: 
   type : int  
-  default : 63 
+  default : 63
   help : hidden units of gru. 
 
 lstm_neurons:
   type : int  
-  default : 64 
+  default : 32 
   help :  Number of recurrent units or neurons in the LSTM layer. 

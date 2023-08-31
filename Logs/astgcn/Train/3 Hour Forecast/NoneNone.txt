@@ -1,0 +1,13 @@
+2023-08-31 13:38:09,796 - None - INFO - ********** AST-GCN model training started
+2023-08-31 13:38:09,796 - None - INFO - Starting data preprocessing for all stations 
+2023-08-31 13:38:46,811 - None - INFO - ********** AST-GCN model training started
+2023-08-31 13:38:46,814 - None - INFO - Starting data preprocessing for all stations 
+2023-08-31 13:40:17,724 - None - INFO - ********** AST-GCN model training started
+2023-08-31 13:40:17,724 - None - INFO - Starting data preprocessing for all stations 
+2023-08-31 13:40:23,199 - None - DEBUG - Starting to train the model
+2023-08-31 13:41:07,886 - None - INFO - ********** AST-GCN model training started
+2023-08-31 13:41:07,886 - None - INFO - Starting data preprocessing for all stations 
+2023-08-31 13:41:13,685 - None - DEBUG - Starting to train the model
+2023-08-31 13:41:44,867 - None - INFO - ********** AST-GCN model training started
+2023-08-31 13:41:44,868 - None - INFO - Starting data preprocessing for all stations 
+2023-08-31 13:41:49,986 - None - DEBUG - Starting to train the model
